@@ -1,5 +1,5 @@
 from flask import Flask
-from os import path
+import os
 from datetime import date as dt
 from datetime import datetime
 from jinja2 import Environment, PackageLoader, select_autoescape
@@ -14,7 +14,7 @@ def create_app():
     )
 
     keys={}
-    with open('keys.txt', 'r') as f:
+    with open(os.path.join(views.root_path,'keys.txt'), 'r') as f:
         key_list = f.readlines()
     keys['openai_key'] = key_list[0]
     keys['youtube_key'] = key_list[1]
