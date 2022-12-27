@@ -197,9 +197,9 @@ def cleanse_track_duplicates(df):
     print(df[['track_name', 'popularity', 'specific_keyword']])
     return df
 
-def main_proc(options):
-    input_keyword_csv_filepath = options['input_fp']
-    keyword_df = get_input_keyword_data(input_keyword_csv_filepath)
+def main_proc(input_data):
+
+    keyword_df = input_data
 
     output_df_not_filtered = []
     output_dfs = []
@@ -315,8 +315,8 @@ if __name__ == '__main__':
     #    print(f'An error {e} occurred:')
 '''
 
-def search(input_file_path, limit_st, limit_tot):
+def search(input_data, limit_st, limit_tot):
     global limit_per_search_term, limit_total
     limit_total = limit_tot
     limit_per_search_term = limit_st
-    return main_proc({'input_fp': input_file_path})
+    return main_proc(input_data)
