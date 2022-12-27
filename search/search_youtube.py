@@ -12,19 +12,11 @@ import argparse
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-# Set DEVELOPER_KEY to the API key value from the APIs & auth > Registered apps
-# tab of
-#   https://cloud.google.com/console
-# Please ensure that you have enabled the YouTube Data API for your project.
-# DEVELOPER_KEY = 'AIzaSyCNuBly5Opbxe4cLVscjQX8bN-HczbINhQ'
-# DEVELOPER_KEY = 'AIzaSyAytu853252F20s5b4sbf4En6iOItcRvWk'
-DEVELOPER_KEY = "AIzaSyD307eSsoL8cLTECBA-dcoZs9n6Ip5bK-E"
-
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
 
 
-def youtube_search(options):
+def youtube_search(options, DEVELOPER_KEY):
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
                     developerKey=DEVELOPER_KEY)
 

@@ -5,6 +5,7 @@ from datetime import datetime as dt
 import pandas as pd
 import sys
 import os
+from . import keys
 from flask import current_app as app
 sys.path.append('/..')
 from search import search as song_search
@@ -73,7 +74,8 @@ def search():
                     filename = song_search(
                         read_data().rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}),
                         limit_st,
-                        limit_tot
+                        limit_tot,
+                        keys
                     )
                     flash('Search completed.', category='download')
             
@@ -111,6 +113,6 @@ def clear_input():
 @views.route('/uploads/<path:filename>', methods=['GET', 'POST'])
 def download(filename):
     # Appending app path to upload folder path within app root folder
-    path = os.path.join(views.root_path, '..\\model_outputs', filename)
+    path = os.path.join(views.root_path, 'model_outputs', filename)
     # Returning file from appended path
     return send_file(path, as_attachment=True)

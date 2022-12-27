@@ -13,6 +13,13 @@ def create_app():
         autoescape=select_autoescape()
     )
 
+    keys={}
+    with open('keys.txt', 'r') as f:
+        key_list = f.readlines()
+    keys['openai_key'] = key_list[0]
+    keys['youtube_key'] = key_list[1]
+    
+
     from .views import views
 
     app.register_blueprint(views, url_prefix='/')

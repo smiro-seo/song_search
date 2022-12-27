@@ -21,7 +21,7 @@ limit_per_search_term=20    #Top N songs for search term (ex. animals). For all 
 limit_total=-1  #Top N songs. For all results insert -1
 market='US'
 flagged_characters = ['-', '('] #Characters after which the track name does not matter for duplicates 
-sleep_time_openai=0.5 #seconds      #CHANGE THIS
+sleep_time_openai=15 #seconds      #CHANGE THIS
 
 try:
     from openai_api_song_data.search_youtube import youtube_search
@@ -35,7 +35,8 @@ column_name_transform = {'artist': 'Artist','track_name': 'Track Name','release_
 cwd = os.getcwd()
 
 # define auth keys
-openai.api_key = "REPLACE THIS"
+openai.api_key = ""
+youtube_api_key = ''
 
 # paths
 output_dir = f'{cwd}\model_outputs'
@@ -113,7 +114,7 @@ def get_youtube_search_results(track_title):
     options = argparse.Namespace(q=track_title, max_results=1)
     try:
         #Try getting the video data from google API
-        search_results = youtube_search(options)
+        search_results = youtube_search(options, youtube_api_key)
         video_id = search_results['items'][0]['id']['videoId']
     except HttpError as error:
         # check if the error is due to exceeding the daily quota
@@ -162,16 +163,15 @@ def get_openai_model_responses(df_w_spot_and_yt):
         prompt = f'Write a simple text presenting the song {track_name} by {artist} from {release_year} ' \
                  f'describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text.'
         # CHANGE THIS
-        #completion = openai.Completion.create(engine="text-davinci-003",
-        #                                      max_tokens=150,
-        #                                      prompt=prompt)
+        completion = openai.Completion.create(engine="text-davinci-003",
+                                              max_tokens=150,
+                                              prompt=prompt)
         
-        #CHANGE THIS
-        #choice_response_text = completion['choices'][0].text.strip()
+        choice_response_text = completion['choices'][0].text.strip()
         print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
         print(f'The prompt is: {prompt}')
-        choice_response_text = ''#completion['choices'][0].text.strip().replace('"', '') #CHANGE!!!!!!!!!
-        completions.append('completion') #CHANGE!!!!!
+        choice_response_text = completion['choices'][0].text.strip().replace('"', '')
+        completions.append(completion)
         tracks_data_w_completion_text.append((track_id, prompt, choice_response_text))
         time.sleep(sleep_time_openai)
         print(f"Sleeping for {str(sleep_time_openai)} seconds")
@@ -251,7 +251,11 @@ def main_proc(input_data):
     print(f"Getting Youtube data")
     df_w_spot_and_yt = get_youtube_search_results_for_tracks_dataset(output_df_filtered)
     print(f"Getting OpenAI response")
-    merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt)
+    try:
+        merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt)
+    except:
+        merged_df_w_results = df_w_spot_and_yt.copy()
+        merged_df_w_results['model_response'] = ''
     
     output_df_filtered_w_results = merged_df_w_results[column_list]
     
@@ -315,8 +319,12 @@ if __name__ == '__main__':
     #    print(f'An error {e} occurred:')
 '''
 
-def search(input_data, limit_st, limit_tot):
-    global limit_per_search_term, limit_total
+def search(input_data, limit_st, limit_tot, keys):
+    global limit_per_search_term, limit_total, youtube_api_key
+
+    openai.api_key = key['openai_key']
+    youtube_api_key = key['youtube_key']
+
     limit_total = limit_tot
     limit_per_search_term = limit_st
     return main_proc(input_data)
