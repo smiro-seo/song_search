@@ -5,3 +5,4 @@ __pycache__/
 test.py
 instance/
 model_outputs/
+input.csv
