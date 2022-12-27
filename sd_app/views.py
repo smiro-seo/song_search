@@ -150,11 +150,11 @@ def clear_input(flash_msg=True):
 @views.route('/repeat_search', methods=['POST'])
 def repeat_search():
     global input_data
-    search_input = request.data
+    search_input = json.loads(request.data)['keyword']
     print(search_input)
 
     clear_input(flash_msg=False)
-    input_data = pd.DataFrame(search_input)
+    input_data = pd.read_json(search_input)
 
     save_input_data(input_data)
     flash('Input data restored.', category='error')

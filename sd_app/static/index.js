@@ -20,7 +20,7 @@ function delete_row(idx, table) {
 function repeat_search(keyword_json) {
     fetch("/repeat_search", {
         method: "POST",
-        body: keyword_json,
+        body: JSON.stringify({ keyword: keyword_json }),
     }).then((_res) => {
         window.location.href = "/search";
     });
