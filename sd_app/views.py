@@ -76,6 +76,7 @@ def search():
                 if limit_tot < -1 or limit_st < -1:
                     flash("Limits must be positive integer numbers. If you don't want to limit the results, uncheck the checkbox", category='error')
                 else:
+                    print(keys)
                     input_data = read_data()
                     filename = song_search(
                         input_data.rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}),
