@@ -57,8 +57,34 @@ def sign_up():
                 password1, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
-            login_user(new_user, remember=True)
+            #login_user(new_user, remember=True)
             flash('Account created!', category='success')
             return redirect(url_for('views.search'))
 
     return render_template("sign_up.html", user=current_user)
+
+@auth.route('/change_password', methods=['GET', 'POST']) 
+@login_required 
+def change_password():
+
+    if request.method == 'POST':
+        old_pwd = request.form.get('old-password')
+        password1 = request.form.get('password1')
+        password2 = request.form.get('password2')
+
+        if check_password_hash(current_user.password, old_pwd):
+            
+            if password1 != password2:
+                flash('Passwords don\'t match.', category='error')
+            elif len(password1) < 7:
+                flash('Password must be at least 7 characters.', category='error')
+            else:
+                current_user.password = generate_password_hash(password1, method='sha256')
+                db.session.commit()
+                flash('Password changed!', category='success')
+                return redirect(url_for('views.search'))
+
+        else:
+            flash('Incorrect password, try again.', category='error')
+
+    return render_template("change_password.html", user=current_user)

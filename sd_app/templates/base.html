@@ -27,8 +27,11 @@
       <div class="collapse navbar-collapse" id="navbar">
         <div class="navbar-nav">
           {% if user.is_authenticated %}
+          <a class="nav-item nav-link" id="search" href="/search">Search</a>
           <a class="nav-item nav-link" id="history" href="/history">Search History</a>
           <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+          <a class="nav-item nav-link" id="logout" href="/signup">New User</a>
+          <a class="nav-item nav-link" id="settings" href="/change_password">Change Password</a>
           {% endif %}
         </div>
       </div>

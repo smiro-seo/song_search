@@ -105,6 +105,13 @@ def history():
   
     return render_template("history.html", user=current_user, searches=Search.query.order_by(Search.date.desc()).all())
 
+@views.route('/change_password', methods=['GET', 'POST']) 
+@login_required 
+def change_password():
+
+
+    return render_template("change_password.html", user=current_user)
+
 
 @views.route('/delete_row', methods=['POST'])  
 @login_required
