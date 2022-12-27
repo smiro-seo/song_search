@@ -151,10 +151,9 @@ def clear_input(flash_msg=True):
 def repeat_search():
     global input_data
     search_input = json.loads(request.data)['keyword']
-    print(search_input)
 
     clear_input(flash_msg=False)
-    input_data = pd.read_json(search_input)
+    input_data = pd.DataFrame(json.loads(search_input))
     print(input_data)
 
     save_input_data(input_data)
