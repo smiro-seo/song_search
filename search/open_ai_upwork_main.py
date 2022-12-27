@@ -123,6 +123,7 @@ def get_youtube_search_results(track_title):
             print('Daily quota for YouTube Data API exceeded... Switching to YouTube scraping solution...')
             video_id = scrape_youtube_search_results(track_title)
         else:
+            print(error)
             video_id = ''
     except Exception as e:
         print('There was an error using the YouTube Data API... Switching to YouTube scraping solution...')
@@ -254,6 +255,7 @@ def main_proc(input_data):
     try:
         merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt)
     except:
+        print("There was an error recovering model response.")
         merged_df_w_results = df_w_spot_and_yt.copy()
         merged_df_w_results['model_response'] = ''
     
