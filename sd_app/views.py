@@ -129,6 +129,7 @@ def delete_search():
     search = Search.query.get(idx)
 
     filepath = os.path.join(views.root_path, 'model_outputs', search.csv_path)
+    print(f"File path to be deleted: {filepath}")
     os.remove(filepath)
 
     db.session.delete(search)
