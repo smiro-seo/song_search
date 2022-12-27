@@ -34,8 +34,6 @@ column_list = ['keyword', 'specific_keyword', 'artist', 'track_name', 'release_y
 column_name_transform = {'artist': 'Artist','track_name': 'Track Name','release_year': 'Release Year','album': 'Album'}
 cwd = os.getcwd()
 
-pathlib.Path(f'{cwd}\model_outputs').mkdir(parents=True, exist_ok=True)
-
 # define auth keys
 openai.api_key = "REPLACE THIS"
 

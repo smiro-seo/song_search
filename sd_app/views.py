@@ -32,6 +32,7 @@ def add_row(input_data, new_row):
         input_data = pd.concat([input_data, pd.DataFrame(new_row, index=[1])], ignore_index=True)
         return True, input_data, 'Keyword added.'
 
+@views.route('/', methods=['GET', 'POST'])  
 @views.route('/search', methods=['GET', 'POST'])  
 def search():
 
