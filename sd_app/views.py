@@ -126,8 +126,11 @@ def delete_search():
     
     data = json.loads(request.data)
     idx = data['idx']
-
     search = Search.query.get(idx)
+
+    filepath = os.path.join(views.root_path, 'model_outputs', search.csv_path)
+    os.remove(filepath)
+
     db.session.delete(search)
     db.session.commit()
 
@@ -165,6 +168,5 @@ def repeat_search():
 def download(filename):
     # Appending app path to upload folder path within app root folder
     path = os.path.join(views.root_path, 'model_outputs', filename)
-    print(path)
     # Returning file from appended path
     return send_file(path, as_attachment=True)
