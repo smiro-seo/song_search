@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, send_file
 import json 
+from flask_login import login_required, current_user
 from jinja2 import Environment, PackageLoader, select_autoescape
 from datetime import datetime as dt
 import pandas as pd
@@ -35,7 +36,8 @@ def add_row(input_data, new_row):
         return True, input_data, 'Keyword added.'
 
 @views.route('/', methods=['GET', 'POST'])  
-@views.route('/search', methods=['GET', 'POST'])  
+@views.route('/search', methods=['GET', 'POST']) 
+@login_required 
 def search():
 
     global input_data
@@ -84,9 +86,10 @@ def search():
                 flash("Limits must be integer numbers. If you don't want to limit the results, uncheck the checkbox", category='error')
 
     input_data_tuple = to_tuples(input_data)    
-    return render_template("search.html", input_data = input_data_tuple, download_link=filename)
+    return render_template("search.html", input_data = input_data_tuple, download_link=filename, user=current_user)
 
 @views.route('/delete_row', methods=['POST'])  
+@login_required
 def delete_row():
     global input_data
     data = json.loads(request.data)
@@ -101,6 +104,7 @@ def delete_row():
     return jsonify({})
 
 @views.route('/clear_input', methods=['POST'])  
+@login_required
 def clear_input():
     global input_data
     
@@ -112,6 +116,7 @@ def clear_input():
     return jsonify({})
 
 @views.route('/uploads/<path:filename>', methods=['GET', 'POST'])
+@login_required
 def download(filename):
     # Appending app path to upload folder path within app root folder
     path = os.path.join(views.root_path, 'model_outputs', filename)
