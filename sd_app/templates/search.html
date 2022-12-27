@@ -1,0 +1,146 @@
+{% extends "base.html" %} {% block title %}Keyword editing{% endblock %}
+{% block content %}
+
+  <h1 align="center" style="margin-bottom:1em">Search songs</h1>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-6">
+      <table class="table" id="keyword-table">
+          <thead>
+              <tr>
+              <th scope="col">Keyword</th>
+              <th scope="col">Specific keyword</th>
+              <th scope="col">
+                <button type="button" class="btn btn-danger" onClick="clear_input()" style="font-size:70%">Clear</button>
+              </th>
+              </tr>
+          </thead>
+          <tbody>
+              {%for idx, keyword, sp_kw in input_data %}
+          <tr>
+          <td>
+              {{keyword}}
+          </td>
+          <td>
+              {{sp_kw}}
+          </td>
+          <td class="column_action">
+              <button type="button" class="btn btn-danger" onClick="delete_row({{ idx }})">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                  </svg>
+              </button>
+          </td>
+          </tr>
+              {% endfor %}
+          <form method="POST">
+          <tr>
+            <input hidden name="option" value="input_row">
+            <td>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="keyword"
+                  name="keyword"
+                  placeholder="Animals"
+                />
+              </div>
+            </td>
+            <td>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="sp_keyword"
+                  name="sp_keyword"
+                  placeholder="Cat"
+                />
+              </div>
+            </td>
+            <td class="column_action">
+              <button type="submit" class="btn btn-success" id="btn-new-row">
+                Add
+              </button>
+            </td>
+          </tr>
+          </form>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-4">
+
+      <form method="POST">
+        <input hidden name="option" value="search">
+      <div class="form-group">
+        <div class="row">
+
+          <div class="col-md-4" align="right">
+            <input checked class="form-check-input" type="checkbox" value="limited" id="check-limit-kw" name="check-limit-kw">
+          </div>
+          <div class="col-md-8">
+            <label for="limit-range-kw" class="form-label">Limit by keyword</label>
+            <br>
+            <input type="number" value="20" id="limit-range-kw-txt" name="limit-range-kw-txt" style="width:3em">  &nbsp
+            <input type="range" class="form-range" id="limit-range-kw" min="1" max="50" step="1" value="20">
+            
+          </div>
+
+        </div>   
+        
+        <div class="row" style="margin-top:1em">
+
+          <div class="col-md-4" align="right">
+            <input class="form-check-input" type="checkbox" value="limited" id="check-limit" name="check-limit">
+          </div>
+          <div class="col-md-8">
+            <label for="limit-range" class="form-label">Limit final results</label>
+            <br>
+            <input disabled type="number" value="20" id="limit-range-txt" name="limit-range-txt" style="width:3em">  &nbsp
+            <input disabled type="range" class="form-range" id="limit-range" min="1" max="50" step="1" value="20">
+          </div>
+
+        </div>
+
+        <div class="row" style="margin-top:2em;text-align:center">
+
+          <div class="col-md-12">
+            <button type="submit" class="btn btn-primary" id="btn-search" data-toggle="modal" data-target="#modal_searching">
+              Search!
+            </button>
+          </div>
+
+        </div>
+          
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="modal_searching" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+      <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Searching...</h5>
+          
+      </div>
+      <div class="modal-body">
+          <p>Do not close or exit the webpage.</p>
+      </div>
+      <!--
+      <div class="modal-footer">
+          <button type="button" class="btn btn-cancelar" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-aceptar">Añadir</button>
+      </div>-->
+      </div>
+      
+  </div>
+  </div>
+
+{% endblock %}
+    

@@ -16,7 +16,7 @@ import re
 import urllib.request
 import urllib.parse
 
-limit_per_keyword=20     #Top N songs per keyowrd (ex. cat). For all results insert -1
+limit_per_keyword=-1     #Top N songs per keyowrd (ex. cat). For all results insert -1
 limit_per_search_term=20    #Top N songs for search term (ex. animals). For all results insert -1
 limit_total=-1  #Top N songs. For all results insert -1
 market='US'
@@ -43,7 +43,7 @@ openai.api_key = "REPLACE THIS"
 output_dir = f'{cwd}\model_outputs'
 
 def get_input_keyword_data(input_keyword_csv_filepath):
-    input_kw_df = pd.read_csv(input_keyword_csv_filepath)
+    input_kw_df = pd.read_csv(input_keyword_csv_filepath, names=['index','search_term', 'keyword'])
     return input_kw_df
 
 def search_spotify_tracks(keyword):
@@ -301,6 +301,7 @@ def main_proc(options):
     print(f"Saving CSV file to : {os.path.join(output_dir, output_fname)}")
 
     final_output_df.to_csv(os.path.join(output_dir, output_fname), sep=';', index=False)
+    return output_fname
 
 '''
 if __name__ == '__main__':
@@ -316,5 +317,8 @@ if __name__ == '__main__':
     #    print(f'An error {e} occurred:')
 '''
 
-def search(input_file_path):
-    main_proc({'input_fp': input_file_path})
+def search(input_file_path, limit_st, limit_tot):
+    global limit_per_search_term, limit_total
+    limit_total = limit_tot
+    limit_per_search_term = limit_st
+    return main_proc({'input_fp': input_file_path})
