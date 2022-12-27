@@ -322,8 +322,8 @@ if __name__ == '__main__':
 def search(input_data, limit_st, limit_tot, keys):
     global limit_per_search_term, limit_total, youtube_api_key
 
-    openai.api_key = key['openai_key']
-    youtube_api_key = key['youtube_key']
+    openai.api_key = keys['openai_key']
+    youtube_api_key = keys['youtube_key']
 
     limit_total = limit_tot
     limit_per_search_term = limit_st
