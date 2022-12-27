@@ -21,7 +21,7 @@
         {{search.user}}
     </td>
     <td>
-      <a href="{{ url_for('views.download', filename=search.filename) }}">Download CSV file</a>
+      <a href="{{ url_for('views.download', filename=search.csv_path) }}">Download CSV file</a>
     </td>
     <td class="column_action">
         <button type="button" class="btn btn-info" onClick="repeat_search({{ search.keywords }})">
