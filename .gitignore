@@ -6,3 +6,4 @@ test.py
 instance/
 model_outputs/
 input.csv
+sd_app/keys.txt
