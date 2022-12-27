@@ -1,5 +1,4 @@
 from flask import Flask
-import os
 from datetime import date as dt
 from datetime import datetime
 from jinja2 import Environment, PackageLoader, select_autoescape
@@ -12,13 +11,6 @@ def create_app():
         loader=PackageLoader("sd_app"),
         autoescape=select_autoescape()
     )
-
-    keys={}
-    with open(os.path.join(app.root_path,'keys.txt'), 'r') as f:
-        key_list = f.readlines()
-    keys['openai_key'] = key_list[0]
-    keys['youtube_key'] = key_list[1]
-    
 
     from .views import views
 
