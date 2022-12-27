@@ -2,10 +2,12 @@ from flask import Blueprint, render_template, request, flash, jsonify, redirect,
 import json 
 from flask_login import login_required, current_user
 from jinja2 import Environment, PackageLoader, select_autoescape
+from .models import Search
 from datetime import datetime as dt
 import pandas as pd
 import sys
 import os
+from . import db
 from .constants import keys
 from flask import current_app as app
 sys.path.append('/..')
@@ -74,12 +76,21 @@ def search():
                 if limit_tot < -1 or limit_st < -1:
                     flash("Limits must be positive integer numbers. If you don't want to limit the results, uncheck the checkbox", category='error')
                 else:
+                    input_data = read_data()
                     filename = song_search(
-                        read_data().rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}),
+                        input_data.rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}),
                         limit_st,
                         limit_tot,
                         keys
                     )
+
+                    new_search = Search(
+                        user = current_user.username,
+                        keywords = input_data.to_json(),
+                        csv_path = filename
+                    )
+                    db.session.add(new_search)
+                    db.session.commit()
                     flash('Search completed.', category='download')
             
             except ValueError:
@@ -87,6 +98,13 @@ def search():
 
     input_data_tuple = to_tuples(input_data)    
     return render_template("search.html", input_data = input_data_tuple, download_link=filename, user=current_user)
+
+@views.route('/history', methods=['GET']) 
+@login_required 
+def history():
+  
+    return render_template("history.html", user=current_user, searches=Search.query.order_by(Search.date.desc()).all())
+
 
 @views.route('/delete_row', methods=['POST'])  
 @login_required
@@ -103,6 +121,21 @@ def delete_row():
 
     return jsonify({})
 
+@views.route('/delete_search', methods=['POST'])  
+@login_required
+def delete_search():
+    
+    data = json.loads(request.data)
+    idx = data['idx']
+
+    search = Search.query.get(idx)
+    db.session.delete(search)
+    db.session.commit()
+
+    flash('Search record deleted.', category='error')
+
+    return jsonify({})
+
 @views.route('/clear_input', methods=['POST'])  
 @login_required
 def clear_input():
@@ -112,6 +145,18 @@ def clear_input():
 
     save_input_data(input_data)
     flash('Input data cleared.', category='error')
+
+    return jsonify({})
+
+@views.route('/repeat_search', methods=['POST'])
+def repeat_search():
+    global input_data
+    search_input = request.data
+    
+    input_data = pd.DataFrame(search_input)
+
+    save_input_data(input_data)
+    flash('Input data restored.', category='error')
 
     return jsonify({})
 

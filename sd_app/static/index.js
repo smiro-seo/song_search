@@ -1,11 +1,30 @@
-function delete_row(idx) {
-    fetch("/delete_row", {
+function delete_row(idx, table) {
+    if(table == "input") {
+        fetch("/delete_row", {
+            method: "POST",
+            body: JSON.stringify({ idx: idx }),
+        }).then((_res) => {
+            window.location.href = "/search";
+        });
+    } else if(table=="history"){
+        fetch("/delete_search", {
+            method: "POST",
+            body: JSON.stringify({ idx: idx }),
+        }).then((_res) => {
+            window.location.href = "/history";
+        });
+    }
+    
+};
+
+function repeat_search(keyword_json) {
+    fetch("/repeat_search", {
         method: "POST",
-        body: JSON.stringify({ idx: idx }),
+        body: keyword_json,
     }).then((_res) => {
         window.location.href = "/search";
     });
-};
+}
 
 function clear_input() {
     fetch("/clear_input", {
