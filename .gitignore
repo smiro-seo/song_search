@@ -4,3 +4,4 @@ main_local.py
 __pycache__/
 test.py
 instance/
+model_outputs/
