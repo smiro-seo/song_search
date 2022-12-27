@@ -11,15 +11,16 @@ from search import search as song_search
 
 views = Blueprint('views', __name__)
 input_data = pd.DataFrame(columns=['keyword', 'sp_keyword'])
+input_path = os.path.join(views.root_path, '..', 'input.csv')
 
 def save_input_data(input_data):
-    input_data.to_csv('input.csv', header=False)
+    input_data.to_csv(input_path, header=False)
     
 def to_tuples(input_data):
     return list(input_data.itertuples(index=True, name=None))
 
 def read_data():
-    return pd.read_csv('input.csv',names=['keyword', 'sp_keyword'])
+    return pd.read_csv(input_path,names=['keyword', 'sp_keyword'])
 
 def add_row(input_data, new_row):
     #check n of columns
