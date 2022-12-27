@@ -155,6 +155,7 @@ def repeat_search():
 
     clear_input(flash_msg=False)
     input_data = pd.read_json(search_input)
+    print(input_data)
 
     save_input_data(input_data)
     flash('Input data restored.', category='error')
