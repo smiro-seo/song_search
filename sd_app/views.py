@@ -67,7 +67,8 @@ def search():
 
             try:
                 limit_st = int(data['limit-range-kw-txt']) if data.get('check-limit-kw', None) is not None else -1
-                limit_tot = int(data['limit-range-txt']) if data.get('check-limit', None) is not None else -1
+                limit_tot=-1
+                #limit_tot = int(data['limit-range-txt']) if data.get('check-limit', None) is not None else -1
                 if limit_tot < -1 or limit_st < -1:
                     flash("Limits must be positive integer numbers. If you don't want to limit the results, uncheck the checkbox", category='error')
                 else:
