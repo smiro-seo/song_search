@@ -82,7 +82,7 @@ def search_spotify_tracks(keyword):
             break
         
         track_search_results = sp.search(q=f'track:{keyword}', type="track", limit=50, offset=offset, market=market)['tracks']['items']
-        track_search_results_clean = [track for track in track_search_results if keyword in clean_names_for_list(track['name'], keyword)]
+        track_search_results_clean = [track for track in track_search_results if keyword in clean_names_for_list(track.get('name', None), keyword)]
         for i, track in enumerate(track_search_results_clean):
             
             search_results_clean.append({
