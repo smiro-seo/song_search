@@ -153,6 +153,7 @@ def repeat_search():
     search_input = json.loads(request.data)['keyword']
 
     clear_input(flash_msg=False)
+    print(json.loads(search_input))
     input_data = pd.DataFrame(json.loads(search_input))
     print(input_data)
 
