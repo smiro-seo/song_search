@@ -154,10 +154,9 @@ def repeat_search():
 
     clear_input(flash_msg=False)
     input_data = pd.DataFrame(search_input)
-    print(input_data)
 
     save_input_data(input_data)
-    flash('Input data restored.', category='error')
+    flash('Input data restored.', category='success')
 
     return jsonify({})
 
@@ -166,5 +165,6 @@ def repeat_search():
 def download(filename):
     # Appending app path to upload folder path within app root folder
     path = os.path.join(views.root_path, 'model_outputs', filename)
+    print(path)
     # Returning file from appended path
     return send_file(path, as_attachment=True)
