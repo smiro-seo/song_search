@@ -5,7 +5,7 @@ from datetime import datetime as dt
 import pandas as pd
 import sys
 import os
-from . import keys
+from sd_app import keys
 from flask import current_app as app
 sys.path.append('/..')
 from search import search as song_search
