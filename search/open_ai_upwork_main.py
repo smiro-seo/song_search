@@ -162,8 +162,7 @@ def get_openai_model_responses(df_w_spot_and_yt):
         # here is the prompt
         prompt = f'Write a simple text presenting the song {track_name} by {artist} from {release_year} ' \
                  f'describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text.'
-        # CHANGE THIS
-        print('ok')
+        
         completion = openai.Completion.create(engine="text-davinci-003",
                                               max_tokens=150,
                                               prompt=prompt)
@@ -256,7 +255,7 @@ def main_proc(input_data):
         merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt)
     except Exception as e:
         print("There was an error recovering model response.")
-        print(e)
+        raise e
         merged_df_w_results = df_w_spot_and_yt.copy()
         merged_df_w_results['model_response'] = ''
     
