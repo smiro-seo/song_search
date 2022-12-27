@@ -255,7 +255,6 @@ def main_proc(input_data):
         merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt)
     except Exception as e:
         print("There was an error recovering model response.")
-        raise e
         merged_df_w_results = df_w_spot_and_yt.copy()
         merged_df_w_results['model_response'] = ''
     
