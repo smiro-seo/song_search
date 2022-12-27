@@ -39,7 +39,7 @@ openai.api_key = ""
 youtube_api_key = ''
 
 # paths
-output_dir = f'{cwd}/song_search/model_outputs'
+output_dir = f'{cwd}/song_search/sd_app/model_outputs'
 
 def get_input_keyword_data(input_keyword_csv_filepath):
     input_kw_df = pd.read_csv(input_keyword_csv_filepath, names=['index','search_term', 'keyword'])

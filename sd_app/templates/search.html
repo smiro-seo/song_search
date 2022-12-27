@@ -20,10 +20,10 @@
               {%for idx, keyword, sp_kw in input_data %}
           <tr>
           <td>
-              {{keyword}}
+              {{keyword.title()}}
           </td>
           <td>
-              {{sp_kw}}
+              {{sp_kw.title()}}
           </td>
           <td class="column_action">
               <button type="button" class="btn btn-danger" onClick="delete_row({{ idx }})">
