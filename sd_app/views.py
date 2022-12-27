@@ -137,13 +137,13 @@ def delete_search():
 
 @views.route('/clear_input', methods=['POST'])  
 @login_required
-def clear_input():
+def clear_input(flash_msg=True):
     global input_data
     
     input_data = pd.DataFrame(columns=['keyword', 'sp_keyword'])
 
     save_input_data(input_data)
-    flash('Input data cleared.', category='error')
+    if flash_msg: flash('Input data cleared.', category='error')
 
     return jsonify({})
 
@@ -152,6 +152,7 @@ def repeat_search():
     global input_data
     search_input = request.data
     
+    clear_input(flash_msg=True)
     input_data = pd.DataFrame(search_input)
 
     save_input_data(input_data)
