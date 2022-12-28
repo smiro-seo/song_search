@@ -62,7 +62,7 @@ $(document).ready(function() {
             $('#offset-range-txt').attr('disabled', false);
 
             $('#lower-limit').text('');
-            $('#lower-limit').text($('#offset-range-txt').val());
+            $('#lower-limit').text(parseFloat($('#offset-range-txt').val())+1);
             if($('#upper-limit').text() != 'infinity'){
                 $('#upper-limit').text('');
                 $('#upper-limit').text(parseFloat($('#offset-range-txt').val()) + parseFloat($('#limit-range-kw-txt').val()));
@@ -73,7 +73,7 @@ $(document).ready(function() {
             $('#offset-range-txt').attr('disabled', true);
 
             $('#lower-limit').text('');
-            $('#lower-limit').text('0');
+            $('#lower-limit').text('1');
             if($('#upper-limit').text() != 'infinity'){
                 $('#upper-limit').text('');
                 $('#upper-limit').text(parseFloat($('#limit-range-kw-txt').val()));
@@ -107,7 +107,7 @@ $(document).ready(function() {
         $('#offset-range-txt').val(value);
 
         $('#lower-limit').text('');
-        $('#lower-limit').text(value);
+        $('#lower-limit').text(parseFloat(value) + 1);
         $('#upper-limit').text('');
         $('#upper-limit').text(parseFloat(value) + parseFloat($('#limit-range-kw-txt').val()));
 
@@ -118,7 +118,7 @@ $(document).ready(function() {
         $('#offset-range').val(value);
 
         $('#lower-limit').text('');
-        $('#lower-limit').text(value);
+        $('#lower-limit').text(parseFloat(value) + 1);
         $('#upper-limit').text('');
         $('#upper-limit').text(parseFloat(value) + parseFloat($('#limit-range-kw-txt').val()));
 
