@@ -10,7 +10,7 @@ db = SQLAlchemy()
 DB_NAME = "database.db"
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, timeout=3600)
     app.config['SECRET_KEY'] = 'THISISTHESECRETKEY'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     db.init_app(app)
