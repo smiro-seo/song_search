@@ -43,7 +43,7 @@ $(document).ready(function() {
             $('#limit-range-kw-txt').attr('disabled', false);
 
             $('#upper-limit').text('');
-            $('#upper-limit').text(parseFloat($('#lower-limit').text()) + parseFloat($('#limit-range-kw').val()));
+            $('#upper-limit').text(parseFloat($('#lower-limit').text()) + parseFloat($('#limit-range-kw-txt').val()));
         } else {
             $('#limit-range-kw').attr('disabled', true);
             $('#limit-range-kw-txt').attr('disabled', true);
@@ -62,10 +62,10 @@ $(document).ready(function() {
             $('#offset-range-txt').attr('disabled', false);
 
             $('#lower-limit').text('');
-            $('#lower-limit').text($('#offset-range').val());
+            $('#lower-limit').text($('#offset-range-txt').val());
             if($('#upper-limit').text() != 'infinity'){
                 $('#upper-limit').text('');
-                $('#upper-limit').text(parseFloat($('#offset-range').val()) + parseFloat($('#limit-range-kw').val()));
+                $('#upper-limit').text(parseFloat($('#offset-range-txt').val()) + parseFloat($('#limit-range-kw-txt').val()));
             }
 
         } else {
@@ -76,7 +76,7 @@ $(document).ready(function() {
             $('#lower-limit').text('0');
             if($('#upper-limit').text() != 'infinity'){
                 $('#upper-limit').text('');
-                $('#upper-limit').text(parseFloat($('#limit-range-kw').val()));
+                $('#upper-limit').text(parseFloat($('#limit-range-kw-txt').val()));
             }
         }
 
