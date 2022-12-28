@@ -65,7 +65,7 @@ $(document).ready(function() {
             $('#lower-limit').text($('#offset-range').val());
             if($('#upper-limit').text() != 'infinity'){
                 $('#upper-limit').text('');
-                $('#upper-limit').text(parseFloat($('#offset-range').val()) + parseFloat($('#upper-limit').text()));
+                $('#upper-limit').text(parseFloat($('#offset-range').val()) + parseFloat($('#limit-range-kw').text()));
             }
 
         } else {
@@ -76,7 +76,7 @@ $(document).ready(function() {
             $('#lower-limit').text('0');
             if($('#upper-limit').text() != 'infinity'){
                 $('#upper-limit').text('');
-                $('#upper-limit').text(parseFloat($('#upper-limit').text()) - parseFloat($('#offset-range').val()));
+                $('#upper-limit').text(parseFloat($('#upper-limit').text()) - parseFloat($('#limit-range-kw').val()));
             }
         }
 
