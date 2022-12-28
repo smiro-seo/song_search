@@ -54,9 +54,20 @@ $(document).ready(function() {
         if(able) {
             $('#offset-range').attr('disabled', false);
             $('#offset-range-txt').attr('disabled', false);
+
+            $('#lower-limit').text('');
+            $('#lower-limit').text($('#offset-range').val());
+            $('#upper-limit').text('');
+            $('#upper-limit').text(parseFloat($('#offset-range').val()) + parseFloat($('#limit-range-kw').val()));
+
         } else {
             $('#offset-range').attr('disabled', true);
             $('#offset-range-txt').attr('disabled', true);
+
+            $('#lower-limit').text('');
+            $('#lower-limit').text('0');
+            $('#upper-limit').text('');
+            $('#upper-limit').text($('#limit-range-kw').val());
         }
 
     });
