@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, send_file
-import json 
+import json
 from flask_login import login_required, current_user
 from jinja2 import Environment, PackageLoader, select_autoescape
 from .models import Search
@@ -37,6 +37,28 @@ def add_row(input_data, new_row):
     else:
         input_data = pd.concat([input_data, pd.DataFrame(new_row, index=[1])], ignore_index=True)
         return True, input_data, 'Keyword added.'
+
+def queue_search(input_data, limit, offset, time_to_complete):
+    queue_path = os.path.join(views.root_path, '..', 'queue.txt')
+
+    input_data_dict['input_data'] = input_data.to_dict()
+    input_data_dict['limit'] = limit
+    input_data_dict['offset'] = offset
+
+    input_data_json = json.dumps(input_data_dict)
+
+    try:
+        with open(queue_path, 'a') as f:
+            f.write(f'{input_data_json}\n')
+        
+        msg = f'Search running in background. Check the search history in about {int(time_to_complete/60)+1} minutes for the download link.'
+        print('Search added to queue')
+    except Exception as e:
+        msg = 'There was an error while writing into the queue. Try again in a few minutes'
+        print('There was an error while writing into the queue')
+        print(e)
+    
+    return msg
 
 @views.route('/', methods=['GET', 'POST'])  
 @views.route('/search', methods=['GET', 'POST']) 
@@ -78,23 +100,29 @@ def search():
                     flash("Limits must be positive integer numbers. If you don't want to limit or offset the results, uncheck the checkbox", category='error')
                 else:
                     input_data = read_data()
-                    filename = song_search(
-                        input_data.rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}),
-                        limit_st,
-                        offset,
-                        keys
-                    )
-                    time.sleep(2)   #Sleep to avoid collision between save file and send_file
+                    time_to_complete = 20*limit_st*len(set(input_data['keyword'].values))
+                    if time_to_complete <= 330:     #If it takes less than 5 minutes (timeout limit in PA)
 
-                    new_search = Search(
-                        user = current_user.username,
-                        keywords = input_data.to_json(),
-                        csv_path = filename
-                    )
-                    db.session.add(new_search)
-                    db.session.commit()
-                    flash('Search completed.', category='download')
-            
+                        filename = song_search(
+                            input_data.rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}),
+                            limit_st,
+                            offset,
+                            keys
+                        )
+
+                        new_search = Search(
+                            user = current_user.username,
+                            keywords = input_data.to_json(),
+                            csv_path = filename
+                        )
+                        db.session.add(new_search)
+                        db.session.commit()
+                        flash('Search completed.', category='download')
+                    
+                    else:           #If the task will take longer, put search on queue
+                        msg = queue_search(input_data.rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}), limit_st, offset, time_to_complete)
+                        flash(msg, category='success')
+                
             except ValueError:
                 flash("An error happened. Try again.", category='error')
 
