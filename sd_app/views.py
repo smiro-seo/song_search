@@ -24,7 +24,7 @@ def to_tuples(input_data):
     return list(input_data.itertuples(index=True, name=None))
 
 def read_data():
-    return pd.read_csv(input_path,names=['keyword', 'sp_keyword'])
+    return pd.read_csv(input_path,names=['keyword', 'sp_keyword']).applymap(str)
 
 def add_row(input_data, new_row):
     #check n of columns
