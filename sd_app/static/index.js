@@ -41,9 +41,15 @@ $(document).ready(function() {
         if(able) {
             $('#limit-range-kw').attr('disabled', false);
             $('#limit-range-kw-txt').attr('disabled', false);
+
+            $('#upper-limit').text('');
+            $('#upper-limit').text(parseFloat($('#lower-limit').text()) + parseFloat($('#limit-range-kw').val()));
         } else {
             $('#limit-range-kw').attr('disabled', true);
             $('#limit-range-kw-txt').attr('disabled', true);
+
+            $('#upper-limit').text('');
+            $('#upper-limit').text('infinity');
         }
 
     });
@@ -57,8 +63,10 @@ $(document).ready(function() {
 
             $('#lower-limit').text('');
             $('#lower-limit').text($('#offset-range').val());
-            $('#upper-limit').text('');
-            $('#upper-limit').text(parseFloat($('#offset-range').val()) + parseFloat($('#limit-range-kw').val()));
+            if($('#upper-limit').text() != 'infinity'){
+                $('#upper-limit').text('');
+                $('#upper-limit').text(parseFloat($('#offset-range').val()) + parseFloat($('#upper-limit').text()));
+            }
 
         } else {
             $('#offset-range').attr('disabled', true);
@@ -66,8 +74,10 @@ $(document).ready(function() {
 
             $('#lower-limit').text('');
             $('#lower-limit').text('0');
-            $('#upper-limit').text('');
-            $('#upper-limit').text($('#limit-range-kw').val());
+            if($('#upper-limit').text() != 'infinity'){
+                $('#upper-limit').text('');
+                $('#upper-limit').text(parseFloat($('#upper-limit').text()) - parseFloat($('#offset-range').val()));
+            }
         }
 
     });
