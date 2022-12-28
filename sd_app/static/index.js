@@ -43,6 +43,8 @@ $(document).ready(function() {
             $('#limit-range-kw-txt').attr('disabled', false);
 
             $('#upper-limit').text('');
+            console.log($('#lower-limit').text())
+            console.log($('#limit-range-kw-txt').val())
             $('#upper-limit').text(parseFloat($('#lower-limit').text()) + parseFloat($('#limit-range-kw-txt').val()));
         } else {
             $('#limit-range-kw').attr('disabled', true);
