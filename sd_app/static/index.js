@@ -76,7 +76,7 @@ $(document).ready(function() {
             $('#lower-limit').text('0');
             if($('#upper-limit').text() != 'infinity'){
                 $('#upper-limit').text('');
-                $('#upper-limit').text(parseFloat($('#upper-limit').text()) - parseFloat($('#limit-range-kw').val()));
+                $('#upper-limit').text(parseFloat($('#limit-range-kw').text()));
             }
         }
 
