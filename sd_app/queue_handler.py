@@ -30,6 +30,7 @@ def read_queue():
         queue = f.readlines()
         f.truncate(0)
 
+    queue = [str(item) for item in queue if item!='' and item is not None]
     return queue
 
 def main_proc():
@@ -41,7 +42,7 @@ def main_proc():
         limit = search['limit']
         offset = search['offset']
 
-        search_record = perform_search(input_data, limit_st, offset, keys)
+        search_record = perform_search(pd.DataFrame(input_data), limit_st, offset, keys)
         db.session.add(search_record)
 
     db.session.commit()

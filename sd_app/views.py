@@ -38,6 +38,7 @@ def add_row(input_data, new_row):
         input_data = pd.concat([input_data, pd.DataFrame(new_row, index=[1])], ignore_index=True)
         return True, input_data, 'Keyword added.'
 
+'''     SCHEDULED NOT WORKING ON PYTHONANYWHERE
 def queue_search(input_data, limit, offset, time_to_complete):
     queue_path = os.path.join(views.root_path, '..', 'queue.txt')
 
@@ -59,6 +60,7 @@ def queue_search(input_data, limit, offset, time_to_complete):
         print(e)
     
     return msg
+'''
 
 @views.route('/', methods=['GET', 'POST'])  
 @views.route('/search', methods=['GET', 'POST']) 
@@ -100,29 +102,29 @@ def search():
                     flash("Limits must be positive integer numbers. If you don't want to limit or offset the results, uncheck the checkbox", category='error')
                 else:
                     input_data = read_data()
-                    time_to_complete = 20*limit_st*len(set(input_data['keyword'].values))
-                    if time_to_complete <= 330:     #If it takes less than 5 minutes (timeout limit in PA)
+                    #time_to_complete = 20*limit_st*len(set(input_data['keyword'].values))
+                    #if time_to_complete <= 330:     #If it takes less than 5 minutes (timeout limit in PA)
 
-                        filename = song_search(
-                            input_data.rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}),
-                            limit_st,
-                            offset,
-                            keys
-                        )
+                    filename = song_search(
+                        input_data.rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}),
+                        limit_st,
+                        offset,
+                        keys
+                    )
 
-                        new_search = Search(
-                            user = current_user.username,
-                            keywords = input_data.to_json(),
-                            csv_path = filename
-                        )
-                        db.session.add(new_search)
-                        db.session.commit()
-                        flash('Search completed.', category='download')
-                    
+                    new_search = Search(
+                        user = current_user.username,
+                        keywords = input_data.to_json(),
+                        csv_path = filename
+                    )
+                    db.session.add(new_search)
+                    db.session.commit()
+                    flash('Search completed.', category='download')
+                    '''
                     else:           #If the task will take longer, put search on queue
                         msg = queue_search(input_data.rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}), limit_st, offset, time_to_complete)
                         flash(msg, category='success')
-                
+                    '''
             except ValueError:
                 flash("An error happened. Try again.", category='error')
 
