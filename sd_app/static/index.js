@@ -43,8 +43,6 @@ $(document).ready(function() {
             $('#limit-range-kw-txt').attr('disabled', false);
 
             $('#upper-limit').text('');
-            console.log($('#lower-limit').text())
-            console.log($('#limit-range-kw-txt').val())
             $('#upper-limit').text(parseFloat($('#lower-limit').text()) + parseFloat($('#limit-range-kw-txt').val()));
         } else {
             $('#limit-range-kw').attr('disabled', true);
@@ -90,7 +88,7 @@ $(document).ready(function() {
         $('#limit-range-kw-txt').val(value);
 
         $('#upper-limit').text('');
-        $('#upper-limit').text(parseFloat(value) + parseFloat($('#offset-range').val()));
+        $('#upper-limit').text(parseFloat(value) + parseFloat($('#offset-range-txt').val()));
 
     });
     $('#limit-range-kw-txt').on('change', function(){
@@ -99,7 +97,7 @@ $(document).ready(function() {
         $('#limit-range-kw').val(value);
 
         $('#upper-limit').text('');
-        $('#upper-limit').text(parseFloat(value) + parseFloat($('#offset-range').val()));
+        $('#upper-limit').text(parseFloat(value) + parseFloat($('#offset-range-txt').val()));
 
     });
 
@@ -111,7 +109,7 @@ $(document).ready(function() {
         $('#lower-limit').text('');
         $('#lower-limit').text(value);
         $('#upper-limit').text('');
-        $('#upper-limit').text(parseFloat(value) + parseFloat($('#limit-range-kw').val()));
+        $('#upper-limit').text(parseFloat(value) + parseFloat($('#limit-range-kw-txt').val()));
 
     });
     $('#offset-range-txt').on('change', function(){
@@ -122,7 +120,7 @@ $(document).ready(function() {
         $('#lower-limit').text('');
         $('#lower-limit').text(value);
         $('#upper-limit').text('');
-        $('#upper-limit').text(parseFloat(value) + parseFloat($('#limit-range-kw').val()));
+        $('#upper-limit').text(parseFloat(value) + parseFloat($('#limit-range-kw-txt').val()));
 
     });
 })
