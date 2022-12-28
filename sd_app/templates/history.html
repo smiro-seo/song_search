@@ -24,7 +24,7 @@
       <a href="{{ url_for('views.download', filename=search.csv_path) }}">Download CSV file</a>
     </td>
     <td>
-        {{ ', '.join(json_load(search.keywords).keys()) }}
+        {{ ', '.join(json_load(search.keywords).get('keyword')) }}
     </td>
     <td class="column_action">
         <button type="button" class="btn btn-info" onClick="repeat_search({{ search.keywords }})">
