@@ -84,7 +84,7 @@ def search():
                         offset,
                         keys
                     )
-                    time.sleep(1)   #Sleep to avoid collision between save file and send_file
+                    time.sleep(2)   #Sleep to avoid collision between save file and send_file
 
                     new_search = Search(
                         user = current_user.username,
