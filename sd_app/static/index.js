@@ -67,7 +67,7 @@ $(document).ready(function() {
         $('#limit-range-kw-txt').val(value);
 
         $('#upper-limit').text('');
-        $('#upper-limit').text(value + $('#offset-range').val());
+        $('#upper-limit').text(value + parseFloat($('#offset-range').val()));
 
     });
     $('#limit-range-kw-txt').on('change', function(){
@@ -76,7 +76,7 @@ $(document).ready(function() {
         $('#limit-range-kw').val(value);
 
         $('#upper-limit').text('');
-        $('#upper-limit').text(value + $('#offset-range').val());
+        $('#upper-limit').text(value + parseFloat($('#offset-range').val()));
 
     });
 
