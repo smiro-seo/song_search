@@ -67,7 +67,7 @@ $(document).ready(function() {
         $('#limit-range-kw-txt').val(value);
 
         $('#upper-limit').text('');
-        $('#upper-limit').text(value + parseFloat($('#offset-range').val()));
+        $('#upper-limit').text(parseFloat(value) + parseFloat($('#offset-range').val()));
 
     });
     $('#limit-range-kw-txt').on('change', function(){
@@ -76,7 +76,7 @@ $(document).ready(function() {
         $('#limit-range-kw').val(value);
 
         $('#upper-limit').text('');
-        $('#upper-limit').text(value + parseFloat($('#offset-range').val()));
+        $('#upper-limit').text(parseFloat(value) + parseFloat($('#offset-range').val()));
 
     });
 
@@ -87,6 +87,8 @@ $(document).ready(function() {
 
         $('#lower-limit').text('');
         $('#lower-limit').text(value);
+        $('#upper-limit').text('');
+        $('#upper-limit').text(parseFloat(value) + parseFloat($('#limit-range-kw').val()));
 
     });
     $('#offset-range-txt').on('change', function(){
@@ -96,6 +98,8 @@ $(document).ready(function() {
 
         $('#lower-limit').text('');
         $('#lower-limit').text(value);
+        $('#upper-limit').text('');
+        $('#upper-limit').text(parseFloat(value) + parseFloat($('#limit-range-kw').val()));
 
     });
 })
