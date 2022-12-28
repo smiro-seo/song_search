@@ -48,15 +48,15 @@ $(document).ready(function() {
 
     });
     
-    $('#check-limit').on('change', function(){
+    $('#check-offset').on('change', function(){
 
-        let able = $('#check-limit').is(':checked');
+        let able = $('#check-offset').is(':checked');
         if(able) {
-            $('#limit-range').attr('disabled', false);
-            $('#limit-range-txt').attr('disabled', false);
+            $('#offset-range').attr('disabled', false);
+            $('#offset-range-txt').attr('disabled', false);
         } else {
-            $('#limit-range').attr('disabled', true);
-            $('#limit-range-txt').attr('disabled', true);
+            $('#offset-range').attr('disabled', true);
+            $('#offset-range-txt').attr('disabled', true);
         }
 
     });
@@ -66,24 +66,36 @@ $(document).ready(function() {
         let value = $('#limit-range-kw').val();
         $('#limit-range-kw-txt').val(value);
 
+        $('#upper-limit').text('');
+        $('#upper-limit').text(value + $('#offset-range').val());
+
     });
     $('#limit-range-kw-txt').on('change', function(){
 
         let value = $('#limit-range-kw-txt').val();
         $('#limit-range-kw').val(value);
 
-    });
-
-    $('#limit-range').on('change', function(){
-
-        let value = $('#limit-range').val();
-        $('#limit-range-txt').val(value);
+        $('#upper-limit').text('');
+        $('#upper-limit').text(value + $('#offset-range').val());
 
     });
-    $('#limit-range-txt').on('change', function(){
 
-        let value = $('#limit-range-txt').val();
-        $('#limit-range').val(value);
+    $('#offset-range').on('change', function(){
+
+        let value = $('#offset-range').val();
+        $('#offset-range-txt').val(value);
+
+        $('#lower-limit').text('');
+        $('#lower-limit').text(value);
+
+    });
+    $('#offset-range-txt').on('change', function(){
+
+        let value = $('#offset-range-txt').val();
+        $('#offset-range').val(value);
+
+        $('#lower-limit').text('');
+        $('#lower-limit').text(value);
 
     });
 })

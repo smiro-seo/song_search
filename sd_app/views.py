@@ -72,15 +72,15 @@ def search():
             try:
                 limit_st = int(data['limit-range-kw-txt']) if data.get('check-limit-kw', None) is not None else -1
                 limit_tot=-1
-                #limit_tot = int(data['limit-range-txt']) if data.get('check-limit', None) is not None else -1
-                if limit_tot < -1 or limit_st < -1:
-                    flash("Limits must be positive integer numbers. If you don't want to limit the results, uncheck the checkbox", category='error')
+                offset = int(data['offset-range-txt']) if data.get('check-offset', None) is not None else 0
+                if offset < 0 or limit_st < -1:
+                    flash("Limits must be positive integer numbers. If you don't want to limit or offset the results, uncheck the checkbox", category='error')
                 else:
                     input_data = read_data()
                     filename = song_search(
                         input_data.rename(columns={'keyword': 'search_term', 'sp_keyword':'keyword'}),
                         limit_st,
-                        limit_tot,
+                        offset,
                         keys
                     )
 
@@ -94,7 +94,7 @@ def search():
                     flash('Search completed.', category='download')
             
             except ValueError:
-                flash("Limits must be integer numbers. If you don't want to limit the results, uncheck the checkbox", category='error')
+                flash("An error happened. Try again.", category='error')
 
     input_data_tuple = to_tuples(input_data)    
     return render_template("search.html", input_data = input_data_tuple, download_link=filename, user=current_user)

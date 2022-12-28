@@ -19,6 +19,7 @@ import urllib.parse
 limit_per_keyword=-1     #Top N songs per keyowrd (ex. cat). For all results insert -1
 limit_per_search_term=20    #Top N songs for search term (ex. animals). For all results insert -1
 limit_total=-1  #Top N songs. For all results insert -1
+offset=0    #Offset final results by popularity
 market='US'
 flagged_characters = ['-', '('] #Characters after which the track name does not matter for duplicates 
 sleep_time_openai=15 #seconds      #CHANGE THIS
@@ -232,7 +233,15 @@ def main_proc(input_data):
         
         #drop duplicates
         out_df_no_duplicates = cleanse_track_duplicates(st_out_sp_df)
-        if limit_per_search_term != -1: out_df_no_duplicates = out_df_no_duplicates.iloc[:limit_per_search_term]       #search_term-level filtering
+        if limit_per_search_term != -1: 
+            if out_df_no_duplicates.shape[0] > offset + limit_per_search_term:
+                out_df_no_duplicates = out_df_no_duplicates.iloc[offset:offset+limit_per_search_term]       #search_term-level filtering
+            elif out_df_no_duplicates.shape[0] > offset:
+                out_df_no_duplicates = out_df_no_duplicates.iloc[offset:]
+            else:
+                print(f"Offset too big for results. Returning empty table.")
+                out_df_no_duplicates = pd.DataFrame(columns=out_df_no_duplicates.columns)
+            
 
         print("Prepping our KW output...")
         # prep for final output
@@ -320,12 +329,13 @@ if __name__ == '__main__':
     #    print(f'An error {e} occurred:')
 '''
 
-def search(input_data, limit_st, limit_tot, keys):
-    global limit_per_search_term, limit_total, youtube_api_key
+def search(input_data, limit_st, offset_res, keys):
+    global limit_per_search_term, limit_total, youtube_api_key, offset
 
     openai.api_key = keys['openai_key']
     youtube_api_key = keys['youtube_key']
 
-    limit_total = limit_tot
+    offset = offset_res
+    limit_total = -1
     limit_per_search_term = limit_st
     return main_proc(input_data)
