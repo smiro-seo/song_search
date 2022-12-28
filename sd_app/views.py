@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 from jinja2 import Environment, PackageLoader, select_autoescape
 from .models import Search
 from datetime import datetime as dt
+import time
 import pandas as pd
 import sys
 import os
@@ -83,6 +84,7 @@ def search():
                         offset,
                         keys
                     )
+                    time.sleep(1)   #Sleep to avoid collision between save file and send_file
 
                     new_search = Search(
                         user = current_user.username,
