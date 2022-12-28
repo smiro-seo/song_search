@@ -103,7 +103,7 @@ def search():
 @login_required 
 def history():
   
-    return render_template("history.html", user=current_user, searches=Search.query.order_by(Search.date.desc()).all())
+    return render_template("history.html", user=current_user, searches=Search.query.order_by(Search.date.desc()).all(), json_load=json.loads)
 
 @views.route('/delete_row', methods=['POST'])  
 @login_required

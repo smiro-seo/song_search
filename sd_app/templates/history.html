@@ -23,6 +23,9 @@
     <td>
       <a href="{{ url_for('views.download', filename=search.csv_path) }}">Download CSV file</a>
     </td>
+    <td>
+        {{ ', '.join(json_load(search.keywords).keys()) }}
+    </td>
     <td class="column_action">
         <button type="button" class="btn btn-info" onClick="repeat_search({{ search.keywords }})">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
