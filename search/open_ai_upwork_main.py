@@ -291,7 +291,7 @@ def main_proc(input_data):
 
         output_data = {'id': str(uuid4()),
                         'track_name_keyword': search_term,
-                        'H1': f'{len(out_df_keep_3)} Songs with {search_term.capitalize()} in the title',
+                        'H1': f'{len(out_df_keep_3)} Songs About {search_term.capitalize()}',
                         'slug': slug,
                         'intro': '',
                         'number_of_songs_listed': len(out_df_keep_3),
