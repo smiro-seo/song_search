@@ -33,14 +33,14 @@ except:
 column_list = ['keyword', 'specific_keyword', 'artist', 'track_name', 'release_year', 'album', 'yt_video_id',
                         'model_response', 'popularity', 'duration_ms', 'track_id']
 column_name_transform = {'artist': 'Artist','track_name': 'Track Name','release_year': 'Release Year','album': 'Album'}
-cwd = os.getcwd()
+cwd = os.path.dirname(__file__)
 
 # define auth keys
 openai.api_key = ""
 youtube_api_key = ''
 
 # paths
-output_dir = f'{cwd}/song_search/sd_app/model_outputs'
+output_dir = os.path.join(cwd,'..', 'sd_app', 'model_outputs')
 
 def get_input_keyword_data(input_keyword_csv_filepath):
     input_kw_df = pd.read_csv(input_keyword_csv_filepath, names=['index','search_term', 'keyword'])
@@ -291,7 +291,7 @@ def main_proc(input_data):
 
         output_data = {'id': str(uuid4()),
                         'track_name_keyword': search_term,
-                        'H1': f'{len(out_df_keep_3)} Songs About {search_term.capitalize()}',
+                        'H1': f'{len(out_df_keep_3)} Songs with {search_term.capitalize()} in the title',
                         'slug': slug,
                         'intro': '',
                         'number_of_songs_listed': len(out_df_keep_3),
@@ -309,10 +309,12 @@ def main_proc(input_data):
     print(f'There are {len(final_output_df)} records in the output CSV...')
 
     output_fname = f'sample_keywords_output_{datetime.now().strftime("%Y%m%d-%H%M%S")}.csv'
+    output_path = os.path.join(output_dir, output_fname)
+    
+    print(f"Saving CSV file to : {output_path}")
 
-    print(f"Saving CSV file to : {os.path.join(output_dir, output_fname)}")
-
-    final_output_df.to_csv(os.path.join(output_dir, output_fname), sep=';', index=False)
+    if not os.path.exists(output_dir): os.mkdir(output_dir)
+    final_output_df.to_csv(output_path, sep=';', index=False)
     return output_fname
 
 '''

@@ -9,7 +9,10 @@
         <th scope="col">Date</th>
         <th scope="col">User</th>
         <th scope="col">Download Link</th>
-        <th scope="col" colspan="3">Search Keywords</th>
+        <th scope="col">Search Keywords</th>
+        <th scope="col" colspan="2">
+          <button type="button" class="btn btn-danger" onClick="clear_table('history')" style="font-size:70%">Clear history</button>
+        </th>
         </tr>
     </thead>
     <tbody>
@@ -22,7 +25,11 @@
         {{search.user}}
     </td>
     <td>
+        {% if search.csv_path != 'In progress' %}
       <a href="{{ url_for('views.download', filename=search.csv_path) }}">Download CSV file</a>
+        {% else %}
+        In progress
+        {% endif %}
     </td>
     <td>
         {{ ', '.join(set(json_load(search.keywords).get('keyword').values())) }}

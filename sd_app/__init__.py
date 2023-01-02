@@ -8,11 +8,14 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
+db_string_conn = f"sqlite:///{DB_NAME}"
+
 
 def create_app():
+    global app
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'THISISTHESECRETKEY'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_string_conn
     db.init_app(app)
 
     env = Environment(          #Jinja env

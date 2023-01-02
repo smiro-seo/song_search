@@ -26,9 +26,10 @@ function repeat_search(keyword_json) {
     });
 }
 
-function clear_input() {
-    fetch("/clear_input", {
+function clear_table(what_to_clear) {
+    fetch("/clear", {
         method: "POST",
+        body: JSON.stringify({ what_to_clear: what_to_clear })
     }).then((_res) => {
         window.location.href = "/search";
     });
