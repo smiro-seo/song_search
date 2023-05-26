@@ -1,10 +1,6 @@
-search/__pycache__/
-.vscode/
-main_local.py
-__pycache__/
+instance
+search/__pycache__
+sd_app/__pycache__
+sd_app/model_outputs
+.cache
 test.py
-#instance/
-model_outputs/
-!model_outputs/placeholder.txt
-#input.csv
-sd_app/keys.txt

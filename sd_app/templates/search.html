@@ -1,18 +1,19 @@
 {% extends "base.html" %} {% block title %}Song search{% endblock %}
 {% block content %}
 
-  <h1 align="center" style="margin-bottom:1em">Search songs</h1>
 
 <div class="container-fluid">
+<div class="row"><div class="col-lg-6" style="justify-content:center;text-align:center">
+  <h1 class="page-title">Search songs</h1></div></div>
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-lg-6">
       <table class="table" id="keyword-table">
           <thead>
               <tr>
               <th scope="col">Keyword</th>
               <th scope="col">Specific keyword</th>
               <th scope="col">
-                <button type="button" class="btn btn-danger" onClick="clear_table('input')" style="font-size:70%">Clear</button>
+                <button type="button" class="btn btn-outline-danger" onClick="clear_table('input')" style="font-size:70%">Clear</button>
               </th>
               </tr>
           </thead>
@@ -26,7 +27,7 @@
               {{sp_kw.title()}}
           </td>
           <td class="column_action">
-              <button type="button" class="btn btn-danger" onClick="delete_row({{ idx }}, 'input')">
+              <button type="button" class="btn btn-outline-danger" onClick="delete_row({{ idx }}, 'input')">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                       <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                       <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
@@ -71,59 +72,60 @@
         </tbody>
       </table>
     </div>
-    <div class="col-md-2">
-    </div>
-    <div class="col-md-4">
 
-      <form method="POST">
+    <div class="col-lg-3">
+
+    <form method="POST">
+      
         <input hidden name="option" value="search">
-      <div class="form-group">
-        <div class="row">
+        <div class="nice-container basic-padding">
+          <div class="horizontal-container">
+            <input checked type="checkbox" value="limited" id="check-limit-kw" name="check-limit-kw" class="checkbox">
+            <label for="limit-range-kw" >Limit results by keyword</label></div>
 
-          <div class="col-md-8">
-            <label for="limit-range-kw" class="form-label">Limit by keyword</label>
-            <br>
-            <input type="number" value="20" id="limit-range-kw-txt" name="limit-range-kw-txt" style="width:3em">  &nbsp
-            <input type="range" class="form-range" id="limit-range-kw" min="1" max="50" step="1" value="20">
-            
-          </div>
-          <div class="col-md-4" align="left">
-            <input checked class="form-check-input" type="checkbox" value="limited" id="check-limit-kw" name="check-limit-kw">
+          <div class="horizontal-container">
+            <input  type="number" value="20" id="limit-range-kw-txt" name="limit-range-kw-txt" style="max-width:3em">  &nbsp
+            <input type="range" id="limit-range-kw" min="1" max="50" step="1" value="20" style="flex:1">
           </div>
 
-        </div>   
-        
-        
-        <div class="row" style="margin-top:1em">
+        </div> 
+    </div> 
+    <div class="col-lg-3">
+          
+        <div class="nice-container basic-padding">
+          <div class="horizontal-container">
 
-          <div class="col-md-8">
-            <label for="offset-range" class="form-label">Result offset</label>
-            <br>
-            <input disabled type="number" value="0" id="offset-range-txt" name="offset-range-txt" style="width:3em">  &nbsp
-            <input disabled type="range" class="form-range" id="offset-range" min="0" max="50" step="1" value="0">
+          <input type="checkbox" value="limited" id="check-offset" name="check-offset" class="checkbox">
+          <label for="offset-range" >Result offset</label></div>
+
+          <div class="horizontal-container">
+          <input disabled type="number" value="0" id="offset-range-txt" name="offset-range-txt" style="width:3em">  &nbsp
+          <input disabled type="range" id="offset-range" min="0" max="50" step="1" value="0">
           </div>
-          <div class="col-md-4" align="left">
-            <input class="form-check-input" type="checkbox" value="limited" id="check-offset" name="check-offset">
-          </div>
-          <br>
-          <p>Looking for records: <span id="lower-limit">0</span> through <span id="upper-limit">20</span></p>
 
-        </div>
-        
-
-        <div class="row" style="margin-top:2em;text-align:center">
+      </div> 
+    </div>
+  
+  </div>
+    <div class="row" style="margin-top:2em;text-align:center">
 
           <div class="col-md-12">
-            <button type="submit" class="btn btn-primary" id="btn-search" data-toggle="modal" data-target="#modal_searching">
-              Search!
+            <button type="submit" class="btn btn-primary basic-padding" id="btn-search" data-toggle="modal" data-target="#modal_searching" style="width:100%">
+              Search
             </button>
           </div>
 
         </div>
-          
-      </div>
-      </form>
-    </div>
+        <div class="row" style="margin-top:2em;text-align:center">
+    
+              <div class="col-md-12">
+                <input checked type="checkbox" value="limited" id="wordpress" name="wordpress" class="checkbox">
+          <span class="text" style="font-size:1em">Generate Wordpress draft</label>
+              </div>
+    
+            </div>
+      
+    </div></form>
   </div>
 </div>
 

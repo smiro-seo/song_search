@@ -18,16 +18,18 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = db_string_conn
     db.init_app(app)
 
-    env = Environment(          #Jinja env
+    env = Environment(  # Jinja env
         loader=PackageLoader("sd_app"),
         autoescape=select_autoescape()
     )
 
     from .views import views
     from .auth import auth
+    from .api import api
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(api, url_prefix='/api/')
 
     from .models import User
 

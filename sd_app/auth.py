@@ -36,7 +36,7 @@ def logout():
 
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def sign_up():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -57,14 +57,15 @@ def sign_up():
                 password1, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
-            #login_user(new_user, remember=True)
+            # login_user(new_user, remember=True)
             flash('Account created!', category='success')
             return redirect(url_for('views.search'))
 
     return render_template("sign_up.html", user=current_user)
 
-@auth.route('/change_password', methods=['GET', 'POST']) 
-@login_required 
+
+@auth.route('/change_password', methods=['GET', 'POST'])
+@login_required
 def change_password():
 
     if request.method == 'POST':
@@ -73,13 +74,14 @@ def change_password():
         password2 = request.form.get('password2')
 
         if check_password_hash(current_user.password, old_pwd):
-            
+
             if password1 != password2:
                 flash('Passwords don\'t match.', category='error')
             elif len(password1) < 7:
                 flash('Password must be at least 7 characters.', category='error')
             else:
-                current_user.password = generate_password_hash(password1, method='sha256')
+                current_user.password = generate_password_hash(
+                    password1, method='sha256')
                 db.session.commit()
                 flash('Password changed!', category='success')
                 return redirect(url_for('views.search'))

@@ -1,0 +1,99 @@
+{% extends "base.html" %} {% block title %}Song search{% endblock %}
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row"><div class="col-lg-6" style="justify-content:center;text-align:center">
+    <h1 class="page-title">Search songs by artist</h1></div></div>
+      
+  <div class="row">
+    <div class="col-lg-6">
+            <div class="form-group">
+              <input
+                autofocus
+                type="text"
+                class="form-control"
+                id="artist"
+                placeholder="Artist"
+              />
+            </div>
+    </div>
+    
+        <div class="col-lg-3">
+
+          <form method="POST">
+            
+              <input hidden name="option" value="search">
+              <div class="nice-container basic-padding">
+                <div class="horizontal-container">
+                  <input checked type="checkbox" value="limited" id="check-limit-kw" name="check-limit-kw" class="checkbox">
+                  <label for="limit-range-kw" >Limit results by keyword</label></div>
+      
+                <div class="horizontal-container">
+                  <input  type="number" value="20" id="limit-range-kw-txt" name="limit-range-kw-txt" style="max-width:3em">  &nbsp
+                  <input type="range" id="limit-range-kw" min="1" max="50" step="1" value="20" style="flex:1">
+                </div>
+      
+              </div> 
+          </div> 
+          <div class="col-lg-3">
+                
+              <div class="nice-container basic-padding">
+                <div class="horizontal-container">
+      
+                <input type="checkbox" value="limited" id="check-offset" name="check-offset" class="checkbox">
+                <label for="offset-range" >Result offset</label></div>
+      
+                <div class="horizontal-container">
+                <input disabled type="number" value="0" id="offset-range-txt" name="offset-range-txt" style="width:3em">  &nbsp
+                <input disabled type="range" id="offset-range" min="0" max="50" step="1" value="0">
+                </div>
+      
+            </div> 
+          </div>
+    </form>
+  </div>
+    <div class="row">
+    <div class="col-md-12" style="margin-top:2em;text-align:center">
+      
+      <button class="btn btn-primary basic-padding" data-toggle="modal" onClick="search_artist()" style="width:100%">
+        Search
+      </button>
+    </div></div>
+
+    
+    <div class="row" style="margin-top:2em;text-align:center">
+    
+      <div class="col-md-12">
+        <input checked type="checkbox" value="limited" id="wordpress" name="wordpress" class="checkbox">
+  <span class="text" style="font-size:1em">Generate Wordpress draft</label>
+      </div>
+
+    </div>
+
+  
+        
+  
+</div>
+
+
+
+<div class="modal fade" id="modal_artist_select" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="margin:1em">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="width:85%;align-self:center">
+      <div class="modal-header">
+          <h5 class="modal-title page-title" id="exampleModalLongTitle">Select an artist</h5>
+          
+      </div>
+      <div class="modal-body">
+        <div id="artist-list">
+
+        </div>  
+        
+      </div>
+      </div>
+      
+  </div>
+  </div>
+
+{% endblock %}
+    

@@ -1,0 +1,99 @@
+@font-face{
+    font-family: roboto;
+    src: url('roboto.ttf');
+    font-weight: normal;
+}
+
+@font-face{
+    font-family: roboto-bold;
+    src: url('roboto_bold.ttf');
+    font-weight: bold;
+}
+
+:root{
+    --background:#edf7fa;
+    --background-secondary:#cfd3cf;
+    --primary:#5eb9d5;
+    --primary-title:#224753;
+    --secondary: #d57a5e;
+    --text: #31140a;
+}
+
+.navbar-nav{
+    font-family: roboto;
+    vertical-align: center;
+}
+
+.dropdown-menu{
+    background-color: var(--background-secondary);
+}
+
+
+.page-title{
+    color:var(--primary-title);
+    font-family:roboto;
+    font-weight:bold;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+table{
+    margin-bottom: 5em;
+    font-family:roboto;
+    padding: 0.85em 1.2em;
+}
+th{
+    color:var(--text);
+}
+button, input, label{
+    font-family:roboto;
+}
+
+.column_action{
+    justify-content: center;
+}
+
+.text{
+    font-family: roboto;
+    font-size: 0.8em;
+}
+
+.basic-padding{
+    padding: 0.75em
+}
+
+.horizontal-container{
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.nice-container{
+    padding: 0.85em 1.2em;
+    margin: 0.7em 0;
+    justify-content: flex-start;
+    background-color: var(--background-secondary);
+    border-radius: 1.5em;
+
+}
+
+.checkbox{
+    margin-right:0.5em;
+}
+
+.border{
+    border-style: solid;
+    border-width: 5px;
+}
+
+.btn-primary{
+    background-color: var(--primary);
+    color:var(--text);
+    font-family: roboto-bold;
+    border-radius: 2em;
+    border-style: none;
+}
+html, body {
+    background-color: var(--background);
+    margin:0; padding:0;;
+}
