@@ -28,6 +28,8 @@ def create_wp_draft(title, html, slug, keys):
 
     print("Creating wordpress draft...")
     print("Requesting")
+
+    print(credentials)
     
     response = requests.post(url, json=post, headers=header_auth)
     

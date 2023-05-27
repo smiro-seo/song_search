@@ -149,9 +149,6 @@ def search():
                         time_to_complete = 20*limit_st * \
                             len(set(input_data['keyword'].values))
 
-                        keys['wp_user'] = data.get('wp-user', None)
-                        keys['wp_password'] = data.get('wp-password', None)
-
 
                         new_search = Search(  # Create search without file path
                             user=current_user.username,
@@ -172,7 +169,7 @@ def search():
                             'offset': offset,
                             'search_id': search_id,
                             'Search': Search,
-                            'wordpress':data.get('create-wordpress', False) 
+                            'wordpress':data.get('wordpress', False) 
                         })
 
                         thread.start()
@@ -230,7 +227,7 @@ def search_by_artist():
                         'offset': offset,
                         'search_id': search_id,
                         'Search': Search,
-                        'wordpress':data.get('create-wordpress', False),
+                        'wordpress':data.get('wordpress', False),
                         'by_artist':True
                     })
 
@@ -294,6 +291,7 @@ def delete_search(flash_msg=True, idx=None):
             os.remove(filepath)
     else:
         stopper.set()
+        flag_bkg.clear()
         if flash_msg: flash("The search was stopped", category='error')
         flash_msg = False
 
