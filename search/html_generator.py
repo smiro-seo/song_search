@@ -17,7 +17,7 @@ def generate_html(json_string):
     
     # Generate HTML file
     for song, song_data in data.items():
-        title = f"{song_data['Track Name']} &#8211&#32;{song_data['Artist'].title()}"    
+        title = f"{song_data['Track Name']} &#8211;{song_data['Artist'].title()}"    
         #   song_data["model_response"] = "Nice song!!"
 
         #   Title
