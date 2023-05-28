@@ -43,14 +43,9 @@ def generate_html(json_string):
 
             #   Spotify
             with a.a(klass="spotify", href=f"https://open.spotify.com/track/{song_data['track_id']}", target="_blank", rel="noopener" ):
-                a.img('data-lazy-src="https://songpier.com/wp-content/uploads/2022/05/listen-spotify-button-edited-e1671691367203.png"',
+                a.img('src="https://songpier.com/wp-content/uploads/2022/05/listen-spotify-button-edited-e1671691367203.png"',
                 width="292", height="73", klass="gb-image gb-image-1d75b3e9", 
-                src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20292%2073'%3E%3C/svg%3E",
                 alt="spotify", title="listen-spotify-button")
-                with a.noscript():
-                    a.img(width="292", height="73", klass="gb-image gb-image-1d75b3e9", alt="spotify", title="listen-spotify-button",
-                    src="https://songpier.com/wp-content/uploads/2022/05/listen-spotify-button-edited-e1671691367203.png")
-            a.br()
 
         #   Description
         a.p(_t=song_data["model_response"])
