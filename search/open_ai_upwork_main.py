@@ -340,9 +340,9 @@ def generate_html_file(html):
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     
-    with open(output_path, 'w') as f:
-        f.write('<!DOCTYPE html>')
-        f.write(html)
+    with open(output_path, 'wb') as f:
+        f.write('<!DOCTYPE html>'.encode('utf-8'))
+        f.write(html.encode('utf-8'))
 
     return output_html_name
 

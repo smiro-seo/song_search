@@ -27,9 +27,6 @@ def create_wp_draft(title, html, slug, keys):
     }
 
     print("Creating wordpress draft...")
-    print("Requesting")
-
-    print(credentials)
     
     response = requests.post(url, json=post, headers=header_auth)
     
@@ -37,7 +34,4 @@ def create_wp_draft(title, html, slug, keys):
     if response.status_code==401 or response.status_code=="401":
         response = requests.post(url, json=post, auth=auth, headers=headers)
 
-        print(response.json())
-
-    
     return

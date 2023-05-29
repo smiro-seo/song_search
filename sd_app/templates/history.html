@@ -22,10 +22,10 @@
         {{search.date.strftime('%b %d %H:%M')}}
     </td>
     <td>
-        {% if search.csv_path != 'In progress' %}
+        {% if search.csv_path != 'In progress' and search.csv_path != 'Failed' %}
       <a href="{{ url_for('views.download', filename=search.csv_path) }}">Download CSV</a>
         {% else %}
-        In progress
+        {{search.csv_path}}
         {% endif %}
     </td>
     <!--<td>

@@ -92,7 +92,7 @@ def background_search(local_app, local_db, input_data, limit, offset, search_id,
             print("Background search completed")
             local_db.session.close()
             flag_bkg.clear()
-        except:
+        except Exception as e:
             new_search.csv_path = "Failed"
             new_search.html_path = "Failed"
             
@@ -100,6 +100,8 @@ def background_search(local_app, local_db, input_data, limit, offset, search_id,
             print("Background search failed")
             local_db.session.close()
             flag_bkg.clear()
+
+            raise e
 
 
 
