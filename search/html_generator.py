@@ -40,6 +40,7 @@ def generate_html(json_string):
                 a(f"<strong>{item}: </strong>{song_data[item]}")
                 #a.br()
 
+        with a.div(klass="spotify"):
             #   Spotify
             with a.a(klass="spotify", href=f"https://open.spotify.com/track/{song_data['track_id']}", target="_blank", rel="noopener" ):
                 a.img(klass="gb-image gb-image-1d75b3e9", 
