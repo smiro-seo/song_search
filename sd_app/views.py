@@ -14,7 +14,7 @@ import sys
 import os
 from . import db, app
 # from .func.wordpress import create_draft
-from .constants import keys, default_prompt, default_intro_prompt
+from .constants import keys, default_prompt, default_intro_prompt, default_intro_prompt_artist
 sys.path.append('/..')
 
 flag_bkg = threading.Event()
@@ -205,8 +205,6 @@ def search():
             except ValueError:
                 flash("An error happened. Try again.", category='error')
 
-    print("ACA")
-    print(prompt)
     input_data_tuple = to_tuples(input_data['keywords'])
     return render_template("search.html", 
                            input_data=input_data_tuple,
@@ -283,7 +281,7 @@ def search_by_artist():
     return render_template("search_by_artist.html",
                            user=current_user,
                            prompt=default_prompt,
-                           intro_prompt=default_intro_prompt)
+                           intro_prompt=default_intro_prompt_artist)
 
 
 @views.route('/history', methods=['GET'])

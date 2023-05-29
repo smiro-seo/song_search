@@ -57,7 +57,7 @@ def get_input_keyword_data(input_keyword_csv_filepath):
     return input_kw_df
 
 
-def search_spotify_tracks(keyword, target="track", by="track", keyword_id=None):
+def search_spotify_tracks(keyword, keys, target="track", by="track", keyword_id=None):
     search_columns = ['artist', 'track_name', 'release_year',
                       'album', 'popularity', 'duration_ms', 'track_id', 'spotify_url']
 
@@ -85,8 +85,8 @@ def search_spotify_tracks(keyword, target="track", by="track", keyword_id=None):
             return word_combinations
 
     # instantiate spotify api client
-    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='0e73b1eb155746f8bcccbde4b6e02bf6',
-                                                               client_secret='c60a606e52314055b2e28d12722311fc'))
+    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=keys['sp_user'],
+                                                               client_secret=keys['sp_password']))
 
     search_results_clean = []
     print("Searching for " + target + " by " + by)
@@ -193,7 +193,7 @@ def cleanse_track_duplicates(df):
         return df
 
 
-def get_search_results(keyword_df, search_term, stopper):
+def get_search_results(keyword_df, search_term, stopper, keys):
 
     search_term_dfs = []  # list with search term results
 
@@ -207,7 +207,7 @@ def get_search_results(keyword_df, search_term, stopper):
             f"|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
         print(f"Starting first keyword: {keyword}")
         print(f'Getting most popular songs containing our {keyword}')
-        df_w_spot_df = search_spotify_tracks(keyword)
+        df_w_spot_df = search_spotify_tracks(keyword, keys)
         if df_w_spot_df.shape[0] == 0:
             df_w_spot_df['specific_keyword'] = keyword
             search_term_dfs.append(df_w_spot_df)
@@ -250,7 +250,7 @@ def get_search_results(keyword_df, search_term, stopper):
 
     return out_df
 
-def get_search_results_by_artist(artist, stopper, artist_id):
+def get_search_results_by_artist(artist, stopper, artist_id, keys):
 
     if (stopper.is_set()):
         print("Stopped search")
@@ -258,7 +258,7 @@ def get_search_results_by_artist(artist, stopper, artist_id):
     print(
         f"|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
     print(f"Searching for top songs by {artist}")
-    df_w_spot_df = search_spotify_tracks(artist, target="track", by="artist", keyword_id=artist_id)
+    df_w_spot_df = search_spotify_tracks(artist, keys, target="track", by="artist", keyword_id=artist_id)
 
     df_w_spot_df.sort_values('popularity', ascending=False, inplace=True)
     print("Limiting search results to " + str(limit_per_search_term))
@@ -450,13 +450,16 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         prompt = prompt.replace('[keyword]', keyword).replace('[artist]', keyword)
         print("prompt: " + prompt)
 
-        completion = openai.Completion.create(engine="text-davinci-003",
-                                                max_tokens=150,
-                                                prompt=prompt)
+        try:
+            completion = openai.Completion.create(engine="text-davinci-003",
+                                                    max_tokens=150,
+                                                    prompt=prompt)
 
-        choice_response_text = completion['choices'][0].text.strip()
-        choice_response_text = completion['choices'][0].text.strip().replace(
-            '"', '')
+            choice_response_text = completion['choices'][0].text.strip()
+            choice_response_text = completion['choices'][0].text.strip().replace(
+                '"', '')
+        except:
+            choice_response_text=""
 
         return choice_response_text
 
@@ -465,7 +468,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
     output_dfs = []
 
     if by_artist:
-        output_df = get_search_results_by_artist(input_data['name'], stopper, input_data['id'])  
+        output_df = get_search_results_by_artist(input_data['name'], stopper, input_data['id'], keys)  
         print("output search: ")
         print(output_df)  
     
@@ -474,7 +477,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         keyword_df = input_data['keywords']
         for search_term in keyword_df['search_term'].unique():
             search_term_df = get_search_results(
-                keyword_df[keyword_df['search_term'] == search_term], search_term, stopper)
+                keyword_df[keyword_df['search_term'] == search_term], search_term, stopper, keys)
             raw_output_dfs.append(search_term_df)
 
         #   This contains only the truncated list (depending on limit imposed) of songs with basic metadata obtained from spotify
@@ -571,8 +574,8 @@ def search(input_data, limit_st, offset_res, keys, stopper, wordpress,by_artist)
     return main_proc(input_data, stopper, keys, wordpress,by_artist)
 
 
-def search_artists(artist_name):
+def search_artists(artist_name, keys):
 
-    artists = search_spotify_tracks(artist_name, target="artist")
+    artists = search_spotify_tracks(artist_name,keys, target="artist")
     artists.sort_values('popularity', ascending=False, inplace=True)
     return artists
