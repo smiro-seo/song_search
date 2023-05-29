@@ -39,7 +39,6 @@ def generate_html(json_string):
             for item in ["Artist", "Track Name", "Album", "Release Year"]:
                 a.strong(_t=item + ": ")
                 a(song_data[item])
-                a.br()
 
             #   Spotify
             with a.a(klass="spotify", href=f"https://open.spotify.com/track/{song_data['track_id']}", target="_blank", rel="noopener" ):
