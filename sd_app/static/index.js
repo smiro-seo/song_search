@@ -82,9 +82,11 @@ $(document).ready(function () {
     let disable = $("#check-prompt").is(":checked");
     if (disable) {
       $("#prompt").attr("disabled", true);
+      $("#prompt-rules").attr("hidden", true);
       $("#prompt").val(default_prompt);
     } else {
       $("#prompt").attr("disabled", false);
+      $("#prompt-rules").attr("hidden", false);
     }
   });
 
