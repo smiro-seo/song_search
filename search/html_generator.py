@@ -43,6 +43,7 @@ def generate_html(json_string):
 
             #   Spotify
             with a.a(klass="spotify", href=f"https://open.spotify.com/track/{song_data['track_id']}", target="_blank", rel="noopener" ):
+<<<<<<< HEAD
                 a.img(width="292", height="73", klass="gb-image gb-image-1d75b3e9", 
                 src="https://songpier.com/wp-content/uploads/2022/05/listen-spotify-button-edited-e1671691367203.png",
                 alt="spotify", title="listen-spotify-button")
@@ -50,6 +51,11 @@ def generate_html(json_string):
                     a.img(width="292", height="73", klass="gb-image gb-image-1d75b3e9", alt="spotify", title="listen-spotify-button",
                     src="https://songpier.com/wp-content/uploads/2022/05/listen-spotify-button-edited-e1671691367203.png")'''
             a.br()
+=======
+                a.img('src="https://songpier.com/wp-content/uploads/2022/05/listen-spotify-button-edited-e1671691367203.png"',
+                width="292", height="73", klass="gb-image gb-image-1d75b3e9", 
+                alt="spotify", title="listen-spotify-button")
+>>>>>>> a0906bebd1edc95645685afe04674258e77372bf
 
         #   Description
         a.p(_t=song_data["model_response"])
