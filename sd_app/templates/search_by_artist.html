@@ -6,7 +6,8 @@
     <h1 class="page-title">Search songs by artist</h1></div></div>
       
   <div class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-6"><div class="row">
+      <div class="col-lg-12">
             <div class="form-group">
               <input
                 autofocus
@@ -14,15 +15,36 @@
                 class="form-control"
                 id="artist"
                 placeholder="Artist"
-              />
-            </div>
-    </div>
+              /></div>
+            </div></div>
+            <div class="row">
+              <div class="col-lg-12">
+
+ 
+
+      <div class="nice-container basic-padding" >
+        <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
+
+        <input checked type="checkbox" value="limited" id="check-prompt" name="check-prompt" class="checkbox">
+        <label for="prompt" >Use predefined prompt</label>
+        <p class="text" style="white-space: pre-wrap" >You can use the following placeholders that will be replaced with each song's data: 
+[artist] [release year] [track name]</p></div>
+
+        <div class="horizontal-container">
+        <textarea disabled class="text basic-padding"  name="prompt" id="prompt" style="width:100%;border-radius:1em;min-height:7em" >{{prompt}}</textarea> 
+        </div>
+
+    </div> 
+
     
+
+  </div>
+</div>
+    </div>
+
+      
         <div class="col-lg-3">
 
-          <form method="POST">
-            
-              <input hidden name="option" value="search">
               <div class="nice-container basic-padding">
                 <div class="horizontal-container">
                   <input checked type="checkbox" value="limited" id="check-limit-kw" name="check-limit-kw" class="checkbox">
@@ -50,7 +72,8 @@
       
             </div> 
           </div>
-    </form>
+</div>
+  
   </div>
     <div class="row">
     <div class="col-md-12" style="margin-top:2em;text-align:center">

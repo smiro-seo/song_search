@@ -349,13 +349,13 @@ def generate_html_file(html):
 
 def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
-    def get_openai_yt_data(df):
+    def get_openai_yt_data(df, prompt):
         # Get youtube and openai data
         print(f"Getting Youtube data")
         df_w_spot_and_yt = get_youtube_search_results_for_tracks_dataset(df)
         print(f"Getting OpenAI response")
         try:
-            merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt, by_artist=by_artist)
+            merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt, prompt, by_artist=by_artist)
         except Exception as e:
             print("There was an error recovering model response.")
             merged_df_w_results = df_w_spot_and_yt.copy()
@@ -387,7 +387,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
         return tracks_df_with_yt
 
-    def get_openai_model_responses(df_w_spot_and_yt, by_artist=False):
+    def get_openai_model_responses(df_w_spot_and_yt, original_prompt, by_artist=False):
         
         name_artist_year_tuples = list(df_w_spot_and_yt[["track_id",
                                                         "track_name",
@@ -396,22 +396,37 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
                                                                                     name=None))
         completions = []
         tracks_data_w_completion_text = []
+
+
         for track_id, track_name, artist, release_year in name_artist_year_tuples:
+            #   Placeholders to replace in prompt
+            values_to_replace = {
+                '[track name]':track_name,
+                '[artist]':artist,
+                '[release year]': release_year
+            }
+
             if (stopper.is_set()):
                 print("Stopped search")
                 return False
 
             # here is the prompt
-            prompt = f'Write a simple text presenting the song {track_name} by {artist} from {release_year} ' \
-                    f'describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text.'
+            if original_prompt == '':
+                prompt = f'Write a simple text presenting the song {track_name} by {artist} from {release_year} ' \
+                        f'describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text.'
+            else:
+                prompt = original_prompt.lower()
+                for placeholder, value in values_to_replace.items():
+                    prompt = prompt.replace(placeholder, value)
+                prompt = prompt.capitalize()
 
+            print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+            print(f'The prompt is: {prompt}')
             completion = openai.Completion.create(engine="text-davinci-003",
                                                 max_tokens=150,
                                                 prompt=prompt)
 
             choice_response_text = completion['choices'][0].text.strip()
-            print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-            print(f'The prompt is: {prompt}')
             choice_response_text = completion['choices'][0].text.strip().replace(
                 '"', '')
             completions.append(completion)
@@ -425,11 +440,11 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         merged_df_w_results = pd.merge(
             df_w_spot_and_yt, model_res_df, on='track_id')
         if not by_artist: merged_df_w_results = merged_df_w_results.drop_duplicates(subset=['track_id', 'keyword'])
+
         return merged_df_w_results
 
     
 
-    keyword_df = input_data
 
     raw_output_dfs = []
     output_dfs = []
@@ -441,6 +456,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
     
     else:
         #   search_term-level loop (e.g. animals)
+        keyword_df = input_data['keywords']
         for search_term in keyword_df['search_term'].unique():
             search_term_df = get_search_results(
                 keyword_df[keyword_df['search_term'] == search_term], search_term, stopper)
@@ -450,9 +466,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         output_df = pd.concat(raw_output_dfs)
 
     #   Get yt and openai data
-    output_df_data = get_openai_yt_data(output_df)
-    print("yt and openai data:")
-    print(output_df_data)
+    output_df_data = get_openai_yt_data(output_df, input_data['prompt'])
 
     #   Clean and sort results
     clean_sorted_data = clean_and_sort(output_df_data)

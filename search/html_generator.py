@@ -5,13 +5,14 @@ spotify_img = '<img class="gb-image gb-image-1d75b3e9" \
     src="https://songpier.com/wp-content/uploads/2022/05/listen-spotify-button-edited-e1671691367203.png" \
     alt="spotify", title="listen-spotify-button" />'
 
+
 def generate_html(json_string):
 
     print("Generating HTML")
     data = json.loads(json_string)
 
     a = Airium()
-    
+
     # Generate HTML file
     for song, song_data in data.items():
         title = f"{song_data['Track Name']} &#8211; {song_data['Artist'].title()}"    
@@ -27,7 +28,9 @@ def generate_html(json_string):
             with a.div(klass="wp-block-embed__wrapper"):
                 with a.div(f'data-id="{song_data["yt_video_id"]}" data-src="https://www.youtube.com/embed/{song_data["yt_video_id"]}" data-query="feature=oembed"', klass="rll-youtube-player"):
                     #with a.noscript():
-                    a.iframe("allowfullscreen", title=title, width="840", height="473", src=f"https://www.youtube.com/embed/{song_data['yt_video_id']}?feature=oembed", frameborder="0", allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture")
+                    a.iframe("allowfullscreen", title=title, width="840", height="473", 
+                    src=f"https://www.youtube.com/embed/{song_data['yt_video_id']}?feature=oembed", frameborder="0", 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture")
 
         #   Song Data
         with a.div(klass="songfacts"):

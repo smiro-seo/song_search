@@ -16,13 +16,8 @@ function delete_row(idx, table) {
   }
 }
 
-function repeat_search(keyword_json) {
-  fetch("/repeat_search", {
-    method: "POST",
-    body: JSON.stringify({ keyword: keyword_json }),
-  }).then((_res) => {
-    window.location.href = "/search";
-  });
+function repeat_search(id) {
+  window.location.href = "/search?search_id=" + id;
 }
 
 function search_artist() {
@@ -58,6 +53,7 @@ function search_by_artist(artist_name, artist_id) {
     "check-limit-kw": $("#check-limit-kw").is(":checked") ? 1 : null,
     "check-offset": $("#check-offset").is(":checked") ? 1 : null,
     wordpress: $("#wordpress").is(":checked") ? 1 : false,
+    prompt: $("#prompt").val(),
   };
   console.log(body);
 
@@ -78,7 +74,20 @@ function clear_table(what_to_clear) {
   });
 }
 
+var default_prompt =
+  "Write a simple text presenting the song [track name] by [artist] from [release year] describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text.";
+
 $(document).ready(function () {
+  $("#check-prompt").on("change", function () {
+    let disable = $("#check-prompt").is(":checked");
+    if (disable) {
+      $("#prompt").attr("disabled", true);
+      $("#prompt").val(default_prompt);
+    } else {
+      $("#prompt").attr("disabled", false);
+    }
+  });
+
   $("#check-limit-kw").on("change", function () {
     let able = $("#check-limit-kw").is(":checked");
     if (able) {
