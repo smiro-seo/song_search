@@ -37,12 +37,12 @@ def generate_html(json_string):
         #   Song Data
         with a.div(klass="songfacts"):
             for item in ["Artist", "Track Name", "Album", "Release Year"]:
-                a.strong(_t=item + ": ")
-                a(song_data[item])
+                a(f"<strong>{item}: </strong>{song_data[item]}")
+                #a.br()
 
             #   Spotify
             with a.a(klass="spotify", href=f"https://open.spotify.com/track/{song_data['track_id']}", target="_blank", rel="noopener" ):
-                a.img(width="292", height="73", klass="gb-image gb-image-1d75b3e9", 
+                a.img(klass="gb-image gb-image-1d75b3e9", 
                 src="https://songpier.com/wp-content/uploads/2022/05/listen-spotify-button-edited-e1671691367203.png",
                 alt="spotify", title="listen-spotify-button")
                 '''with a.noscript():
