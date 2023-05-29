@@ -19,6 +19,7 @@ class Search(db.Model):
     csv_path = db.Column(db.String(150))
     html_path = db.Column(db.String(150))
     prompt = db.Column(db.String(516))
+    intro_prompt = db.Column(db.String(516))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     by_artist = db.Column(db.Integer, default=0)
 

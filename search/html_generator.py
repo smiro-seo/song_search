@@ -6,12 +6,15 @@ spotify_img = '<img class="gb-image gb-image-1d75b3e9" \
     alt="spotify", title="listen-spotify-button" />'
 
 
-def generate_html(json_string):
+def generate_html(json_string, intro):
 
     print("Generating HTML")
     data = json.loads(json_string)
 
     a = Airium()
+
+    #   Intro
+    a.p(_t=intro)
 
     # Generate HTML file
     for song, song_data in data.items():

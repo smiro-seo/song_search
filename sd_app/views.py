@@ -14,7 +14,7 @@ import sys
 import os
 from . import db, app
 # from .func.wordpress import create_draft
-from .constants import keys, default_prompt
+from .constants import keys, default_prompt, default_intro_prompt
 sys.path.append('/..')
 
 flag_bkg = threading.Event()
@@ -113,8 +113,9 @@ def search():
     global input_data, flag_bkg, app, stopper
     filename = ''
     prompt = default_prompt
+    intro_prompt = default_intro_prompt
     search_id = request.args.get('search_id', None)
-    print(search_id)
+    
 
     if request.method == 'GET':
 
@@ -125,7 +126,7 @@ def search():
             clear(flash_msg=False, what_to_clear='input')
             input_data['keywords'] = pd.DataFrame(json.loads(search.keywords))
             prompt = search.prompt
-            print(prompt)
+            intro_prompt = search.intro_prompt
 
             save_input_data(input_data['keywords'])
 
@@ -164,7 +165,8 @@ def search():
 
                         input_data = {
                             'keywords': read_data(),
-                            'prompt': data.get('prompt', default_prompt)
+                            'prompt': data.get('prompt', default_prompt),
+                            'intro-prompt': data.get('intro-prompt', default_intro_prompt)
                         }
                         time_to_complete = 20*limit_st * \
                             len(set(input_data['keywords']['keyword'].values))
@@ -206,14 +208,19 @@ def search():
     print("ACA")
     print(prompt)
     input_data_tuple = to_tuples(input_data['keywords'])
-    return render_template("search.html", input_data=input_data_tuple, download_link=filename, user=current_user, prompt=prompt, existing=search_id)
+    return render_template("search.html", 
+                           input_data=input_data_tuple,
+                           download_link=filename,
+                           user=current_user,
+                           prompt=prompt,
+                           intro_prompt=intro_prompt,
+                           existing=search_id)
 
 
 @views.route('/search-by-artist', methods=['GET', 'POST'])
 @login_required
 def search_by_artist():
     global input_data, flag_bkg, app, stopper
-    filename = ''
 
     if request.method == 'POST':
         data = json.loads(request.data)
@@ -243,10 +250,16 @@ def search_by_artist():
                     db.session.add(new_search)
                     db.session.commit()
                     search_id = new_search.id
+                    input_data = {
+                        "name":data['artist-name'],
+                        "id":data['artist-id'],
+                        'prompt': data['prompt'],
+                        'intro-prompt': data.get('intro-prompt', default_intro_prompt)
+                    }
                     thread = threading.Thread(target=background_search, kwargs={
                         'local_app': app,
                         'local_db': db,
-                        'input_data': {"name":data['artist-name'], "id":data['artist-id'], 'prompt': data['prompt']},
+                        'input_data': input_data,
                         'limit': limit_st,
                         'offset': offset,
                         'search_id': search_id,
@@ -267,7 +280,10 @@ def search_by_artist():
         
         return jsonify({})
 
-    return render_template("search_by_artist.html", user=current_user, prompt=default_prompt)
+    return render_template("search_by_artist.html",
+                           user=current_user,
+                           prompt=default_prompt,
+                           intro_prompt=default_intro_prompt)
 
 
 @views.route('/history', methods=['GET'])

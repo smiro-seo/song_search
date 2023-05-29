@@ -443,7 +443,22 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
         return merged_df_w_results
 
-    
+    def get_openai_intro(prompt, keyword):
+
+        print("Getting OpenAI introduction")
+
+        prompt = prompt.replace('[keyword]', keyword).replace('[artist]', keyword)
+        print("prompt: " + prompt)
+
+        completion = openai.Completion.create(engine="text-davinci-003",
+                                                max_tokens=150,
+                                                prompt=prompt)
+
+        choice_response_text = completion['choices'][0].text.strip()
+        choice_response_text = completion['choices'][0].text.strip().replace(
+            '"', '')
+
+        return choice_response_text
 
 
     raw_output_dfs = []
@@ -487,8 +502,9 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
                     'json': json_string}
 
         output_df = pd.DataFrame([output_data])
+        intro = get_openai_intro(input_data['intro-prompt'], input_data['name'])
 
-        html = generate_html(json_string)
+        html = generate_html(json_string, intro)
 
         wp_title = str(n_songs) + ' ' + slug.replace('-', ' ').title()
         if wordpress: create_wp_draft(wp_title, html, slug, keys)
@@ -513,8 +529,9 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
                         'json': json_string}
 
             output_df = pd.DataFrame([output_data])
+            intro = get_openai_intro(input_data['intro-prompt'], search_term)
 
-            html = generate_html(json_string)
+            html = generate_html(json_string, intro)
 
             wp_title = str(n_songs) + ' ' + slug.replace('-', ' ').title()
             if wordpress: create_wp_draft(wp_title, html, slug, keys)

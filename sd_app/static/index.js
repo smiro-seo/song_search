@@ -54,6 +54,7 @@ function search_by_artist(artist_name, artist_id) {
     "check-offset": $("#check-offset").is(":checked") ? 1 : null,
     wordpress: $("#wordpress").is(":checked") ? 1 : false,
     prompt: $("#prompt").val(),
+    'intro-prompt': $("#intro-prompt").val(),
   };
   console.log(body);
 
@@ -76,6 +77,8 @@ function clear_table(what_to_clear) {
 
 var default_prompt =
   "Write a simple text presenting the song [track name] by [artist] from [release year] describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text.";
+var default_intro_prompt = "Write a simple, intereseting and captivating introduction for an article that describes the best songs about [keyword]. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text."
+
 
 $(document).ready(function () {
   $("#check-prompt").on("change", function () {
@@ -84,9 +87,24 @@ $(document).ready(function () {
       $("#prompt").attr("disabled", true);
       $("#prompt-rules").attr("hidden", true);
       $("#prompt").val(default_prompt);
+      $("#prompt-div").attr("hidden", true);
     } else {
       $("#prompt").attr("disabled", false);
       $("#prompt-rules").attr("hidden", false);
+      $("#prompt-div").attr("hidden", false);
+    }
+  });
+  $("#check-intro-prompt").on("change", function () {
+    let disable = $("#check-intro-prompt").is(":checked");
+    if (disable) {
+      $("#intro-prompt").attr("disabled", true);
+      $("#intro-prompt-rules").attr("hidden", true);
+      $("#intro-prompt").val(default_intro_prompt);
+      $("#intro-prompt-div").attr("hidden", true);
+    } else {
+      $("#intro-prompt").attr("disabled", false);
+      $("#intro-prompt-rules").attr("hidden", false);
+      $("#intro-prompt-div").attr("hidden", false);
     }
   });
 
