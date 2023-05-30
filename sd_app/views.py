@@ -73,7 +73,7 @@ def background_search(local_app, local_db, input_data, limit, offset, search_id,
         new_search = Search.query.get(search_id)
         
         try:
-            csv_filename, html_filename = song_search(
+            resume = song_search(
                 input_data,
                 limit,
                 offset,
@@ -82,19 +82,18 @@ def background_search(local_app, local_db, input_data, limit, offset, search_id,
                 wordpress,
                 by_artist
             )
-            if csv_filename == False or html_filename == False:
+            if not resume:
                 flag_bkg.clear()
+                stopper.clear()
                 return
             
-            new_search.csv_path = csv_filename
-            new_search.html_path = html_filename
+            new_search.status = "Completed"
             local_db.session.commit()
             print("Background search completed")
             local_db.session.close()
             flag_bkg.clear()
         except Exception as e:
-            new_search.csv_path = "Failed"
-            new_search.html_path = "Failed"
+            new_search.status = "Failed"
             
             local_db.session.commit()
             print("Background search failed")
@@ -111,12 +110,10 @@ def background_search(local_app, local_db, input_data, limit, offset, search_id,
 def search():
 
     global input_data, flag_bkg, app, stopper
-    filename = ''
     prompt = default_prompt
     intro_prompt = default_intro_prompt
     search_id = request.args.get('search_id', None)
     
-
     if request.method == 'GET':
 
         if search_id is not None:
@@ -163,6 +160,8 @@ def search():
                     if not flag_bkg.is_set():
                         stopper.clear()
 
+                        print("Submitted form. Intro prompt: " + data.get('intro-prompt', "ERROR"))
+
                         input_data = {
                             'keywords': read_data(),
                             'prompt': data.get('prompt', default_prompt),
@@ -176,9 +175,9 @@ def search():
                             user=current_user.username,
                             user_id=current_user.id,
                             keywords=input_data['keywords'].to_json(),
-                            csv_path="In progress",
-                            html_path="In progress",
+                            status="In progress",
                             prompt=input_data['prompt'],
+                            intro_prompt=input_data['intro-prompt'],
                             by_artist=0
                         )
                         db.session.add(new_search)
@@ -208,19 +207,31 @@ def search():
     input_data_tuple = to_tuples(input_data['keywords'])
     return render_template("search.html", 
                            input_data=input_data_tuple,
-                           download_link=filename,
                            user=current_user,
                            prompt=prompt,
                            intro_prompt=intro_prompt,
-                           existing=search_id)
+                           existing = search_id is not None)
 
 
 @views.route('/search-by-artist', methods=['GET', 'POST'])
 @login_required
 def search_by_artist():
     global input_data, flag_bkg, app, stopper
+    prompt = default_prompt
+    intro_prompt = default_intro_prompt_artist
+    artist=""
+    search_id = request.args.get('search_id', None)
 
-    if request.method == 'POST':
+    if request.method == 'GET':
+        if search_id is not None:
+            flash('Input data restored.', category='success')
+            search = Search.query.get(search_id)
+
+            prompt = search.prompt
+            intro_prompt = search.intro_prompt
+            artist = search.keywords
+
+    elif request.method == 'POST':
         data = json.loads(request.data)
 
         try:
@@ -236,24 +247,24 @@ def search_by_artist():
 
                     time_to_complete = 20*limit_st
 
-                    new_search = Search(  # Create search without file path
-                        user=current_user.username,
-                        user_id=current_user.id,
-                        keywords=data['artist-name'],
-                        csv_path="In progress",
-                        html_path="In progress",
-                        prompt=data['prompt'],
-                        by_artist=1
-                    )
-                    db.session.add(new_search)
-                    db.session.commit()
-                    search_id = new_search.id
                     input_data = {
                         "name":data['artist-name'],
                         "id":data['artist-id'],
                         'prompt': data['prompt'],
                         'intro-prompt': data.get('intro-prompt', default_intro_prompt)
                     }
+                    new_search = Search(  # Create search without file path
+                        user=current_user.username,
+                        user_id=current_user.id,
+                        keywords=input_data['name'],
+                        status="In progress",
+                        prompt=input_data['prompt'],
+                        intro_prompt=input_data['intro-prompt'],
+                        by_artist=1
+                    )
+                    db.session.add(new_search)
+                    db.session.commit()
+                    search_id = new_search.id
                     thread = threading.Thread(target=background_search, kwargs={
                         'local_app': app,
                         'local_db': db,
@@ -280,8 +291,10 @@ def search_by_artist():
 
     return render_template("search_by_artist.html",
                            user=current_user,
-                           prompt=default_prompt,
-                           intro_prompt=default_intro_prompt_artist)
+                           prompt=prompt,
+                           intro_prompt=intro_prompt,
+                           artist = artist,
+                           existing = search_id is not None)
 
 
 @views.route('/history', methods=['GET'])
@@ -321,19 +334,15 @@ def delete_search(flash_msg=True, idx=None):
         idx = json.loads(request.data)['idx']
     search = Search.query.get(idx)
 
-    if search.csv_path != "In progress":
-        filepath = os.path.join(
-            views.root_path, 'model_outputs', search.csv_path)
-        if os.path.exists(filepath):
-            print(f"File path to be deleted: {filepath}")
-            os.remove(filepath)
-    else:
+    if search.status == "In progress":
         stopper.set()
         flag_bkg.clear()
         if flash_msg: flash("The search was stopped", category='error')
+        search.status = "Stopped"
         flash_msg = False
-
-    db.session.delete(search)
+    else:
+        db.session.delete(search)
+    
     db.session.commit()
 
     if flash_msg:

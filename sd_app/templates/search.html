@@ -115,11 +115,11 @@
       <div class="nice-container basic-padding" >
         <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
 
-        <input checked type="checkbox" value="limited" id="check-prompt" name="check-prompt" class="checkbox">
+        <input {{ "" if existing else "checked" }} type="checkbox" value="limited" id="check-prompt" name="check-prompt" class="checkbox">
         <label for="prompt" >Use default prompt</label>
         </div>
 
-        <div hidden id="prompt-div" class="horizontal-container">
+        <div {{ "" if existing else "hidden" }} id="prompt-div" class="horizontal-container">
           <p class="text" style="white-space: pre-wrap" id="prompt-rules" >You can use the following placeholders that will be replaced with each song's data: 
 [artist] [release year] [track name]</p>
         <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="prompt" id="prompt" style="width:100%;border-radius:1em;min-height:7em" >{{prompt}}</textarea> 
@@ -137,11 +137,11 @@
       <div class="nice-container basic-padding" >
         <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
 
-        <input checked type="checkbox" value="limited" id="check-intro-prompt" name="check-intro-prompt" class="checkbox">
+        <input {{ "" if existing else "checked" }} type="checkbox" value="limited" id="check-intro-prompt" name="check-intro-prompt" class="checkbox">
         <label for="intro-prompt" >Use default prompt for intro</label></div>
 
         
-        <div hidden id="intro-prompt-div" class="horizontal-container">
+        <div {{ "" if existing else "hidden" }} id="intro-prompt-div" class="horizontal-container">
           <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You must use the [keyword] placeholder.</p>
         <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="intro-prompt" id="intro-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{intro_prompt}}</textarea> 
         </div>

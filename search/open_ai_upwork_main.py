@@ -460,7 +460,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
             choice_response_text = completion['choices'][0].text.strip().replace(
                 '"', '')
         except:
-            choice_response_text=""
+            choice_response_text="long text with words " * 50
 
         return choice_response_text
 
@@ -542,25 +542,11 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
             output_dfs.append(output_df)
 
-    output_csv_name = generate_csv(pd.concat(output_dfs))
+    #   output_csv_name = generate_csv(pd.concat(output_dfs))
     output_html_name = generate_html_file(html)
 
-    return output_csv_name, output_html_name
+    return True
 
-
-'''
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--input-fp', help='Full filepath to the input CSV')
-    # parser.add_argument('--output-fp', help='Full filepath to the output CSV')
-    args = parser.parse_args()
-
-    print(args)
-
-    main_proc(args)
-    #except Exception as e:
-    #    print(f'An error {e} occurred:')
-'''
 
 
 def search(input_data, limit_st, offset_res, keys, stopper, wordpress,by_artist):
