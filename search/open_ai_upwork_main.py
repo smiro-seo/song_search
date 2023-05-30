@@ -413,7 +413,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
             # here is the prompt
             if original_prompt == '':
                 prompt = f'Write a simple text presenting the song {track_name} by {artist} from {release_year} ' \
-                        f'describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text.'
+                        f'describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Keep the sentences short and the paragraphs should be no longer than 3 sentences long. Do not use any quotation marks in the text.'
             else:
                 prompt = original_prompt.lower()
                 for placeholder, value in values_to_replace.items():
