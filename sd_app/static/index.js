@@ -102,7 +102,6 @@ $(document).ready(function () {
       $("#prompt").attr("disabled", false);
       $("#prompt-rules").attr("hidden", false);
       $("#prompt-div").attr("hidden", false);
-      $("#default-prompt").attr("checked", true);
     }
   });
   $("#check-intro-prompt").on("change", function () {
@@ -117,7 +116,6 @@ $(document).ready(function () {
       $("#intro-prompt").attr("disabled", false);
       $("#intro-prompt-rules").attr("hidden", false);
       $("#intro-prompt-div").attr("hidden", false);
-      $("#default-intro-prompt").attr("checked", true);
     }
   });
 
