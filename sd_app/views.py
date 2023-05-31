@@ -195,9 +195,8 @@ def search():
                         })
 
                         thread.start()
-                        print("ok")
-                        print(input_data)
-                        print(data)
+
+
                         #   Set default prompts if selected
                         if data.get('default-prompt', "") == 'limited': current_user.default_prompt = input_data['prompt']
                         if data.get('default-intro-prompt', "") == 'limited': current_user.default_intro_prompt = input_data['intro-prompt']
