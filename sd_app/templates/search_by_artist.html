@@ -2,6 +2,8 @@
 {% block content %}
 
 <div class="container-fluid">
+  <input hidden value={{user.get("default_intro_prompt_artist")}} id="user-default-intro-prompt" />
+  <input hidden value={{user.get("default_prompt")}} id="user-default-prompt" />
   <div class="row"><div class="col-lg-6" style="justify-content:center;text-align:center">
     <h1 class="page-title">Search songs by artist</h1></div></div>
       
@@ -34,6 +36,8 @@
           <p class="text" style="white-space: pre-wrap" id="prompt-rules" >You can use the following placeholders that will be replaced with each song's data: 
 [artist] [release year] [track name]</p>
         <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="prompt" id="prompt" style="width:100%;border-radius:1em;min-height:7em" >{{prompt}}</textarea> 
+        <input type="checkbox" value="limited" id="default-prompt" name="default-prompt" class="checkbox"/>
+        <label class="text" for="default-intro-prompt" >Set as default</label>
         </div>
 
     </div> 
@@ -89,7 +93,9 @@
           <div {{ "" if existing else "hidden" }} id="intro-prompt-div" class="horizontal-container">
             <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You must use the [artist] placeholder.</p>
           <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="intro-prompt" id="intro-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{intro_prompt}}</textarea> 
-          </div>
+          <input type="checkbox" value="limited" id="default-intro-prompt" name="default-intro-prompt" class="checkbox"/>
+          <label class="text" for="default-intro-prompt" >Set as default</label>
+        </div>
   
       </div> 
     </div> 
@@ -97,14 +103,15 @@
     </div>
 </div>
   
-  </div>
+  
     <div class="row">
     <div class="col-md-12" style="margin-top:2em;text-align:center">
       
       <button class="btn btn-primary basic-padding" data-toggle="modal" onClick="search_artist()" style="width:100%">
         Search
       </button>
-    </div></div>
+    </div>
+  </div>
 
     
     <div class="row" style="margin-top:2em;text-align:center">
@@ -120,6 +127,7 @@
         
   
 </div>
+
 
 
 

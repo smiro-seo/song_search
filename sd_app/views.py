@@ -110,8 +110,8 @@ def background_search(local_app, local_db, input_data, limit, offset, search_id,
 def search():
 
     global input_data, flag_bkg, app, stopper
-    prompt = default_prompt
-    intro_prompt = default_intro_prompt
+    prompt = current_user.default_prompt
+    intro_prompt = current_user.default_intro_prompt
     search_id = request.args.get('search_id', None)
     
     if request.method == 'GET':
@@ -164,8 +164,8 @@ def search():
 
                         input_data = {
                             'keywords': read_data(),
-                            'prompt': data.get('prompt', default_prompt),
-                            'intro-prompt': data.get('intro-prompt', default_intro_prompt)
+                            'prompt': data.get('prompt', current_user.default_prompt),
+                            'intro-prompt': data.get('intro-prompt', current_user.default_intro_prompt)
                         }
                         time_to_complete = 20*limit_st * \
                             len(set(input_data['keywords']['keyword'].values))
@@ -195,6 +195,14 @@ def search():
                         })
 
                         thread.start()
+                        print("ok")
+                        print(input_data)
+                        print(data)
+                        #   Set default prompts if selected
+                        if data.get('default-prompt', "") == 'limited': current_user.default_prompt = input_data['prompt']
+                        if data.get('default-intro-prompt', "") == 'limited': current_user.default_intro_prompt = input_data['intro-prompt']
+                        
+                        db.session.commit()
                         flash(
                             f'Search running in background. Check the search history in about {int(time_to_complete/60)+1} minutes for the download link.', category='success')
                     else:
@@ -207,7 +215,7 @@ def search():
     input_data_tuple = to_tuples(input_data['keywords'])
     return render_template("search.html", 
                            input_data=input_data_tuple,
-                           user=current_user,
+                           user=current_user.dict_data(),
                            prompt=prompt,
                            intro_prompt=intro_prompt,
                            existing = search_id is not None)
@@ -217,8 +225,8 @@ def search():
 @login_required
 def search_by_artist():
     global input_data, flag_bkg, app, stopper
-    prompt = default_prompt
-    intro_prompt = default_intro_prompt_artist
+    prompt = current_user.default_prompt
+    intro_prompt = current_user.default_intro_prompt_artist
     artist=""
     search_id = request.args.get('search_id', None)
 
@@ -250,8 +258,8 @@ def search_by_artist():
                     input_data = {
                         "name":data['artist-name'],
                         "id":data['artist-id'],
-                        'prompt': data['prompt'],
-                        'intro-prompt': data.get('intro-prompt', default_intro_prompt)
+                        'prompt': data.get('prompt', current_user.default_prompt),
+                        'intro-prompt': data.get('intro-prompt', current_user.default_intro_prompt_artist)
                     }
                     new_search = Search(  # Create search without file path
                         user=current_user.username,
@@ -278,6 +286,12 @@ def search_by_artist():
                     })
 
                     thread.start()
+                    
+                    #   Set default prompts if selected
+                    if data.get('default-prompt', '') == 'limited': current_user.default_prompt = input_data['prompt']
+                    if data.get('default-intro-prompt', '') == 'limited': current_user.default_intro_prompt_artist = input_data['intro-prompt']
+                    
+                    db.session.commit()
                     flash(
                         f'Search running in background. Check the search history in about {int(time_to_complete/60)+1} minutes for the download link.', category='success')
                 else:
@@ -290,7 +304,7 @@ def search_by_artist():
         return jsonify({})
 
     return render_template("search_by_artist.html",
-                           user=current_user,
+                           user=current_user.dict_data(),
                            prompt=prompt,
                            intro_prompt=intro_prompt,
                            artist = artist,
