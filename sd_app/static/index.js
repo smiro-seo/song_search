@@ -86,8 +86,8 @@ function clear_table(what_to_clear) {
   });
 }
 
-var default_prompt = $("#user-default-prompt").val();
-var default_intro_prompt = $("#user-default-intro-prompt").val();
+var default_prompt = $("#user-default-prompt").text();
+var default_intro_prompt = $("#user-default-intro-prompt").text();
 
 $(document).ready(function () {
   $("#check-prompt").on("change", function () {

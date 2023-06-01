@@ -211,6 +211,8 @@ def search():
             except ValueError:
                 flash("An error happened. Try again.", category='error')
 
+
+
     input_data_tuple = to_tuples(input_data['keywords'])
     return render_template("search.html", 
                            input_data=input_data_tuple,

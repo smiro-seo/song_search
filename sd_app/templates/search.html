@@ -2,8 +2,9 @@
 {% block content %}
 
 
-  <input hidden value={{user.get("default_intro_prompt")}} id="user-default-intro-prompt" />
-  <input hidden value={{user.get("default_prompt")}} id="user-default-prompt" />
+<p hidden id="user-default-intro-prompt">{{user.get('default_intro_prompt')}}</p>
+<p hidden id="user-default-prompt" >{{user.get('default_prompt')}}</p>
+
 <div class="container-fluid">
 
   <div class="row">

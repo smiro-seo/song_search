@@ -2,8 +2,10 @@
 {% block content %}
 
 <div class="container-fluid">
-  <input hidden value={{user.get("default_intro_prompt_artist")}} id="user-default-intro-prompt" />
-  <input hidden value={{user.get("default_prompt")}} id="user-default-prompt" />
+  
+<p hidden id="user-default-intro-prompt">{{user.get('default_intro_prompt_artist')}}</p>
+<p hidden id="user-default-prompt" >{{user.get('default_prompt')}}</p>
+
   <div class="row"><div class="col-lg-6" style="justify-content:center;text-align:center">
     <h1 class="page-title">Search songs by artist</h1></div></div>
       
