@@ -198,8 +198,12 @@ def search():
 
 
                         #   Set default prompts if selected
-                        if data.get('default-prompt', "") == 'limited': current_user.default_prompt = input_data['prompt']
-                        if data.get('default-intro-prompt', "") == 'limited': current_user.default_intro_prompt = input_data['intro-prompt']
+                        if data.get('default-prompt', "") == 'limited':
+                            current_user.default_prompt = input_data['prompt']
+                            prompt=input_data['prompt']
+                        if data.get('default-intro-prompt', "") == 'limited':
+                            current_user.default_intro_prompt = input_data['intro-prompt']
+                            intro_prompt=input_data['intro-prompt']
                         
                         db.session.commit()
                         flash(
@@ -287,10 +291,14 @@ def search_by_artist():
                     })
 
                     thread.start()
-                    
+                    print(data)
                     #   Set default prompts if selected
-                    if data.get('default-prompt', '') == 'limited': current_user.default_prompt = input_data['prompt']
-                    if data.get('default-intro-prompt', '') == 'limited': current_user.default_intro_prompt_artist = input_data['intro-prompt']
+                    if data.get('default-prompt', False):
+                        current_user.default_prompt = input_data['prompt']
+                        prompt=input_data['prompt']
+                    if data.get('default-intro-prompt', False):
+                        current_user.default_intro_prompt_artist = input_data['intro-prompt']
+                        intro_prompt=input_data['intro-prompt']
                     
                     db.session.commit()
                     flash(
