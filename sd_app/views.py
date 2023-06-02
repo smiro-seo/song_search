@@ -326,8 +326,7 @@ def history():
 
     return render_template("history.html",
                            user=current_user,
-                           searches=Search.query.filter_by(user_id=current_user.id).order_by(
-                               Search.date.desc()).all(),
+                           searches=Search.query.order_by(Search.date.desc()).all(),
                            json_load=json.loads,
                            set=set)
 
