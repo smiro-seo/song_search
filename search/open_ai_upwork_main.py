@@ -299,8 +299,8 @@ def clean_and_sort(df):
 
 def get_json_string(search_term_df):
 
-    search_term_df['song_key_index'] = [
-        f'Song {i + 1}' for i in range(len(search_term_df))]
+    #search_term_df.assign(song_key_index=lambda x: f'Song {x.index + 1}')
+    search_term_df['song_key_index'] = [f'Song {i + 1}' for i in range(len(search_term_df))]
     out_df_keep = search_term_df.set_index('song_key_index')
     output_dict = out_df_keep.to_dict(orient='index')
 
@@ -358,6 +358,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
             merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt, prompt, by_artist=by_artist)
         except Exception as e:
             print("There was an error recovering model response.")
+            print(e)
             merged_df_w_results = df_w_spot_and_yt.copy()
             merged_df_w_results['model_response'] = ''
 
@@ -393,19 +394,19 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
                                                         "track_name",
                                                         "artist",
                                                         "release_year",
-                                                        'search_term']].itertuples(index=False,
+                                                        'keyword']].itertuples(index=False,
                                                                                     name=None))
         completions = []
         tracks_data_w_completion_text = []
 
 
-        for track_id, track_name, artist, release_year, search_term in name_artist_year_tuples:
+        for track_id, track_name, artist, release_year, keyword in name_artist_year_tuples:
             #   Placeholders to replace in prompt
             values_to_replace = {
                 '[track name]':track_name,
                 '[artist]':artist,
                 '[release year]': release_year,
-                '[keyword]': search_term
+                '[keyword]': keyword
             }
 
             if (stopper.is_set()):
