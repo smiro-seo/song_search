@@ -149,6 +149,16 @@ def search():
         elif data['option'] == 'search':
             data.pop('option', None)
 
+            if "`" in data.get('prompt', "")+ data.get("intro-prompt", ""):
+                flash("Backticks (`) are not allowed in the prompts. You can use both simple or double quotes.", category='error' );
+                return render_template("search.html", 
+                           input_data=to_tuples(input_data['keywords']),
+                           user=current_user.dict_data(),
+                           prompt=prompt,
+                           intro_prompt=intro_prompt,
+                           existing = search_id is not None)
+
+
             try:
                 limit_st = int(
                     data['limit-range-kw-txt']) if data.get('check-limit-kw', None) is not None else -1
@@ -230,7 +240,7 @@ def search():
 @login_required
 def search_by_artist():
     global input_data, flag_bkg, app, stopper
-    prompt = current_user.default_prompt
+    prompt = current_user.default_prompt_artist
     intro_prompt = current_user.default_intro_prompt_artist
     artist=""
     search_id = request.args.get('search_id', None)
@@ -291,10 +301,9 @@ def search_by_artist():
                     })
 
                     thread.start()
-                    print(data)
                     #   Set default prompts if selected
                     if data.get('default-prompt', False):
-                        current_user.default_prompt = input_data['prompt']
+                        current_user.default_prompt_artist = input_data['prompt']
                         prompt=input_data['prompt']
                     if data.get('default-intro-prompt', False):
                         current_user.default_intro_prompt_artist = input_data['intro-prompt']

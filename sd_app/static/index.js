@@ -30,6 +30,16 @@ function repeat_search(id, by_artist) {
 }
 
 function search_artist() {
+  if (
+    $("#intro-prompt").val().includes("`") ||
+    $("#prompt").val().includes("`")
+  ) {
+    alert(
+      "Backticks (`) are not allowed in the prompts. You can use both simple or double quotes."
+    );
+    return;
+  }
+
   let search_string = $("#artist").val();
   fetch("/api/search-artist/?artist=" + search_string, {
     method: "GET",

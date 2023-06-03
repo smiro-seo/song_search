@@ -128,7 +128,7 @@
 
           <div {{ "" if existing else "hidden" }} id="prompt-div" class="horizontal-container">
             <p class="text" style="white-space: pre-wrap" id="prompt-rules" >You can use the following placeholders that will be replaced with each song's data: 
-  [artist] [release year] [track name]</p>
+  [artist] [release year] [track name] [keyword]</p>
           <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="prompt" id="prompt" style="width:100%;border-radius:1em;min-height:7em" >{{prompt}}</textarea> 
           <input type="checkbox" value="limited" id="default-prompt" name="default-prompt" class="checkbox"/>
           <label class="text" for="default-intro-prompt" >Set as default</label>

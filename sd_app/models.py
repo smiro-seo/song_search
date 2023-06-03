@@ -8,6 +8,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     default_prompt = db.Column(db.String(512))
+    default_prompt_artist = db.Column(db.String(512))
     default_intro_prompt = db.Column(db.String(512))
     default_intro_prompt_artist = db.Column(db.String(512))
 
@@ -17,6 +18,7 @@ class User(db.Model, UserMixin):
         return {
             'username': self.username,
             'default_prompt': self.default_prompt,
+            'default_prompt_artist': self.default_prompt_artist,
             'default_intro_prompt': self.default_intro_prompt,
             'default_intro_prompt_artist': self.default_intro_prompt_artist,
             'is_authenticated': current_user.is_authenticated and current_user.id == self.id

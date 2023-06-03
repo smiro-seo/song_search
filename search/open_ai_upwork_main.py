@@ -392,18 +392,20 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         name_artist_year_tuples = list(df_w_spot_and_yt[["track_id",
                                                         "track_name",
                                                         "artist",
-                                                        "release_year"]].itertuples(index=False,
+                                                        "release_year",
+                                                        'search_term']].itertuples(index=False,
                                                                                     name=None))
         completions = []
         tracks_data_w_completion_text = []
 
 
-        for track_id, track_name, artist, release_year in name_artist_year_tuples:
+        for track_id, track_name, artist, release_year, search_term in name_artist_year_tuples:
             #   Placeholders to replace in prompt
             values_to_replace = {
                 '[track name]':track_name,
                 '[artist]':artist,
-                '[release year]': release_year
+                '[release year]': release_year,
+                '[keyword]': search_term
             }
 
             if (stopper.is_set()):
