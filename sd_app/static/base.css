@@ -57,6 +57,12 @@ button, input, label{
     font-family: roboto;
     font-size: 0.8em;
 }
+.text-big{
+    font-family: roboto;
+    font-size: 1em;
+    margin-right:0.5em;
+
+}
 
 .basic-padding{
     padding: 0.55em

@@ -518,7 +518,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         output_df = pd.concat(raw_output_dfs)
 
     #   Get yt and openai data
-    output_df_data = get_openai_yt_data(output_df, input_data['prompt'], input_data['improver-prompt'], input_data['improve'])
+    output_df_data = get_openai_yt_data(output_df, input_data['prompt'], input_data['improver-prompt'], input_data['improve-song'])
 
     #   Clean and sort results
     clean_sorted_data = clean_and_sort(output_df_data)
@@ -539,7 +539,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
                     'json': json_string}
 
         output_df = pd.DataFrame([output_data])
-        intro = get_openai_intro(input_data['intro-prompt'], input_data['name'], input_data['improver-prompt'], input_data['improve'])
+        intro = get_openai_intro(input_data['intro-prompt'], input_data['name'], input_data['improver-prompt'], input_data['improve-intro'])
 
         html = generate_html(json_string, intro)
 
@@ -566,7 +566,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
                         'json': json_string}
 
             output_df = pd.DataFrame([output_data])
-            intro = get_openai_intro(input_data['intro-prompt'], search_term, input_data['improver-prompt'], input_data['improve'])
+            intro = get_openai_intro(input_data['intro-prompt'], search_term, input_data['improver-prompt'], input_data['improve-intro'])
 
             html = generate_html(json_string, intro)
 

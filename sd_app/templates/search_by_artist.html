@@ -26,7 +26,7 @@
             </div></div>
 
 
-          <div class="row">
+      <div class="row">
             <div class="col-lg-12">
 
       
@@ -35,7 +35,11 @@
               <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
 
               <input {{ "" if existing else "checked" }} type="checkbox" value="limited" id="check-prompt" name="check-prompt" class="checkbox">
-              <label for="prompt" >Use default prompt</label>
+              <label class="text-big" for="prompt" >Use default prompt</label>
+
+              <input {{"checked" if improved.get("song") else ""}} type="checkbox" value="limited" id="check-improve-song" name="improve-song" class="checkbox"/>
+              <label class="text" for="check-improve-song" >Improve song description</label>
+
               </div>
 
               <div {{ "" if existing else "hidden" }} id="prompt-div" class="horizontal-container">
@@ -44,6 +48,8 @@
               <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="prompt" id="prompt" style="width:100%;border-radius:1em;min-height:7em" >{{prompt}}</textarea> 
               <input type="checkbox" value="limited" id="default-prompt" name="default-prompt" class="checkbox"/>
               <label class="text" for="default-prompt" >Set as default</label>
+
+          
               </div>
 
           </div> 
@@ -57,7 +63,7 @@
 
   
 
-        <div {{ "" if improved else "hidden" }} class="nice-container basic-padding" id="improver-div" >
+        <div class="nice-container basic-padding" id="improver-div" >
           <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
 
           <input {{ "" if existing else "checked" }} type="checkbox" value="limited" id="check-improver-prompt" name="check-improver-prompt" class="checkbox">
@@ -69,6 +75,7 @@
           <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="improver-prompt" id="improver-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{improver_prompt}}</textarea> 
           <input type="checkbox" value="limited" id="default-improver-prompt" name="default-improver-prompt" class="checkbox"/>
           <label class="text" for="default-improver-prompt" >Set as default</label>
+
           </div>
 
       </div> 
@@ -118,7 +125,10 @@
           <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
   
           <input {{ "" if existing else "checked" }} type="checkbox" value="limited" id="check-intro-prompt" name="check-intro-prompt" class="checkbox">
-          <label for="intro-prompt" >Use default prompt for intro</label></div>
+          <label class="text-big" for="intro-prompt" >Use default prompt for intro</label>
+          
+          <input {{"checked" if improved.get("intro") else ""}} type="checkbox" value="limited" id="check-improve-intro" name="improve-intro" class="checkbox"/>
+          <label class="text" for="check-improve-intro" >Improve intro description</label></div>
   
           
           <div {{ "" if existing else "hidden" }} id="intro-prompt-div" class="horizontal-container">
@@ -150,10 +160,6 @@
       <div class="col">
         <input checked type="checkbox" value="limited" id="wordpress" name="wordpress" class="checkbox">
   <span class="text" style="font-size:1em">Generate Wordpress draft</label>
-      </div>
-      <div class="col">
-        <input checked type="checkbox" value="limited" id="check-improve" name="improve" class="checkbox">
-  <span class="text" style="font-size:1em">Improve GPT responses</label>
       </div>
       
       <div class="col" style="justify-content:flex-start">

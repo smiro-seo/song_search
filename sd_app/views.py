@@ -113,7 +113,7 @@ def search():
     prompt = current_user.default_prompt
     intro_prompt = current_user.default_intro_prompt
     improver_prompt = current_user.default_improver_prompt
-    improved = True
+    improved = {'intro':True,'song':True}
     search_id = request.args.get('search_id', None)
     model='text-davinci-003'
     
@@ -128,7 +128,7 @@ def search():
             prompt = search.prompt
             intro_prompt = search.intro_prompt
             improver_prompt = search.improver_prompt
-            improved = search.improved
+            improved = {'intro':search.improved_intro,'song':search.improved_song}
             model=search.model
 
             save_input_data(input_data['keywords'])
@@ -185,7 +185,8 @@ def search():
                             'intro-prompt': data.get('intro-prompt', current_user.default_intro_prompt),
                             'improver-prompt': data.get('improver-prompt', current_user.default_improver_prompt),
                             'model': data.get('model', 'gpt-3.5-turbo'),
-                            'improve': data.get('improve', "") == 'limited'
+                            'improve-song': data.get('improve-song', "") == 'limited',
+                            'improve-intro': data.get('improve-intro', "") == 'limited'
                         }
                         print(input_data)
                         time_to_complete = 20*limit_st * \
@@ -202,7 +203,8 @@ def search():
                             improver_prompt=input_data['improver-prompt'],
                             model=input_data['model'],
                             by_artist=0,
-                            improved=input_data['improve']
+                            improved_song=input_data['improve-song'],
+                            improved_intro=input_data['improve-intro']
                         )
                         db.session.add(new_search)
                         db.session.commit()
@@ -263,7 +265,7 @@ def search_by_artist():
     prompt = current_user.default_prompt_artist
     intro_prompt = current_user.default_intro_prompt_artist
     improver_prompt = current_user.default_improver_prompt
-    improved=True
+    improved = {'intro':True,'song':True}
     artist=""
     search_id = request.args.get('search_id', None)
     model='text-davinci-003'
@@ -276,12 +278,13 @@ def search_by_artist():
             prompt = search.prompt
             intro_prompt = search.intro_prompt
             improver_prompt = search.improver_prompt
-            improved = search.improved
+            improved = {'intro':search.improved_intro,'song':search.improved_song}
             artist = search.keywords
             model=search.model
 
     elif request.method == 'POST':
         data = json.loads(request.data)
+        print(data)
 
         try:
             limit_st = int(
@@ -303,7 +306,8 @@ def search_by_artist():
                         'intro-prompt': data.get('intro-prompt', current_user.default_intro_prompt_artist),
                         'improver-prompt': data.get('improver-prompt', current_user.default_improver_prompt),
                         'model': data.get('model', 'gpt-3.5-turbo'),
-                        'improve': data.get('check-improve', False),
+                        'improve-song': data.get('improve-song', False),
+                        'improve-intro': data.get('improve-intro', False)
                     }
                     new_search = Search(  # Create search without file path
                         user=current_user.username,
@@ -315,7 +319,8 @@ def search_by_artist():
                         improver_prompt=input_data['improver-prompt'],
                         by_artist=1,
                         model=input_data['model'],
-                        improved=input_data['improve']
+                        improved_song=input_data['improve-song'],
+                        improved_intro=input_data['improve-intro']
                     )
                     db.session.add(new_search)
                     db.session.commit()
@@ -341,6 +346,7 @@ def search_by_artist():
                         current_user.default_intro_prompt_artist = input_data['intro-prompt']
                         intro_prompt=input_data['intro-prompt']
                     if data.get('default-improver-prompt', False):
+                        print("OKKKKKKKKKKKKK")
                         current_user.default_improver_prompt = input_data['improver-prompt']
                         improver_prompt=input_data['improver-prompt']
                     

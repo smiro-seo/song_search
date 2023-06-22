@@ -1,6 +1,8 @@
 from . import db
 from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
+from .constants import default_prompt, default_intro_prompt, default_intro_prompt_artist, default_improver_prompt
+
 
 
 class User(db.Model, UserMixin):
@@ -14,6 +16,16 @@ class User(db.Model, UserMixin):
     default_improver_prompt = db.Column(db.String(512))
 
     searches = db.relationship("Search", back_populates="user_inst")
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+        self.default_prompt = default_prompt
+        self.default_prompt_artist = default_prompt
+        self.default_intro_prompt = default_intro_prompt
+        self.default_intro_prompt_artist = default_intro_prompt_artist
+        self.default_improver_prompt = default_improver_prompt
 
     def dict_data(self):
         return {
@@ -36,7 +48,9 @@ class Search(db.Model):
     prompt = db.Column(db.String(516))
     intro_prompt = db.Column(db.String(516))
     improver_prompt = db.Column(db.String(516))
-    improved = db.Column(db.Boolean)
+    model = db.Column(db.String(64))
+    improved_song = db.Column(db.Boolean)
+    improved_intro = db.Column(db.Boolean)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     by_artist = db.Column(db.Integer, default=0)
 

@@ -65,6 +65,9 @@ function search_artist() {
 }
 function search_by_artist(artist_name, artist_id) {
   console.log("hasta aca bien: " + artist_name);
+  const improving_enabled =
+    $("#check-improve-song").is(":checked") ||
+    $("#check-improve-intro").is(":checked");
   let body = {
     "artist-name": artist_name,
     "artist-id": artist_id,
@@ -75,15 +78,13 @@ function search_by_artist(artist_name, artist_id) {
     wordpress: $("#wordpress").is(":checked") ? 1 : false,
     prompt: $("#prompt").val(),
     "intro-prompt": $("#intro-prompt").val(),
-    "improver-prompt": $("#check-improve").is(":checked")
-      ? $("#improver-prompt").val()
-      : false,
-    "default-intro-prompt": $("#default-intro-prompt").is(":checked"),
+    "improver-prompt": improving_enabled ? $("#improver-prompt").val() : "",
     "default-prompt": $("#default-prompt").is(":checked"),
+    "default-intro-prompt": $("#default-intro-prompt").is(":checked"),
     "default-improver-prompt":
-      $("#check-improve").is(":checked") &&
-      $("#improver-prompt").is(":checked"),
-    improve: $("#check-improve").is(":checked"),
+      improving_enabled && $("#default-improver-prompt").is(":checked"),
+    "improve-song": $("#check-improve-song").is(":checked"),
+    "improve-intro": $("#check-improve-intro").is(":checked"),
     model: $("input[name=model]:checked").val(),
   };
 

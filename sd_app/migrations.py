@@ -12,8 +12,24 @@ query_102= [text("ALTER TABLE search ADD COLUMN improved BOOLEAN;"),
     text(f"UPDATE search SET improved=FALSE;")]
 query_1022= [text("ALTER TABLE search ADD COLUMN model STRING;"),
     text(f"UPDATE search SET model='{default_model}';")]
+query_103= [
+    text("ALTER TABLE search ADD COLUMN improved_song BOOLEAN;"),
+    text("ALTER TABLE search ADD COLUMN improved_intro BOOLEAN;"),
+    text("ALTER TABLE search DROP COLUMN improved;"),
+    text(f"UPDATE search SET improved_song=FALSE;"),
+    text(f"UPDATE search SET improved_intro=FALSE;"),
+    text("ALTER TABLE search ADD COLUMN model STRING;"),
+    text(f"UPDATE search SET model='{default_model}';")
+]
+query_1031=[
+    "UPDATE user SET default_intro_prompt='placeholder' WHERE default_intro_prompt is NULL;",
+    "UPDATE user SET default_prompt='placeholder' WHERE default_prompt is NULL;",
+    "UPDATE user SET default_improver_prompt='placeholder' WHERE default_improver_prompt is NULL;",
+    "UPDATE user SET default_intro_prompt_artist='placeholder' WHERE default_intro_prompt_artist is NULL;",
+    "UPDATE user SET default_prompt_artist='placeholder' WHERE default_prompt_artist is NULL;"
+    ]
 
-queries = {'1.0.0':query_100, '1.0.1':query_101, '1.0.2.1':query_102, '1.0.2.2':query_1022}
+queries = {'1.0.0':query_100, '1.0.1':query_101, '1.0.2':query_102, '1.0.2.2':query_1022,'1.0.2.3':query_100, '1.0.3':query_103, '1.0.3.1':query_1031}
 version_list = list(queries.keys())
 
 def check_db_version():
@@ -26,7 +42,11 @@ def check_db_version():
             index = version_list.index(db_version)
             for v in version_list[index+1:]:
                 print("Running migration for version " + v)
-                for q in queries[v]: con.execute(q)
+                for q in queries[v]: 
+                    try:
+                        con.execute(q)
+                    except:
+                        print("Error while migrating")
             
         elif db_version not in version_list:
             for v in version_list:
