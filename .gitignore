@@ -5,3 +5,7 @@ sd_app/model_outputs
 !sd_app/model_outputs/placeholder
 .cache
 test.py
+venv/
+replit.nix
+.replit
+__pycache__/
