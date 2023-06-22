@@ -112,7 +112,10 @@ def search():
     global input_data, flag_bkg, app, stopper
     prompt = current_user.default_prompt
     intro_prompt = current_user.default_intro_prompt
+    improver_prompt = current_user.default_improver_prompt
+    improved = True
     search_id = request.args.get('search_id', None)
+    model='text-davinci-003'
     
     if request.method == 'GET':
 
@@ -124,6 +127,9 @@ def search():
             input_data['keywords'] = pd.DataFrame(json.loads(search.keywords))
             prompt = search.prompt
             intro_prompt = search.intro_prompt
+            improver_prompt = search.improver_prompt
+            improved = search.improved
+            model=search.model
 
             save_input_data(input_data['keywords'])
 
@@ -132,6 +138,7 @@ def search():
 
     if request.method == 'POST':
         data = dict(request.form)
+        print(data)
 
         if data['option'] == 'input_row':
             data.pop('option', None)
@@ -149,7 +156,7 @@ def search():
         elif data['option'] == 'search':
             data.pop('option', None)
 
-            if "`" in data.get('prompt', "")+ data.get("intro-prompt", ""):
+            if "`" in data.get('prompt', "")+ data.get("intro-prompt", "")+ data.get("improver-prompt", ""):
                 flash("Backticks (`) are not allowed in the prompts. You can use both simple or double quotes.", category='error' );
                 return render_template("search.html", 
                            input_data=to_tuples(input_data['keywords']),
@@ -175,8 +182,12 @@ def search():
                         input_data = {
                             'keywords': read_data(),
                             'prompt': data.get('prompt', current_user.default_prompt),
-                            'intro-prompt': data.get('intro-prompt', current_user.default_intro_prompt)
+                            'intro-prompt': data.get('intro-prompt', current_user.default_intro_prompt),
+                            'improver-prompt': data.get('improver-prompt', current_user.default_improver_prompt),
+                            'model': data.get('model', 'gpt-3.5-turbo'),
+                            'improve': data.get('improve', "") == 'limited'
                         }
+                        print(input_data)
                         time_to_complete = 20*limit_st * \
                             len(set(input_data['keywords']['keyword'].values))
 
@@ -188,7 +199,10 @@ def search():
                             status="In progress",
                             prompt=input_data['prompt'],
                             intro_prompt=input_data['intro-prompt'],
-                            by_artist=0
+                            improver_prompt=input_data['improver-prompt'],
+                            model=input_data['model'],
+                            by_artist=0,
+                            improved=input_data['improve']
                         )
                         db.session.add(new_search)
                         db.session.commit()
@@ -214,6 +228,9 @@ def search():
                         if data.get('default-intro-prompt', "") == 'limited':
                             current_user.default_intro_prompt = input_data['intro-prompt']
                             intro_prompt=input_data['intro-prompt']
+                        if data.get('default-improver-prompt', "") == 'limited':
+                            current_user.default_improver_prompt = input_data['improver-prompt']
+                            improver_prompt=input_data['improver-prompt']
                         
                         db.session.commit()
                         flash(
@@ -233,7 +250,10 @@ def search():
                            user=current_user.dict_data(),
                            prompt=prompt,
                            intro_prompt=intro_prompt,
-                           existing = search_id is not None)
+                           improver_prompt=improver_prompt,
+                           existing = search_id is not None,
+                           improved=improved,
+                           model=model)
 
 
 @views.route('/search-by-artist', methods=['GET', 'POST'])
@@ -242,8 +262,11 @@ def search_by_artist():
     global input_data, flag_bkg, app, stopper
     prompt = current_user.default_prompt_artist
     intro_prompt = current_user.default_intro_prompt_artist
+    improver_prompt = current_user.default_improver_prompt
+    improved=True
     artist=""
     search_id = request.args.get('search_id', None)
+    model='text-davinci-003'
 
     if request.method == 'GET':
         if search_id is not None:
@@ -252,7 +275,10 @@ def search_by_artist():
 
             prompt = search.prompt
             intro_prompt = search.intro_prompt
+            improver_prompt = search.improver_prompt
+            improved = search.improved
             artist = search.keywords
+            model=search.model
 
     elif request.method == 'POST':
         data = json.loads(request.data)
@@ -274,7 +300,10 @@ def search_by_artist():
                         "name":data['artist-name'],
                         "id":data['artist-id'],
                         'prompt': data.get('prompt', current_user.default_prompt),
-                        'intro-prompt': data.get('intro-prompt', current_user.default_intro_prompt_artist)
+                        'intro-prompt': data.get('intro-prompt', current_user.default_intro_prompt_artist),
+                        'improver-prompt': data.get('improver-prompt', current_user.default_improver_prompt),
+                        'model': data.get('model', 'gpt-3.5-turbo'),
+                        'improve': data.get('check-improve', False),
                     }
                     new_search = Search(  # Create search without file path
                         user=current_user.username,
@@ -283,7 +312,10 @@ def search_by_artist():
                         status="In progress",
                         prompt=input_data['prompt'],
                         intro_prompt=input_data['intro-prompt'],
-                        by_artist=1
+                        improver_prompt=input_data['improver-prompt'],
+                        by_artist=1,
+                        model=input_data['model'],
+                        improved=input_data['improve']
                     )
                     db.session.add(new_search)
                     db.session.commit()
@@ -308,6 +340,9 @@ def search_by_artist():
                     if data.get('default-intro-prompt', False):
                         current_user.default_intro_prompt_artist = input_data['intro-prompt']
                         intro_prompt=input_data['intro-prompt']
+                    if data.get('default-improver-prompt', False):
+                        current_user.default_improver_prompt = input_data['improver-prompt']
+                        improver_prompt=input_data['improver-prompt']
                     
                     db.session.commit()
                     flash(
@@ -325,8 +360,11 @@ def search_by_artist():
                            user=current_user.dict_data(),
                            prompt=prompt,
                            intro_prompt=intro_prompt,
+                           improver_prompt=improver_prompt,
                            artist = artist,
-                           existing = search_id is not None)
+                           existing = search_id is not None,
+                           improved=improved,
+                           model=model)
 
 
 @views.route('/history', methods=['GET'])

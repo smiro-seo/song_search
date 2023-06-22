@@ -5,10 +5,10 @@ from os import path
 from flask_login import LoginManager
 from datetime import datetime
 from jinja2 import Environment, PackageLoader, select_autoescape
+from .migrations import check_db_version
+from .constants import db_string_conn, DB_NAME
 
 db = SQLAlchemy()
-DB_NAME = "database.db"
-db_string_conn = f"sqlite:///{DB_NAME}"
 
 
 def create_app():
@@ -51,3 +51,5 @@ def create_database(app):
         with app.app_context():
             db.create_all()
         print('Created Database!')
+    
+    check_db_version()

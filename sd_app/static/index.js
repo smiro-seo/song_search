@@ -32,6 +32,7 @@ function repeat_search(id, by_artist) {
 function search_artist() {
   if (
     $("#intro-prompt").val().includes("`") ||
+    $("#improver-prompt").val().includes("`") ||
     $("#prompt").val().includes("`")
   ) {
     alert(
@@ -74,10 +75,17 @@ function search_by_artist(artist_name, artist_id) {
     wordpress: $("#wordpress").is(":checked") ? 1 : false,
     prompt: $("#prompt").val(),
     "intro-prompt": $("#intro-prompt").val(),
+    "improver-prompt": $("#check-improve").is(":checked")
+      ? $("#improver-prompt").val()
+      : false,
     "default-intro-prompt": $("#default-intro-prompt").is(":checked"),
     "default-prompt": $("#default-prompt").is(":checked"),
+    "default-improver-prompt":
+      $("#check-improve").is(":checked") &&
+      $("#improver-prompt").is(":checked"),
+    improve: $("#check-improve").is(":checked"),
+    model: $("input[name=model]:checked").val(),
   };
-  console.log(body);
 
   fetch("/search-by-artist", {
     method: "POST",
@@ -98,6 +106,7 @@ function clear_table(what_to_clear) {
 
 var default_prompt = $("#user-default-prompt").text();
 var default_intro_prompt = $("#user-default-intro-prompt").text();
+var default_improver_prompt = $("#user-default-improver-prompt").text();
 
 $(document).ready(function () {
   $("#check-prompt").on("change", function () {
@@ -126,6 +135,29 @@ $(document).ready(function () {
       $("#intro-prompt").attr("disabled", false);
       $("#intro-prompt-rules").attr("hidden", false);
       $("#intro-prompt-div").attr("hidden", false);
+    }
+  });
+  $("#check-improver-prompt").on("change", function () {
+    let disable = $("#check-improver-prompt").is(":checked");
+    if (disable) {
+      $("#improver-prompt").attr("disabled", true);
+      $("#improver-prompt-rules").attr("hidden", true);
+      $("#improver-prompt").val(default_intro_prompt);
+      $("#improver-prompt-div").attr("hidden", true);
+      $("#default-improver-prompt").attr("checked", false);
+    } else {
+      $("#improver-prompt").attr("disabled", false);
+      $("#improver-prompt-rules").attr("hidden", false);
+      $("#improver-prompt-div").attr("hidden", false);
+    }
+  });
+
+  $("#check-improve").on("change", function () {
+    let disable = $("#check-improve").is(":checked");
+    if (disable) {
+      $("#improver-div").attr("hidden", false);
+    } else {
+      $("#improver-div").attr("hidden", true);
     }
   });
 

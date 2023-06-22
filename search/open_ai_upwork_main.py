@@ -19,6 +19,7 @@ from .html_generator import generate_html
 from .wordpress import create_wp_draft
 
 local_run = True
+gpt_max_tokens = 300
 
 # Top N songs per keyowrd (ex. cat). For all results insert -1
 limit_per_keyword = -1
@@ -30,6 +31,17 @@ market = 'US'
 # Characters after which the track name does not matter for duplicates
 flagged_characters = ['-', '(']
 sleep_time_openai = 15  # seconds      #CHANGE THIS
+
+def getGptCompletion(prompt, engine):
+    if 'davinci' in engine:
+        return openai.ChatCompletion.create(engine=engine,
+                                                    max_tokens=gpt_max_tokens,
+                                                    prompt=prompt)
+    else:
+        return openai.Completion.create(engine=engine,
+                                                    max_tokens=gpt_max_tokens,
+                                                    prompt=prompt)
+
 
 try:
     from openai_api_song_data.search_youtube import youtube_search
@@ -349,13 +361,13 @@ def generate_html_file(html):
 
 def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
-    def get_openai_yt_data(df, prompt):
+    def get_openai_yt_data(df, prompt, improver_prompt, improve):
         # Get youtube and openai data
         print(f"Getting Youtube data")
         df_w_spot_and_yt = get_youtube_search_results_for_tracks_dataset(df)
         print(f"Getting OpenAI response")
         try:
-            merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt, prompt, by_artist=by_artist)
+            merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt, prompt, improver_prompt, improve, by_artist=by_artist)
         except Exception as e:
             print("There was an error recovering model response.")
             print(e)
@@ -388,7 +400,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
         return tracks_df_with_yt
 
-    def get_openai_model_responses(df_w_spot_and_yt, original_prompt, by_artist=False):
+    def get_openai_model_responses(df_w_spot_and_yt, original_prompt, improver_prompt, improve=False, by_artist=False):
         
         name_artist_year_tuples = list(df_w_spot_and_yt[["track_id",
                                                         "track_name",
@@ -426,13 +438,19 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
             print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
             print(f'The prompt is: {prompt}')
-            completion = openai.Completion.create(engine="text-davinci-003",
-                                                max_tokens=150,
-                                                prompt=prompt)
+            completion = getGptCompletion(prompt, input_data['model'])
 
             choice_response_text = completion['choices'][0].text.strip()
             choice_response_text = completion['choices'][0].text.strip().replace(
                 '"', '')
+                
+            print(f"Sleeping for {str(sleep_time_openai)} seconds")
+            time.sleep(sleep_time_openai)
+            print("Improving response...")
+
+            if improve: 
+                completion, choice_response_text = improve_gpt_response(choice_response_text, improver_prompt)
+
             completions.append(completion)
             tracks_data_w_completion_text.append(
                 (track_id, prompt, choice_response_text))
@@ -447,7 +465,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
         return merged_df_w_results
 
-    def get_openai_intro(prompt, keyword):
+    def get_openai_intro(prompt, keyword,improver_prompt, improve):
 
         print("Getting OpenAI introduction")
 
@@ -455,26 +473,38 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         print("prompt: " + prompt)
 
         try:
-            completion = openai.Completion.create(engine="text-davinci-003",
-                                                    max_tokens=150,
-                                                    prompt=prompt)
+            completion = getGptCompletion(prompt, input_data['model'])
 
             choice_response_text = completion['choices'][0].text.strip()
-            choice_response_text = completion['choices'][0].text.strip().replace(
-                '"', '')
+            choice_response_text = completion['choices'][0].text.strip().replace('"', '')
+            
+            if improve: 
+                n, choice_response_text = improve_gpt_response(choice_response_text,improver_prompt)
         except:
             choice_response_text="long text with words " * 50
 
+
         return choice_response_text
 
+    def improve_gpt_response(choice_response_text, improver_prompt):
 
+        prompt = improver_prompt + '\n' + choice_response_text
+
+        completion = getGptCompletion(prompt, 'gpt-3.5-turbo')
+
+        choice_response_text_ok = completion['choices'][0].text.strip()
+        choice_response_text_ok = completion['choices'][0].text.strip().replace(
+            '"', '')
+        
+        return completion, choice_response_text_ok
+    
+    
     raw_output_dfs = []
     output_dfs = []
 
     if by_artist:
         output_df = get_search_results_by_artist(input_data['name'], stopper, input_data['id'], keys)  
         print("output search: ")
-        print(output_df)  
     
     else:
         #   search_term-level loop (e.g. animals)
@@ -488,7 +518,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         output_df = pd.concat(raw_output_dfs)
 
     #   Get yt and openai data
-    output_df_data = get_openai_yt_data(output_df, input_data['prompt'])
+    output_df_data = get_openai_yt_data(output_df, input_data['prompt'], input_data['improver-prompt'], input_data['improve'])
 
     #   Clean and sort results
     clean_sorted_data = clean_and_sort(output_df_data)
@@ -509,7 +539,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
                     'json': json_string}
 
         output_df = pd.DataFrame([output_data])
-        intro = get_openai_intro(input_data['intro-prompt'], input_data['name'])
+        intro = get_openai_intro(input_data['intro-prompt'], input_data['name'], input_data['improver-prompt'], input_data['improve'])
 
         html = generate_html(json_string, intro)
 
@@ -536,7 +566,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
                         'json': json_string}
 
             output_df = pd.DataFrame([output_data])
-            intro = get_openai_intro(input_data['intro-prompt'], search_term)
+            intro = get_openai_intro(input_data['intro-prompt'], search_term, input_data['improver-prompt'], input_data['improve'])
 
             html = generate_html(json_string, intro)
 

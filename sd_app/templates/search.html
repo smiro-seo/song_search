@@ -4,6 +4,7 @@
 
 <p hidden id="user-default-intro-prompt">{{user.get('default_intro_prompt')}}</p>
 <p hidden id="user-default-prompt" >{{user.get('default_prompt')}}</p>
+<p hidden id="user-default-improver-prompt" >{{user.get('default_improver_prompt')}}</p>
 
 <div class="container-fluid">
 
@@ -162,6 +163,29 @@
       </div>
 
     </div>
+    <div class="row">
+
+      <div class="col-lg-12">
+
+        <div {{ "" if improved else "hidden" }} class="nice-container basic-padding" id="improver-div">
+          <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
+
+          <input {{ "" if existing else "checked" }} type="checkbox" value="limited" id="check-improver-prompt" name="check-improver-prompt" class="checkbox"/>
+          <label for="improver-prompt" >Use default improver prompt</label></div>
+
+          
+          <div {{ "" if existing else "hidden" }} id="improver-prompt-div" class="horizontal-container">
+            <p class="text" style="white-space: pre-wrap" id="improver-prompt-rules" >This prompt will be sent along the first gpt response in order to make the text more human-friendly.</p>
+          <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="improver-prompt" id="improver-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{improver_prompt}}</textarea> 
+          <input type="checkbox" value="limited" id="default-improver-prompt" name="default-improver-prompt" class="checkbox"/>
+          <label class="text" for="default-improver-prompt" >Set as default</label>
+          </div>
+
+      </div> 
+
+      </div>
+
+    </div>
   
   </div>
   
@@ -169,18 +193,39 @@
   <div class="row" style="margin-top:2em;text-align:center">
 
         <div class="col-md-12">
-          <button type="submit" class="btn btn-primary basic-padding" id="btn-search" data-toggle="modal" data-target="#modal_searching" style="width:100%">
+          <button type="submit" class="btn btn-primary basic-padding" id="btn-search" 
+          data-toggle="modal" data-target="#modal_searching" style="width:100%">
             Search
           </button>
         </div>
 
   </div>
-  <div class="row" style="margin-top:2em;text-align:center">
+  <div class="row" style="margin: 1em 0em;text-align:center">
   
-            <div class="col-md-12">
+          <div class="col">
               <input checked type="checkbox" value="limited" id="wordpress" name="wordpress" class="checkbox">
-        <span class="text" style="font-size:1em">Generate Wordpress draft</label>
-            </div>
+              <span class="text" style="font-size:1em">Generate Wordpress draft</span>
+          </div>
+          <div class="col">
+              <input checked type="checkbox" value="limited" id="check-improve" name="improve" class="checkbox">
+              <span class="text" style="font-size:1em">Improve GPT responses</span>
+          </div>
+
+        <div class="col" style="justify-content:flex-start">
+        <span class="text" style="font-size:1em">Select OpenAI model</span>
+          <div class="form-check">
+            <input {{"checked" if model == "gpt-3.5-turbo" else "" }} class="form-check-input" type="radio" value="gpt-3.5-turbo" name="model" id="gpt-turbo">
+            <label class="form-check-label" for="gpt-turbo">
+              GPT 3.5 Turbo
+            </label>
+          </div>
+          <div class="form-check">
+            <input {{"checked" if model == "text-davinci-003" else "" }}  class="form-check-input" type="radio" value="text-davinci-003" name="model" id="davinci">
+            <label class="form-check-label" for="davinci">
+              DaVinci 3
+            </label>
+          </div>
+        </div>
   
   </div>
       

@@ -13,3 +13,9 @@ default_prompt = 'Write a simple text presenting the song [track name] by [artis
 
 default_intro_prompt = "Write a simple, interesting and captivating introduction for an article that describes the best songs about [keyword]. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text."
 default_intro_prompt_artist = "Write a simple, interesting and captivating introduction for an article that describes the best songs from [artist]. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text."
+default_improver_prompt = ""
+
+
+DB_NAME = "database.db"
+db_string_conn = f"sqlite:///{DB_NAME}"
+default_model = 'text-davinci-003'
