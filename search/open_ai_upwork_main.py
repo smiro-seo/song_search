@@ -34,11 +34,11 @@ sleep_time_openai = 15  # seconds      #CHANGE THIS
 
 def getGptCompletion(prompt, engine):
     if 'davinci' in engine:
-        return openai.ChatCompletion.create(engine=engine,
+        return openai.Completion.create(engine=engine,
                                                     max_tokens=gpt_max_tokens,
                                                     prompt=prompt)
     else:
-        return openai.Completion.create(engine=engine,
+        return openai.ChatCompletion.create(engine=engine,
                                                     max_tokens=gpt_max_tokens,
                                                     prompt=prompt)
 
