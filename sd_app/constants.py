@@ -2,7 +2,7 @@ import os
 
 keys = {}
 
-keys['openai_key'] = os.getenv('OPENAI_KEY')
+keys['openai_key'] = os.getenv('OPENAI_API_KEY')
 keys['youtube_key'] = os.getenv('YOUTUBE_KEY')
 keys['sp_user'] = os.getenv('SPOTIFY_USER')
 keys['sp_password'] = os.getenv('SPOTIFY_PASSWORD')
