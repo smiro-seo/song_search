@@ -5,7 +5,7 @@ from os import path
 from flask_login import LoginManager
 from datetime import datetime
 from jinja2 import Environment, PackageLoader, select_autoescape
-from .migrations import check_db_version
+from .migrations import check_db_version, set_db_version_current
 from .constants import db_string_conn, DB_NAME
 
 db = SQLAlchemy()
@@ -50,6 +50,7 @@ def create_database(app):
     if not path.exists('sd_app/' + DB_NAME):
         with app.app_context():
             db.create_all()
+            set_db_version_current()
         print('Created Database!')
     
     check_db_version()

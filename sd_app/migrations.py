@@ -59,3 +59,7 @@ def set_db_version(con, version):
         return version_list[0]
     else:
        con.execute(f"UPDATE parameters SET value='{version}' WHERE name='db_version'")
+
+def set_db_version_current():
+    with engine.connect() as con:
+        con.execute(f"INSERT INTO parameters VALUES ('db_version', '{version_list[-1]}')")
