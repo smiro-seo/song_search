@@ -34,14 +34,17 @@ sleep_time_openai = 15  # seconds      #CHANGE THIS
 
 def getGptCompletion(prompt, engine):
     if 'davinci' in engine:
-        return openai.Completion.create(engine=engine,
+        completion= openai.Completion.create(engine=engine,
                                                     max_tokens=gpt_max_tokens,
                                                     prompt=prompt)
     else:
-        return openai.ChatCompletion.create(engine=engine,
+        completion= openai.ChatCompletion.create(engine=engine,
                                                     max_tokens=gpt_max_tokens,
                                                     prompt=prompt)
 
+    choice_response_text = completion['choices'][0].text.strip()
+    choice_response_text = completion['choices'][0].text.strip().replace('"', '')
+    return completion, choice_response_text
 
 try:
     from openai_api_song_data.search_youtube import youtube_search
@@ -438,12 +441,9 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
             print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
             print(f'The prompt is: {prompt}')
-            completion = getGptCompletion(prompt, input_data['model'])
-
-            choice_response_text = completion['choices'][0].text.strip()
-            choice_response_text = completion['choices'][0].text.strip().replace(
-                '"', '')
-                
+            #completion
+            completion, choice_response_text = getGptCompletion(prompt, input_data['model'])
+                          
             print(f"Sleeping for {str(sleep_time_openai)} seconds")
             time.sleep(sleep_time_openai)
             print("Improving response...")
@@ -456,6 +456,8 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
                 (track_id, prompt, choice_response_text))
             time.sleep(sleep_time_openai)
             print(f"Sleeping for {str(sleep_time_openai)} seconds")
+
+            print("Final response text: " + choice_response_text)
         model_res_df = pd.DataFrame(tracks_data_w_completion_text, columns=[
                                     'track_id', 'prompt', 'model_response'])
 
@@ -473,10 +475,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         print("prompt: " + prompt)
 
         try:
-            completion = getGptCompletion(prompt, input_data['model'])
-
-            choice_response_text = completion['choices'][0].text.strip()
-            choice_response_text = completion['choices'][0].text.strip().replace('"', '')
+            completion, choice_response_text = getGptCompletion(prompt, input_data['model'])
             
             if improve: 
                 n, choice_response_text = improve_gpt_response(choice_response_text,improver_prompt)
@@ -487,16 +486,12 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         return choice_response_text
 
     def improve_gpt_response(choice_response_text, improver_prompt):
+        print("Improving openAI response.")
 
         prompt = improver_prompt + '\n' + choice_response_text
-
-        completion = getGptCompletion(prompt, 'gpt-3.5-turbo')
-
-        choice_response_text_ok = completion['choices'][0].text.strip()
-        choice_response_text_ok = completion['choices'][0].text.strip().replace(
-            '"', '')
+        print("New prompt: " + prompt)
         
-        return completion, choice_response_text_ok
+        return getGptCompletion(prompt, 'gpt-3.5-turbo')
     
     
     raw_output_dfs = []
