@@ -38,9 +38,9 @@ def getGptCompletion(prompt, engine):
                                                     max_tokens=gpt_max_tokens,
                                                     prompt=prompt)
     else:
-        completion= openai.ChatCompletion.create(engine=engine,
+        completion= openai.ChatCompletion.create(mdoel=engine,
                                                     max_tokens=gpt_max_tokens,
-                                                    prompt=prompt)
+                                                    messages={"role": "assistant", "content": prompt})
 
     choice_response_text = completion['choices'][0].text.strip()
     choice_response_text = completion['choices'][0].text.strip().replace('"', '')
