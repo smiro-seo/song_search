@@ -38,7 +38,7 @@ def getGptCompletion(prompt, engine):
                                                     max_tokens=gpt_max_tokens,
                                                     prompt=prompt)
     else:
-        completion= openai.ChatCompletion.create(mdoel=engine,
+        completion= openai.ChatCompletion.create(model=engine,
                                                     max_tokens=gpt_max_tokens,
                                                     messages={"role": "assistant", "content": prompt})
 
