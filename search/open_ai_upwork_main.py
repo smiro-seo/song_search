@@ -33,21 +33,28 @@ flagged_characters = ['-', '(']
 sleep_time_openai = 15  # seconds      #CHANGE THIS
 
 def getGptCompletion(prompt, engine):
-    if 'davinci' in engine:
-        completion= openai.Completion.create(engine=engine,
-                                                    max_tokens=gpt_max_tokens,
-                                                    prompt=prompt)
-        choice_response_text = completion['choices'][0].text.strip()
-        choice_response_text = completion['choices'][0].text.strip().replace('"', '')
-    else:
-        completion= openai.ChatCompletion.create(model=engine,
-                                                    max_tokens=gpt_max_tokens,
-                                                    messages=[{"role": "assistant", "content": prompt}])
-                                                    
-        choice_response_text = completion['choices'][0]['message']['content'].strip().replace('"', '')
-        
 
-    return completion, choice_response_text
+    try:
+        if 'davinci' in engine:
+            completion= openai.Completion.create(engine=engine,
+                                                        max_tokens=gpt_max_tokens,
+                                                        prompt=prompt)
+            choice_response_text = completion['choices'][0].text.strip()
+            choice_response_text = completion['choices'][0].text.strip().replace('"', '')
+        else:
+            completion= openai.ChatCompletion.create(model=engine,
+                                                        max_tokens=gpt_max_tokens,
+                                                        messages=[{"role": "assistant", "content": prompt}])
+                                                        
+            choice_response_text = completion['choices'][0]['message']['content'].strip().replace('"', '')
+            
+
+        return completion, choice_response_text
+
+
+    except Exception as e:
+        print("ERROR IN CHATGPT")
+        return None, ""
 
 try:
     from openai_api_song_data.search_youtube import youtube_search
@@ -477,13 +484,10 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
         prompt = prompt.replace('[keyword]', keyword).replace('[artist]', keyword)
         print("prompt: " + prompt)
 
-        try:
-            completion, choice_response_text = getGptCompletion(prompt, input_data['model'])
-            
-            if improve: 
-                n, choice_response_text = improve_gpt_response(choice_response_text,improver_prompt)
-        except:
-            choice_response_text="long text with words " * 50
+        completion, choice_response_text = getGptCompletion(prompt, input_data['model'])
+        
+        if improve: 
+            n, choice_response_text = improve_gpt_response(choice_response_text,improver_prompt)
 
 
         return choice_response_text
@@ -491,7 +495,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
     def improve_gpt_response(choice_response_text, improver_prompt):
         print("Improving openAI response.")
 
-        prompt = improver_prompt + '\n' + choice_response_text
+        prompt = improver_prompt + '\n\n' + choice_response_text
         print("New prompt: " + prompt)
         
         return getGptCompletion(prompt, 'gpt-3.5-turbo')
