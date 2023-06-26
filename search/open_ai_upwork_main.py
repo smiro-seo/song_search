@@ -526,11 +526,11 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
     if(by_artist):
         # Loop again for consolidating csv file
         json_string, n_songs = get_json_string(clean_sorted_data)
-        slug = 'top-songs-from-' + input_data['name'].replace(" ", "-").lower()
+        slug = input_data['name'].replace(" ", "-").lower() + "-songs"
 
         output_data = {'id': str(uuid4()),
                     'track_name_keyword': input_data['name'],
-                    'H1': f'{n_songs} Top songs from {input_data["name"].capitalize()}',
+                    'H1': f'{n_songs} Best {input_data["name"].title()} Songs',
                     'slug': slug,
                     'intro': '',
                     'number_of_songs_listed': n_songs,
@@ -541,7 +541,7 @@ def main_proc(input_data, stopper, keys, wordpress,by_artist):
 
         html = generate_html(json_string, intro)
 
-        wp_title = str(n_songs) + ' ' + slug.replace('-', ' ').title()
+        wp_title = output_data['H1']
         if wordpress: create_wp_draft(wp_title, html, slug, keys)
 
         output_dfs.append(output_df)
