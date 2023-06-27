@@ -58,7 +58,8 @@ def getGptCompletion(prompt, engine):
 
     except Exception as e:
         print("ERROR IN CHATGPT")
-        return "No response available. prompt: " + prompt
+        print(e)
+        return ""
 
 try:
     from openai_api_song_data.search_youtube import youtube_search
