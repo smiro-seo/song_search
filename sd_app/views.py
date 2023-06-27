@@ -58,7 +58,7 @@ def background_search(local_app, local_db, input_data, limit, offset,user,  by="
 @views.route('/', methods=['GET', 'POST'])
 @views.route('/search/<by>', methods=['GET', 'POST'])
 @login_required
-def search(by):
+def search(by="keyword"):
 
     global input_data, flag_bkg, app, stopper
 
