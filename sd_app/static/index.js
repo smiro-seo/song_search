@@ -1,44 +1,82 @@
-function delete_row(idx, table) {
-  if (table == "input") {
-    fetch("/delete_row", {
-      method: "POST",
-      body: JSON.stringify({ idx: idx }),
-    }).then((_res) => {
-      window.location.href = "/search";
+const trashSvg = (onClick) =>
+  `<button type="button" class="btn btn-outline-danger" onClick="${onClick}">` +
+  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">' +
+  '<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>' +
+  '<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>' +
+  "</svg>";
+
+function deleteKeyword(sp_kw) {
+  const id = `tr-${sp_kw}`;
+  $(`#${id}`).remove();
+}
+function addKeyword() {
+  const childNumber = $("#keyword-table-body").children().length;
+  const sp_kw = $("#sp_keyword").val();
+  console.log("Adding keyword: " + sp_kw + " at position " + childNumber);
+
+  $(`#keyword-table-body tr:nth-child(${childNumber})`).before(
+    `<tr id="tr-${sp_kw}">` +
+      `<td>${sp_kw}</td>` +
+      '<td class="column_action">' +
+      trashSvg(`deleteKeyword('${sp_kw}')`) +
+      "</td>" +
+      "</tr>"
+  );
+
+  $("#sp_keyword").val("");
+}
+function clearKeywordTable() {
+  $("#keyword-table-body")
+    .children()
+    .each((i, child) => {
+      if (child.id != "keyword-input-row") {
+        $(`#${child.id}`).remove();
+      }
     });
-  } else if (table == "history") {
-    fetch("/delete_search", {
-      method: "POST",
-      body: JSON.stringify({ idx: idx }),
-    }).then((_res) => {
-      window.location.href = "/history";
-    });
-  }
+}
+
+function deleteSearch(idx) {
+  fetch("/delete_search", {
+    method: "POST",
+    body: JSON.stringify({ idx: idx }),
+  }).then((_res) => {
+    window.location.href = "/history";
+  });
+}
+function repeatSearch(id, by) {
+  window.location.href = `/search/${by}?search_id=${id}`;
 }
 
 function showAlert(text) {
-  console.log("OK");
   window.alert(text);
 }
 
-function repeat_search(id, by_artist) {
-  if (by_artist == 0) {
-    window.location.href = "/search?search_id=" + id;
-  } else {
-    window.location.href = "/search-by-artist?search_id=" + id;
-  }
-}
+function search(searchType) {
+  console.log("Searching by " + searchType);
+  switch (searchType) {
+    case "artist":
+      searchArtist();
+      break;
 
-function search_artist() {
+    case "keyword":
+      searchByKeyword();
+      break;
+
+    default:
+      break;
+  }
+
+  return;
+}
+function searchArtist() {
   if (
     $("#intro-prompt").val().includes("`") ||
     $("#improver-prompt").val().includes("`") ||
     $("#prompt").val().includes("`")
   ) {
-    alert(
+    return alert(
       "Backticks (`) are not allowed in the prompts. You can use both simple or double quotes."
     );
-    return;
   }
 
   let search_string = $("#artist").val();
@@ -49,7 +87,7 @@ function search_artist() {
     .then((res) => {
       res.forEach((data) => {
         $("#artist-list").append(
-          '<button class="btn btn-outline-secondary" style="margin:5px" onClick="search_by_artist(\'' +
+          '<button class="btn btn-outline-secondary" style="margin:5px" onClick="searchByArtist(\'' +
             data.name.replace("'", "") +
             "','" +
             data.id +
@@ -63,14 +101,52 @@ function search_artist() {
       $("#modal_artist_select").modal("show");
     });
 }
-function search_by_artist(artist_name, artist_id) {
-  console.log("hasta aca bien: " + artist_name);
-  const improving_enabled =
-    $("#check-improve-song").is(":checked") ||
-    $("#check-improve-intro").is(":checked");
+function searchByArtist(artist_name, artist_id) {
+  console.log("Searching tracks by artist...");
+  console.log("Artist: " + artist_name);
   let body = {
     "artist-name": artist_name,
     "artist-id": artist_id,
+    ...getFormData(),
+  };
+
+  fetch("/search/artist", {
+    method: "POST",
+    body: JSON.stringify(body),
+  }).then((_res) => {
+    window.location.href = "/history";
+  });
+}
+function searchByKeyword() {
+  let sp_keywords = [];
+  $("#keyword-table-body")
+    .children()
+    .each((i, child) => {
+      if (child.id != "keyword-input-row") {
+        let kws = child.id.split("-");
+        sp_keywords.push(kws[1]);
+      }
+    });
+
+  let body = {
+    sp_keywords: sp_keywords,
+    keyword: $("#keyword").val(),
+    ...getFormData(),
+  };
+
+  fetch("/search/keyword", {
+    method: "POST",
+    body: JSON.stringify(body),
+  }).then((_res) => {
+    window.location.href = "/history";
+  });
+}
+
+function getFormData() {
+  const improving_enabled =
+    $("#check-improve-song").is(":checked") ||
+    $("#check-improve-intro").is(":checked");
+  return {
     "limit-range-kw-txt": $("#limit-range-kw-txt").val(),
     "offset-range-txt": $("#offset-range-txt").val(),
     "check-limit-kw": $("#check-limit-kw").is(":checked") ? 1 : null,
@@ -87,21 +163,14 @@ function search_by_artist(artist_name, artist_id) {
     "improve-intro": $("#check-improve-intro").is(":checked"),
     model: $("input[name=model]:checked").val(),
   };
-
-  fetch("/search-by-artist", {
-    method: "POST",
-    body: JSON.stringify(body),
-  }).then((_res) => {
-    window.location.href = "/history";
-  });
 }
 
-function clear_table(what_to_clear) {
-  fetch("/clear", {
+function clearHistory() {
+  fetch("/clear-history", {
     method: "POST",
-    body: JSON.stringify({ what_to_clear: what_to_clear }),
+    body: JSON.stringify({}),
   }).then((_res) => {
-    window.location.href = "/search";
+    window.location.href = "/history";
   });
 }
 

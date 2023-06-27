@@ -2,6 +2,7 @@ from . import db
 from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
 from .constants import default_prompt, default_intro_prompt, default_intro_prompt_artist, default_improver_prompt
+import json
 
 
 
@@ -29,12 +30,13 @@ class User(db.Model, UserMixin):
 
     def dict_data(self):
         return {
+            'id':self.id,
             'username': self.username,
             'default_prompt': self.default_prompt,
             'default_prompt_artist': self.default_prompt_artist,
-            'default_improver_prompt': self.default_improver_prompt,
             'default_intro_prompt': self.default_intro_prompt,
             'default_intro_prompt_artist': self.default_intro_prompt_artist,
+            'default_improver_prompt': self.default_improver_prompt,
             'is_authenticated': current_user.is_authenticated and current_user.id == self.id
         }
 
@@ -52,9 +54,19 @@ class Search(db.Model):
     improved_song = db.Column(db.Boolean)
     improved_intro = db.Column(db.Boolean)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    by_artist = db.Column(db.Integer, default=0)
+    by = db.Column(db.String(32), default=0)
 
     user_inst = db.relationship("User", back_populates="searches")
+
+    @property
+    def sp_keywords(self):
+        kws = json.loads(self.keywords)
+        return kws['sp_keywords']
+
+    @property
+    def keyword(self):
+        kws = json.loads(self.keywords)
+        return kws['keyword']
 
 
 class Parameters(db.Model):

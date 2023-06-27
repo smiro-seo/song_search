@@ -1,6 +1,7 @@
 
 import argparse
 import json
+import functools
 import os
 import pathlib
 import string
@@ -47,14 +48,17 @@ def getGptCompletion(prompt, engine):
                                                         messages=[{"role": "assistant", "content": prompt}])
                                                         
             choice_response_text = completion['choices'][0]['message']['content'].strip().replace('"', '')
-            
+        
 
-        return completion, choice_response_text
+        print(f"Sleeping for {str(sleep_time_openai)} seconds")
+        time.sleep(sleep_time_openai)
+
+        return choice_response_text
 
 
     except Exception as e:
         print("ERROR IN CHATGPT")
-        return None, ""
+        return "No response available. prompt: " + prompt
 
 try:
     from openai_api_song_data.search_youtube import youtube_search
@@ -62,7 +66,7 @@ try:
 except:
     from .search_youtube import youtube_search
 
-column_list = ['keyword', 'specific_keyword', 'artist', 'track_name', 'release_year', 'album', 'yt_video_id',
+column_list = ['artist', 'track_name', 'release_year', 'album', 'yt_video_id',
                'model_response', 'popularity', 'duration_ms', 'track_id']
 column_name_transform = {'artist': 'Artist', 'track_name': 'Track Name',
                          'release_year': 'Release Year', 'album': 'Album'}
@@ -76,13 +80,7 @@ youtube_api_key = ''
 output_dir = os.path.join(cwd, '..', 'sd_app', 'model_outputs')
 
 
-def get_input_keyword_data(input_keyword_csv_filepath):
-    input_kw_df = pd.read_csv(input_keyword_csv_filepath, names=[
-                              'index', 'search_term', 'keyword'])
-    return input_kw_df
-
-
-def search_spotify_tracks(keyword, keys, target="track", by="track", keyword_id=None):
+def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=None):
     search_columns = ['artist', 'track_name', 'release_year',
                       'album', 'popularity', 'duration_ms', 'track_id', 'spotify_url']
 
@@ -109,9 +107,7 @@ def search_spotify_tracks(keyword, keys, target="track", by="track", keyword_id=
                 ' '.join(track_name_wlist[i:i+n_words_kw]) for i in range(0, n_words_tn-1)]
             return word_combinations
 
-    # instantiate spotify api client
-    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=keys['sp_user'],
-                                                               client_secret=keys['sp_password']))
+    
 
     search_results_clean = []
     print("Searching for " + target + " by " + by)
@@ -175,7 +171,6 @@ def scrape_youtube_search_results(track_title):
 
     return video_id
 
-
 def get_youtube_search_results(track_title):
 
     options = argparse.Namespace(q=track_title, max_results=1)
@@ -200,6 +195,7 @@ def get_youtube_search_results(track_title):
  #   video_url = f'https://www.youtube.com/watch?v={video_id}'
     return video_id
 
+
 def cleanse_track_duplicates(df):
         def delete_after_character(track_name):
             for c in flagged_characters:
@@ -214,99 +210,8 @@ def cleanse_track_duplicates(df):
             lambda x: delete_after_character(x['track_name']), axis=1)
 
         df.drop_duplicates(subset='track_name_clean', keep='first', inplace=True)
-        print(df[['track_name', 'popularity', 'specific_keyword']])
+        print(df[['track_name', 'popularity']])
         return df
-
-
-def get_search_results(keyword_df, search_term, stopper, keys):
-
-    search_term_dfs = []  # list with search term results
-
-    #   keyword-level loop (e.g. horse)
-    for keyword in keyword_df['keyword'].unique():
-
-        if (stopper.is_set()):
-            print("Stopped search")
-            return False
-        print(
-            f"|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-        print(f"Starting first keyword: {keyword}")
-        print(f'Getting most popular songs containing our {keyword}')
-        df_w_spot_df = search_spotify_tracks(keyword, keys)
-        if df_w_spot_df.shape[0] == 0:
-            df_w_spot_df['specific_keyword'] = keyword
-            search_term_dfs.append(df_w_spot_df)
-            continue
-        df_w_spot_df.sort_values('popularity', ascending=False, inplace=True)
-        if limit_per_keyword != -1:
-            # keyword-level filtering
-            df_w_spot_df = df_w_spot_df.iloc[:limit_per_keyword+1]
-
-        # For traceability purposes
-        df_w_spot_df['specific_keyword'] = keyword
-        search_term_dfs.append(df_w_spot_df)
-
-    # search term-level dataframe
-    st_out_sp_df = pd.concat(search_term_dfs)
-    if st_out_sp_df.shape[0] == 0:
-        st_out_sp_df['keyword'] = search_term
-        return st_out_sp_df
-
-    st_out_sp_df.sort_values('popularity', ascending=False, inplace=True)
-
-    # drop duplicates
-    out_df_no_duplicates = cleanse_track_duplicates(st_out_sp_df)
-    if limit_per_search_term != -1:
-        if out_df_no_duplicates.shape[0] > offset + limit_per_search_term:
-            # search_term-level filtering
-            out_df_no_duplicates = out_df_no_duplicates.iloc[offset:offset +
-                                                             limit_per_search_term]
-        elif out_df_no_duplicates.shape[0] > offset:
-            out_df_no_duplicates = out_df_no_duplicates.iloc[offset:]
-        else:
-            print(f"Offset too big for results. Returning empty table.")
-            out_df_no_duplicates = pd.DataFrame(
-                columns=out_df_no_duplicates.columns)
-
-    print("Prepping our KW output...")
-    # prep for final output
-    out_df = out_df_no_duplicates.copy()
-    out_df['keyword'] = search_term
-
-    return out_df
-
-def get_search_results_by_artist(artist, stopper, artist_id, keys):
-
-    if (stopper.is_set()):
-        print("Stopped search")
-        return False
-    print(
-        f"|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-    print(f"Searching for top songs by {artist}")
-    df_w_spot_df = search_spotify_tracks(artist, keys, target="track", by="artist", keyword_id=artist_id)
-
-    df_w_spot_df.sort_values('popularity', ascending=False, inplace=True)
-    print("Limiting search results to " + str(limit_per_search_term))
-    if limit_per_search_term != -1:
-        if df_w_spot_df.shape[0] > offset + limit_per_search_term:
-            # search_term-level filtering
-            df_w_spot_df = df_w_spot_df.iloc[offset:offset + limit_per_search_term]
-        elif df_w_spot_df.shape[0] > offset:
-            df_w_spot_df = df_w_spot_df.iloc[offset:]
-        else:
-            print(f"Offset too big for results. Returning empty table.")
-            df_w_spot_df = pd.DataFrame(columns=df_w_spot_df.columns)
-
-    # For traceability purposes
-    df_w_spot_df['keyword'] = artist
-    df_w_spot_df['specific_keyword'] = artist
-
-    print("Prepping our KW output...")
-    # prep for final output
-
-    return df_w_spot_df
-
-
 
 def clean_and_sort(df):
     # Order by most popular songs (total)
@@ -321,40 +226,6 @@ def clean_and_sort(df):
         columns=column_name_transform)
     return output_df_filtered_w_results
 
-
-def get_json_string(search_term_df):
-
-    #search_term_df.assign(song_key_index=lambda x: f'Song {x.index + 1}')
-    search_term_df['song_key_index'] = [f'Song {i + 1}' for i in range(len(search_term_df))]
-    out_df_keep = search_term_df.set_index('song_key_index')
-    output_dict = out_df_keep.to_dict(orient='index')
-
-    # Use json.dumps() to convert the dictionary to a JSON string,
-    json_string = json.dumps(output_dict, ensure_ascii=False)
-
-    # Use json.loads() to parse the JSON string,
-    # then use json.dumps() to re-serialize the parsed JSON data,
-    # setting the ensure_ascii parameter to False
-    json_string = json.dumps(json.loads(
-        json_string), ensure_ascii=False)
-
-    return json_string, len(out_df_keep)
-
-
-def generate_csv(df):
-    print("Combining all keyword results into one output...")
-    print(f'There are {len(df)} records in the output CSV...')
-
-    output_fname = f'sample_keywords_output_{datetime.now().strftime("%Y%m%d-%H%M%S")}.csv'
-    output_path = os.path.join(output_dir, output_fname)
-
-    print(f"Saving CSV file to : {output_path}")
-
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-    df.to_csv(output_path, sep=';', index=False)
-
-    return output_fname
 
 def generate_html_file(html):
     output_html_name = f'sample_keywords_output_html_{datetime.now().strftime("%Y%m%d-%H%M%S")}.html'
@@ -372,232 +243,320 @@ def generate_html_file(html):
     return output_html_name
 
 
-def main_proc(input_data, stopper, keys, wordpress,by_artist):
-
-    def get_openai_yt_data(df, prompt, improver_prompt, improve):
-        # Get youtube and openai data
-        print(f"Getting Youtube data")
-        df_w_spot_and_yt = get_youtube_search_results_for_tracks_dataset(df)
-        print(f"Getting OpenAI response")
-        try:
-            merged_df_w_results = get_openai_model_responses(df_w_spot_and_yt, prompt, improver_prompt, improve, by_artist=by_artist)
-        except Exception as e:
-            print("There was an error recovering model response.")
-            print(e)
-            merged_df_w_results = df_w_spot_and_yt.copy()
-            merged_df_w_results['model_response'] = ''
-
-        return merged_df_w_results
-    
-    def get_youtube_search_results_for_tracks_dataset(df_w_spot_df):
-
-        track_id_name_and_yt_url = []
-
-        for track_id, track_name, artist in list(zip(df_w_spot_df['track_id'],
-                                                    df_w_spot_df['track_name'],
-                                                    df_w_spot_df['artist']
-                                                    )):
-            if (stopper.is_set()):
-                print("Stopped search")
-                return False
-            yt_video_id = get_youtube_search_results(track_name + ' ' + artist)
-            track_id_name_and_yt_url.append((track_id, track_name, yt_video_id))
-
-        track_id_w_yt_data_df = pd.DataFrame(track_id_name_and_yt_url,
-                                            columns=['track_id', 'track_name', 'yt_video_id'])
-        track_id_w_yt_data_df.drop(columns=['track_name'], inplace=True)
-        tracks_df_with_yt = pd.merge(
-            df_w_spot_df, track_id_w_yt_data_df, on='track_id', how='right')
-        tracks_df_with_yt = tracks_df_with_yt.drop_duplicates(
-            subset=['track_id', 'keyword'])
-
-        return tracks_df_with_yt
-
-    def get_openai_model_responses(df_w_spot_and_yt, original_prompt, improver_prompt, improve=False, by_artist=False):
-        
-        name_artist_year_tuples = list(df_w_spot_and_yt[["track_id",
-                                                        "track_name",
-                                                        "artist",
-                                                        "release_year",
-                                                        'keyword']].itertuples(index=False,
-                                                                                    name=None))
-        completions = []
-        tracks_data_w_completion_text = []
-
-
-        for track_id, track_name, artist, release_year, keyword in name_artist_year_tuples:
-            #   Placeholders to replace in prompt
-            values_to_replace = {
-                '[track name]':track_name,
-                '[artist]':artist,
-                '[release year]': release_year,
-                '[keyword]': keyword
-            }
-
-            if (stopper.is_set()):
-                print("Stopped search")
-                return False
-
-            # here is the prompt
-            if original_prompt == '':
-                prompt = f'Write a simple text presenting the song {track_name} by {artist} from {release_year} ' \
-                        f'describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language.  ' \
-                        f'Keep the sentences short and the paragraphs should be no longer than 3 sentences long. Do not use any quotation marks in the text.'
-            else:
-                prompt = original_prompt.lower()
-                for placeholder, value in values_to_replace.items():
-                    prompt = prompt.replace(placeholder, value)
-                prompt = prompt.capitalize()
-
-            print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-            print(f'The prompt is: {prompt}')
-            #completion
-            completion, choice_response_text = getGptCompletion(prompt, input_data['model'])
-                          
-            print(f"Sleeping for {str(sleep_time_openai)} seconds")
-            time.sleep(sleep_time_openai)
-            print("Improving response...")
-
-            if improve: 
-                completion, choice_response_text = improve_gpt_response(choice_response_text, improver_prompt)
-
-            completions.append(completion)
-            tracks_data_w_completion_text.append(
-                (track_id, prompt, choice_response_text))
-            time.sleep(sleep_time_openai)
-            print(f"Sleeping for {str(sleep_time_openai)} seconds")
-
-            print("Final response text: " + choice_response_text)
-        model_res_df = pd.DataFrame(tracks_data_w_completion_text, columns=[
-                                    'track_id', 'prompt', 'model_response'])
-
-        merged_df_w_results = pd.merge(
-            df_w_spot_and_yt, model_res_df, on='track_id')
-        if not by_artist: merged_df_w_results = merged_df_w_results.drop_duplicates(subset=['track_id', 'keyword'])
-
-        return merged_df_w_results
-
-    def get_openai_intro(prompt, keyword,improver_prompt, improve):
-
-        print("Getting OpenAI introduction")
-
-        prompt = prompt.replace('[keyword]', keyword).replace('[artist]', keyword)
-        print("prompt: " + prompt)
-
-        completion, choice_response_text = getGptCompletion(prompt, input_data['model'])
-        
-        if improve: 
-            n, choice_response_text = improve_gpt_response(choice_response_text,improver_prompt)
-
-
-        return choice_response_text
-
-    def improve_gpt_response(choice_response_text, improver_prompt):
-        print("Improving openAI response.")
-
-        prompt = improver_prompt + '\n\n' + choice_response_text
-        print("New prompt: " + prompt)
-        
-        return getGptCompletion(prompt, 'gpt-3.5-turbo')
-    
-    
-    raw_output_dfs = []
-    output_dfs = []
-
-    if by_artist:
-        output_df = get_search_results_by_artist(input_data['name'], stopper, input_data['id'], keys)  
-        print("output search: ")
-    
-    else:
-        #   search_term-level loop (e.g. animals)
-        keyword_df = input_data['keywords']
-        for search_term in keyword_df['search_term'].unique():
-            search_term_df = get_search_results(
-                keyword_df[keyword_df['search_term'] == search_term], search_term, stopper, keys)
-            raw_output_dfs.append(search_term_df)
-
-        #   This contains only the truncated list (depending on limit imposed) of songs with basic metadata obtained from spotify
-        output_df = pd.concat(raw_output_dfs)
-
-    #   Get yt and openai data
-    output_df_data = get_openai_yt_data(output_df, input_data['prompt'], input_data['improver-prompt'], input_data['improve-song'])
-
-    #   Clean and sort results
-    clean_sorted_data = clean_and_sort(output_df_data)
-    print("clean data:")
-    print(clean_sorted_data)
-
-    if(by_artist):
-        # Loop again for consolidating csv file
-        json_string, n_songs = get_json_string(clean_sorted_data)
-        slug = input_data['name'].replace(" ", "-").lower() + "-songs"
-
-        output_data = {'id': str(uuid4()),
-                    'track_name_keyword': input_data['name'],
-                    'H1': f'{n_songs} Best {input_data["name"].title()} Songs',
-                    'slug': slug,
-                    'intro': '',
-                    'number_of_songs_listed': n_songs,
-                    'json': json_string}
-
-        output_df = pd.DataFrame([output_data])
-        intro = get_openai_intro(input_data['intro-prompt'], input_data['name'], input_data['improver-prompt'], input_data['improve-intro'])
-
-        html = generate_html(json_string, intro)
-
-        wp_title = output_data['H1']
-        if wordpress: create_wp_draft(wp_title, html, slug, keys)
-
-        output_dfs.append(output_df)
-
-    else:
-
-        # Loop again for consolidating csv file
-        for search_term in keyword_df['search_term'].unique():
-
-            json_string, n_songs = get_json_string(
-                clean_sorted_data[clean_sorted_data.keyword == search_term])
-            slug = 'songs-about-' + search_term
-
-            output_data = {'id': str(uuid4()),
-                        'track_name_keyword': search_term,
-                        'H1': f'{n_songs} Songs with {search_term.capitalize()} in the title',
-                        'slug': slug,
-                        'intro': '',
-                        'number_of_songs_listed': n_songs,
-                        'json': json_string}
-
-            output_df = pd.DataFrame([output_data])
-            intro = get_openai_intro(input_data['intro-prompt'], search_term, input_data['improver-prompt'], input_data['improve-intro'])
-
-            html = generate_html(json_string, intro)
-
-            wp_title = str(n_songs) + ' ' + slug.replace('-', ' ').title()
-            if wordpress: create_wp_draft(wp_title, html, slug, keys)
-
-            output_dfs.append(output_df)
-
-    #   output_csv_name = generate_csv(pd.concat(output_dfs))
-    output_html_name = generate_html_file(html)
-
-    return True
-
-
-
-def search(input_data, limit_st, offset_res, keys, stopper, wordpress,by_artist):
-    global limit_per_search_term, limit_total, youtube_api_key, offset
-
-    openai.api_key = keys['openai_key']
-    youtube_api_key = keys['youtube_key']
-
-    offset = offset_res
-    limit_total = -1
-    limit_per_search_term = limit_st
-    return main_proc(input_data, stopper, keys, wordpress,by_artist)
-
-
 def search_artists(artist_name, keys):
-
-    artists = search_spotify_tracks(artist_name,keys, target="artist")
+    # instantiate spotify api client
+    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=keys['sp_user'],
+                                                               client_secret=keys['sp_password']))
+    artists = search_spotify_tracks(artist_name,sp, target="artist")
     artists.sort_values('popularity', ascending=False, inplace=True)
     return artists
+
+
+class Search_Process():
+    def __init__(self, data, limit_st, offset_res, keys, current_user):
+
+        self.prompt = data.get('prompt', current_user['default_intro_prompt_artist'])
+        self.improver_prompt = data.get('improver-prompt', current_user['default_improver_prompt'])
+        self.intro_prompt = data.get('intro-prompt', current_user['default_intro_prompt_artist'])
+        self.model = data.get('model','gpt-3.5-turbo' )
+
+        self.improve_song = data.get('improve-song', False)
+        self.improve_intro = data.get('improve-intro', False)
+        self.wordpress =  data.get('wordpress', False)
+        
+        self.limit = limit_st
+        self.offset = offset_res
+        self.keys = keys
+        
+        self.keyword_descriptor=""
+        self.by=None
+
+ 
+    def create_record(self, Search, current_user):
+        new_search = Search(
+            # Create search
+            user=current_user['username'],
+            user_id=current_user['id'],
+            keywords=self.keyword_descriptor,
+            status="In progress",
+            prompt=self.prompt,
+            intro_prompt=self.intro_prompt,
+            improver_prompt=self.improver_prompt,
+            model=self.model,
+            by=self.by,
+            improved_song=self.improve_song,
+            improved_intro=self.improve_intro
+        )
+        self.search_id = new_search.id
+
+        return new_search
+
+    def run(self, flag_running, stopper):
+
+        try:
+            # instantiate spotify api client
+            self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=self.keys['sp_user'],client_secret=self.keys['sp_password']),requests_timeout=60)
+            resume = self.main_process(stopper)
+
+            flag_running.clear()
+            stopper.clear()
+
+            if not resume:
+                return "Failed"
+            else:
+                return "Completed"
+        
+        except Exception as e:
+            flag_running.clear()
+            stopper.clear()
+
+            print("Error while running search")
+            print(e)
+
+            return "Failed"
+
+    def main_process(self, stopper):
+
+        openai.api_key = self.keys['openai_key']
+        youtube_api_key = self.keys['youtube_key']
+
+        def get_openai_yt_data(self, df):
+            # Get youtube and openai data
+            print(f"Getting Youtube data")
+            df_w_spot_and_yt = get_youtube_search_results_for_tracks_dataset(df)
+
+            if not isinstance(df_w_spot_and_yt, pd.DataFrame): return False
+
+            print(f"Getting OpenAI response")
+            merged_df_w_results = get_openai_model_responses(self, df_w_spot_and_yt)
+            
+            if not isinstance(merged_df_w_results, pd.DataFrame): return False
+
+
+            return merged_df_w_results
+        
+        def get_youtube_search_results_for_tracks_dataset(df_w_spot_df):
+
+            track_id_name_and_yt_url = []
+
+            for track_id, track_name, artist in list(zip(df_w_spot_df['track_id'],
+                                                        df_w_spot_df['track_name'],
+                                                        df_w_spot_df['artist']
+                                                        )):
+                if (stopper.is_set()):
+                    print("Stopped search")
+                    return False
+                
+                yt_video_id = get_youtube_search_results(track_name + ' ' + artist)
+                track_id_name_and_yt_url.append((track_id, track_name, yt_video_id))
+
+            # Convert to dataframe
+            track_id_w_yt_data_df = pd.DataFrame(track_id_name_and_yt_url,
+                                                columns=['track_id', 'track_name', 'yt_video_id'])
+            track_id_w_yt_data_df.drop(columns=['track_name'], inplace=True)
+
+            # Merge with spotify data
+            tracks_df_with_yt = pd.merge(df_w_spot_df, track_id_w_yt_data_df, on='track_id', how='right')
+            # Drop duplicate tracks
+            tracks_df_with_yt = tracks_df_with_yt.drop_duplicates(subset=['track_id'])
+
+            return tracks_df_with_yt
+
+        def get_openai_model_responses(self, df_w_spot_and_yt):
+            tracks_data_w_completion_text = []
+
+
+            for i, track in df_w_spot_and_yt.iterrows():
+                if (stopper.is_set()):
+                    print("Stopped search")
+                    return False
+                
+                
+                values_to_replace = {
+                    '[track name]':track.track_name,
+                    '[artist]':track.artist,
+                    '[release year]': track.release_year
+                } | self.values_to_replace
+
+                # here is the prompt
+                if self.prompt == '':
+                    prompt = f'Write a simple text presenting the song {track.track_name} by {track.artist} from {track.release_year} ' \
+                            f'describing how it sounds, the feeling of the song, and its meaning. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language.  ' \
+                            f'Keep the sentences short and the paragraphs should be no longer than 3 sentences long. Do not use any quotation marks in the text.'
+                else:
+                    prompt = self.prompt.lower()
+                    for placeholder, value in values_to_replace.items():
+                        prompt = prompt.replace(placeholder, value)
+                    prompt = prompt.capitalize()
+
+                print("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+                print(f'The prompt is: {prompt}')
+                #completion
+                choice_response_text = getGptCompletion(prompt, self.model)
+
+                if self.improve_song: 
+                    print("Improving response...")
+                    choice_response_text = improve_gpt_response(choice_response_text)
+
+                tracks_data_w_completion_text.append((track.track_id, choice_response_text))
+
+                print("Final response text: " + choice_response_text)
+            
+            model_res_df = pd.DataFrame(tracks_data_w_completion_text, columns=['track_id', 'model_response'])
+
+            merged_df_w_results = pd.merge(df_w_spot_and_yt, model_res_df, on='track_id')
+            merged_df_w_results = merged_df_w_results.drop_duplicates(subset=['track_id'])
+
+            return merged_df_w_results
+
+        def get_openai_intro(self):
+
+            print("Getting OpenAI introduction")
+            print("prompt: " + self.intro_prompt)
+
+            choice_response_text = getGptCompletion(self.intro_prompt, self.model)
+            
+            if self.improve_intro: 
+                choice_response_text = improve_gpt_response(choice_response_text)
+
+
+            return choice_response_text
+
+        def improve_gpt_response(old_text):
+            print("Improving openAI response.")
+
+            if '[old text]' in self.improver_prompt:
+                prompt = self.improver_prompt.replace('[old text]', old_text)
+            else:
+                prompt = self.improver_prompt + '\n\n' + old_text
+
+            return getGptCompletion(prompt, 'gpt-3.5-turbo')
+        
+        
+        raw_output_dfs = []
+        output_dfs = []
+
+        output_df = self.get_search_results(stopper)
+        if not isinstance(output_df, pd.DataFrame): return False
+
+        #   Get yt and openai data
+        output_df_data = get_openai_yt_data(self, output_df)
+        if not isinstance(output_df_data, pd.DataFrame): return False
+
+        #   Clean and sort results
+        clean_sorted_data = clean_and_sort(output_df_data)
+        n_songs=clean_sorted_data.shape[0]
+
+        if self.by=="artist":
+            slug = self.artist_name.replace(" ", "-").lower() + "-songs"
+            wp_title = f'{n_songs} Best {self.artist_name.title()} Songs'
+
+        elif self.by=="keyword":
+            slug = 'songs-about-' + self.keyword.lower()
+            wp_title = f'{str(n_songs)} Songs About {self.keyword.title()}'
+
+        intro = get_openai_intro(self)
+        html = generate_html(clean_sorted_data, intro)
+        if self.wordpress: create_wp_draft(wp_title, html, slug, self.keys)
+
+        output_html_name = generate_html_file(html)
+
+        return True
+
+
+class Search_Keyword(Search_Process):
+
+
+    def __init__(self, data, limit_st, offset_res, keys, current_user):
+        Search_Process.__init__(self, data, limit_st, offset_res, keys, current_user)
+        self.by="keyword"
+        self.sp_keywords=data.get('sp_keywords', [])
+        self.keyword = data.get('keyword', '')
+        self.keyword_descriptor = json.dumps({'keyword': self.keyword, 'sp_keywords':self.sp_keywords})
+
+        self.intro_prompt = self.intro_prompt.replace('[keyword]', self.keyword)
+        self.values_to_replace = {'[keyword]': self.keyword}
+
+    
+    def get_search_results(self, stopper):
+        search_term_dfs = []  # list with search term results
+
+        for keyword in self.sp_keywords:
+
+            if (stopper.is_set()):
+                print("Stopped search")
+                return False
+            
+            print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+            print(f"Starting first keyword: {keyword}")
+            print(f'Getting most popular songs containing {keyword}')
+            df_w_spot_df = search_spotify_tracks(keyword, self.sp, target="track", by="track")
+
+            search_term_dfs.append(df_w_spot_df)
+
+        # search term-level dataframe
+        st_out_sp_df = pd.concat(search_term_dfs)
+        st_out_sp_df.sort_values('popularity', ascending=False, inplace=True)
+        if st_out_sp_df.shape[0] == 0: return st_out_sp_df
+
+
+        # drop duplicates
+        out_df_no_duplicates = cleanse_track_duplicates(st_out_sp_df)
+        if self.limit != -1:
+            if out_df_no_duplicates.shape[0] > self.offset + self.limit:
+                # search_term-level filtering
+                out_df_no_duplicates = out_df_no_duplicates.iloc[self.offset:self.offset + self.limit]
+            elif out_df_no_duplicates.shape[0] > self.offset:
+                out_df_no_duplicates = out_df_no_duplicates.iloc[self.offset:]
+            else:
+                print(f"Offset too big for results. Returning empty table.")
+                out_df_no_duplicates = pd.DataFrame(columns=out_df_no_duplicates.columns)
+
+        print("Prepping our KW output...")
+        # prep for final output
+        out_df = out_df_no_duplicates.copy()
+
+        return out_df
+
+
+class Search_Artist(Search_Process):
+
+
+    def __init__(self, data, limit_st, offset_res, keys, current_user):
+        Search_Process.__init__(self, data, limit_st, offset_res, keys, current_user)
+        self.by="artist"
+
+        self.artist_name=data.get('artist-name', None)
+        self.artist_id=data.get('artist-id', None)
+
+        self.intro_prompt = self.intro_prompt.replace('[artist]', self.artist_name)
+        
+        self.keyword_descriptor=self.artist_name
+        self.values_to_replace = {'artist':self.artist_name}
+    
+    def get_search_results(self, stopper):
+
+        if (stopper.is_set()):
+            print("Stopped search")
+            return False
+
+        print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
+        print(f"Searching for top songs by {self.artist_name}")
+        df_w_spot_df = search_spotify_tracks(self.artist_name, self.sp, target="track", by="artist", keyword_id=self.artist_id)
+
+        df_w_spot_df.sort_values('popularity', ascending=False, inplace=True)
+        print("Limiting search results to " + str(self.limit))
+
+        if self.limit != -1:
+            if df_w_spot_df.shape[0] > self.offset + self.limit:
+                # search_term-level filtering
+                df_w_spot_df = df_w_spot_df.iloc[self.offset:self.offset + self.limit]
+            elif df_w_spot_df.shape[0] > self.offset:
+                df_w_spot_df = df_w_spot_df.iloc[self.offset:]
+            else:
+                print(f"Offset too big for results. Returning empty table.")
+                df_w_spot_df = pd.DataFrame(columns=df_w_spot_df.columns)
+
+        return df_w_spot_df
+
+    

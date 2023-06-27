@@ -6,10 +6,9 @@ spotify_img = '<img class="gb-image gb-image-1d75b3e9" \
     alt="spotify", title="listen-spotify-button" />'
 
 
-def generate_html(json_string, intro):
+def generate_html(data, intro):
 
     print("Generating HTML")
-    data = json.loads(json_string)
 
     a = Airium()
 
@@ -17,13 +16,13 @@ def generate_html(json_string, intro):
     a.p(_t=intro)
 
     # Generate HTML file
-    for song, song_data in data.items():
+    for i, song_data in data.iterrows():
         title = f"{song_data['Track Name']} &#8211; {song_data['Artist'].title()}"    
 
         #   Title
         with a.h2(klass="wp-block-heading"):
             a(
-                f"{song.split(' ')[1]}. {title}"
+                f"{str(i+1)}. {title}"
             )
 
         #   Video

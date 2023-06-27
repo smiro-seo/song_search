@@ -29,7 +29,25 @@ query_1031=[
     "UPDATE user SET default_prompt_artist='placeholder' WHERE default_prompt_artist is NULL;"
     ]
 
-queries = {'1.0.0':query_100, '1.0.1':query_101, '1.0.2':query_102, '1.0.2.2':query_1022,'1.0.2.3':query_100, '1.0.3':query_103, '1.0.3.1':query_1031}
+query_104=[
+    'ALTER TABLE search ADD COLUMN "by" STRING;',
+    'UPDATE search SET "by"=\'artist\' WHERE by_artist=1;',
+    'UPDATE search SET "by"=\'keyword\' WHERE by_artist=0;',
+    "ALTER TABLE search DROP COLUMN by_artist"
+]
+
+queries = {
+    '1.0.0':query_100,
+    '1.0.1':query_101,
+    '1.0.2':query_102,
+    '1.0.2.2':query_1022,
+    '1.0.2.3':query_100,
+    '1.0.3':query_103,
+    '1.0.3.1':query_1031,
+    '1.0.4':query_104
+}
+
+
 version_list = list(queries.keys())
 
 def check_db_version():
