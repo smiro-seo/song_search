@@ -1,5 +1,5 @@
 from search import Search_Keyword, Search_Artist
-from flask import Flask, Blueprint, render_template, request, flash, jsonify, redirect, url_for, send_file, render_template_string
+from flask import Flask, Blueprint, render_template, request, flash, jsonify, redirect, send_file, render_template_string
 import json
 import threading
 from flask_login import login_required, current_user
