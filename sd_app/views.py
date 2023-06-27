@@ -72,7 +72,7 @@ def search(by="keyword"):
     improver_prompt = current_user.default_improver_prompt
     improved = {'intro':True,'song':True}
     search_id = request.args.get('search_id', None)
-    model='text-davinci-003'
+    model='gpt-3.5-turbo'
 
     artist=""
     keywords = {'keyword': '', 'sp_keywords':[]}
