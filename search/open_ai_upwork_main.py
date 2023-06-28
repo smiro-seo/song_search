@@ -37,7 +37,6 @@ default_prompt_options = {}
 
 improver_prompt_options = {
     'temperature':0.75,
-    'maximum_length': 1000,
     'top_p': 1,
     'frequency_penalty':1,
     'presence_penalty':1
