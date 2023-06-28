@@ -95,7 +95,8 @@ class Search(db.Model):
             'improver-prompt': self.improver_prompt,
             'improved_song': self.improved_song,
             'improved_intro': self.improved_intro,
-            'model': model
+            'model': model,
+            'by':self.by.title()
         }
 
         return json.dumps(data)

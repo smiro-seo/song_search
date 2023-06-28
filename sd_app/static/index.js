@@ -62,6 +62,7 @@ function showDetails(searchData) {
     "prompt",
     "status",
     "keywords",
+    "by",
   ];
 
   for (let p of properties) {
