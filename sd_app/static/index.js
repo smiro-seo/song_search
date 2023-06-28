@@ -47,6 +47,30 @@ function repeatSearch(id, by) {
   window.location.href = `/search/${by}?search_id=${id}`;
 }
 
+function showDetails(searchData) {
+  const modal = new bootstrap.Modal(
+    document.getElementById("modal-search-details"),
+    {}
+  );
+
+  const properties = [
+    "date",
+    "user",
+    "model",
+    "intro-prompt",
+    "improver-prompt",
+    "prompt",
+    "status",
+    "keywords",
+  ];
+
+  for (let p of properties) {
+    $(`#details-${p}`).text(searchData[p]);
+  }
+
+  modal.show();
+}
+
 function showAlert(text) {
   window.alert(text);
 }
@@ -77,6 +101,8 @@ function searchArtist() {
     return alert(
       "Backticks (`) are not allowed in the prompts. You can use both simple or double quotes."
     );
+  } else if ($("#artist").val() == "") {
+    return alert("Please write something in the 'Artist' field");
   }
 
   let search_string = $("#artist").val();
@@ -85,6 +111,7 @@ function searchArtist() {
   })
     .then((res) => res.json())
     .then((res) => {
+      console.log("Rendergin artist list");
       res.forEach((data) => {
         $("#artist-list").append(
           '<button class="btn btn-outline-secondary" style="margin:5px" onClick="searchByArtist(\'' +
@@ -98,7 +125,11 @@ function searchArtist() {
       });
 
       jQuery.noConflict();
-      $("#modal_artist_select").modal("show");
+      const modal = new bootstrap.Modal(
+        document.getElementById("modal_artist_select"),
+        {}
+      );
+      modal.show();
     });
 }
 function searchByArtist(artist_name, artist_id) {
@@ -127,6 +158,14 @@ function searchByKeyword() {
         sp_keywords.push(kws[1]);
       }
     });
+
+  if ($("#keyword").val() == "") {
+    return alert("Please write something in the 'Keyword' field");
+  } else if (sp_keywords.length == 0) {
+    return alert(
+      "Please add at least one word in the 'Specific keyword' section"
+    );
+  }
 
   let body = {
     sp_keywords: sp_keywords,
@@ -178,59 +217,49 @@ var default_prompt = $("#user-default-prompt").text();
 var default_intro_prompt = $("#user-default-intro-prompt").text();
 var default_improver_prompt = $("#user-default-improver-prompt").text();
 
-$(document).ready(function () {
-  $("#check-prompt").on("change", function () {
-    let disable = $("#check-prompt").is(":checked");
-    if (disable) {
-      $("#prompt").attr("disabled", true);
-      $("#prompt-rules").attr("hidden", true);
-      $("#prompt").val(default_prompt);
-      $("#prompt-div").attr("hidden", true);
-      $("#default-prompt").attr("checked", false);
-    } else {
-      $("#prompt").attr("disabled", false);
-      $("#prompt-rules").attr("hidden", false);
-      $("#prompt-div").attr("hidden", false);
-    }
-  });
-  $("#check-intro-prompt").on("change", function () {
-    let disable = $("#check-intro-prompt").is(":checked");
-    if (disable) {
-      $("#intro-prompt").attr("disabled", true);
-      $("#intro-prompt-rules").attr("hidden", true);
+function resetPrompt(prompt) {
+  switch (prompt) {
+    case "intro":
       $("#intro-prompt").val(default_intro_prompt);
-      $("#intro-prompt-div").attr("hidden", true);
-      $("#default-intro-prompt").attr("checked", false);
-    } else {
-      $("#intro-prompt").attr("disabled", false);
-      $("#intro-prompt-rules").attr("hidden", false);
-      $("#intro-prompt-div").attr("hidden", false);
-    }
+      break;
+    case "song":
+      $("#prompt").val(default_prompt);
+      break;
+    case "improver":
+      $("#improver-prompt").val(default_improver_prompt);
+      break;
+  }
+}
+
+$(document).ready(function () {
+  // ACCORDION TITLE UPDATE
+  $("#artist").on("change", () => {
+    const newArt = $("#artist").val();
+    $("#artist-accordion-title").text(`(${newArt})`);
   });
-  $("#check-improver-prompt").on("change", function () {
-    let disable = $("#check-improver-prompt").is(":checked");
-    if (disable) {
-      $("#improver-prompt").attr("disabled", true);
-      $("#improver-prompt-rules").attr("hidden", true);
-      $("#improver-prompt").val(default_intro_prompt);
-      $("#improver-prompt-div").attr("hidden", true);
-      $("#default-improver-prompt").attr("checked", false);
-    } else {
-      $("#improver-prompt").attr("disabled", false);
-      $("#improver-prompt-rules").attr("hidden", false);
-      $("#improver-prompt-div").attr("hidden", false);
-    }
+  $("#keyword").on("change", () => {
+    const newArt = $("#keyword").val();
+    $("#keyword-accordion-title").text(`(${newArt})`);
   });
 
-  $("#check-improve").on("change", function () {
-    let disable = $("#check-improve").is(":checked");
-    if (disable) {
-      $("#improver-div").attr("hidden", false);
-    } else {
-      $("#improver-div").attr("hidden", true);
-    }
+  // IMPROVER
+  const checkImprove = () => {
+    console.log("Checking if is improved");
+    const improving_enabled =
+      $("#check-improve-song").is(":checked") ||
+      $("#check-improve-intro").is(":checked");
+    console.log(improving_enabled);
+
+    $("#improver-prompt-div").attr("hidden", !improving_enabled);
+  };
+  $("#check-improve-song").on("change", function () {
+    checkImprove();
+  });
+  $("#check-improve-intro").on("change", function () {
+    checkImprove();
   });
 
+  //  OFFSET / LIMIT
   $("#check-limit-kw").on("change", function () {
     let able = $("#check-limit-kw").is(":checked");
     if (able) {
@@ -251,7 +280,6 @@ $(document).ready(function () {
       $("#upper-limit").text("infinity");
     }
   });
-
   $("#check-offset").on("change", function () {
     let able = $("#check-offset").is(":checked");
     if (able) {
@@ -279,7 +307,6 @@ $(document).ready(function () {
       }
     }
   });
-
   $("#limit-range-kw").on("change", function () {
     let value = $("#limit-range-kw").val();
     $("#limit-range-kw-txt").val(value);
@@ -306,7 +333,6 @@ $(document).ready(function () {
       $("#upper-limit").text(parseFloat(value));
     }
   });
-
   $("#offset-range").on("change", function () {
     let value = $("#offset-range").val();
     $("#offset-range-txt").val(value);

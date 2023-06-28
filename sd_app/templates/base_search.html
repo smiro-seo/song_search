@@ -12,144 +12,206 @@
 
 <p hidden id="user-default-improver-prompt" >{{user.get('default_improver_prompt')}}</p>
 
-<div class="container-fluid">
-  <!--  TITLE   -->
+<div class="container-fluid" style="width:100%;margin:0px" >
+  <!--  TITLE   
   <div class="row">
-    <div class="col-lg-6" style="justify-content:center;text-align:center">
+    <div class="col" style="justify-content:center;text-align:center">
       <h1 class="page-title">{% block page_title %}Search songs{% endblock %}</h1>
     </div>
-  </div>
+  </div>-->
 
-  <!--  INPUTS   -->
+  <!--  CONFIG   -->
   <div class="row">
+    <div class="col-12" style="padding:0">
+      <div class="accordion" id="input-accordion">
 
-    <div class="col-lg-6">
+        <!--  INPUTS   -->
+        <div class="accordion-item accordion-first" id="input-acc-label">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#input-acc-item" aria-expanded="true" aria-controls="input-acc-item">
+              {% block accordion_title %} {{ "Keyword selection" if by=="keyword" else "Artist search" if by=="artist" else "" }} {% endblock %}
+            </button>
+          </h2>
 
-      {% block searchinput %}
+          <div id="input-acc-item" aria-labelledby="input-acc-label" class="accordion-collapse collapse show" data-bs-parent="#input-accordion" >
 
-      {% endblock %}
+            <div class="accordion-body container-fluid ">
+              <div class="row justify-content-center" style="width:100%">
+                  {% block searchinput %}
+
+                  {% endblock %}
+                </div>
+            </div>
+                  
+          </div>
+        </div>
+
+        <!--  PROMPTS  -->
+        <div class="accordion-item" id="prompts-acc-label">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#prompts-acc-item" aria-expanded="true" aria-controls="prompts-acc-item">
+              Prompts
+            </button>
+          </h2>
+
+          <div id="prompts-acc-item" aria-labelledby="prompts-acc-label" class="accordion-collapse collapse" data-bs-parent="#input-accordion">
+            <div class="container-fluid accordion-body">
+              <div class="row">
+
+                <!--  SONG PROMPT  -->
+                <div class="col-sm-6 accordion-content">
+
+                  <div style="display:flex;align-items:flex-start">
+                    <h6 class="section-title">Song description prompt </h6>
+                    <button class="btn btn-outline-secondary btn-sm" style="margin-left:auto" onClick="resetPrompt('song')">Reset</button>
+                    
+                  </div>
+
+                  {% if by=="keyword" %}
+                    <p class="text" style="white-space: pre-wrap" id="prompt-rules" >You can use the following placeholders that will be replaced with each song's data: [artist] [release year] [track name] [keyword]</p>
+                  {% elif by=="artist" %}
+                    <p class="text" style="white-space: pre-wrap" id="prompt-rules" >You can use the following placeholders that will be replaced with each song's data: [artist] [release year] [track name]</p>
+                  {% endif %}
+
+                  <textarea class="text basic-padding"  name="prompt" id="prompt" style="width:100%;border-radius:1em;min-height:7em" >{{prompt}}</textarea> 
+                  
+                  <div id="prompt-div" class="horizontal-container">
+                    <input type="checkbox" value="limited" id="default-prompt" name="default-prompt" class="checkbox"/>
+                    <label class="text" for="default-intro-prompt" >Set as default</label>
+
+                    <input {{"checked" if improved.get("song") else ""}} type="checkbox" value="limited" id="check-improve-song" name="improve-song" class="checkbox"/>
+                    <label class="text" for="check-improve-song" >Improve song description</label>
+                  </div>
+                </div>
+
+                <!--  INTRO PROMPT  -->
+                <div class="col-sm-6 accordion-content">
+                
+                  <div style="display:flex;align-items:center">
+                    <h6 class="section-title">Intro prompt </h6>
+                    <button class="btn btn-outline-secondary btn-sm" style="margin-left:auto" onClick="resetPrompt('intro')">Reset</button>
+                    
+                  </div>
+                      
+                  {% if by=="keyword" %}
+                    <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You must use the [keyword] placeholder.</p>
+                  {% elif by=="artist" %}
+                    <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You must use the [artist] placeholder.</p>
+                  {% endif %}
+                  <textarea class="text basic-padding"  name="intro-prompt" id="intro-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{intro_prompt}}</textarea> 
+                  
+                    
+                  <div id="intro-prompt-div" class="horizontal-container">
+                    <input type="checkbox" value="limited" id="default-intro-prompt" name="default-intro-prompt" class="checkbox"/>
+                    <label class="text" for="default-intro-prompt" >Set as default</label>
+
+                    <input {{"checked" if improved.get("intro") else ""}} type="checkbox" value="limited" id="check-improve-intro" name="improve-intro" class="checkbox"/>
+                    <label class="text" for="check-improve-intro" >Improve intro description</label>
+                  </div>
+
+                </div> 
+            
+                <!--  IMPROVER PROMPT  -->
+                <div class="col-sm-6 accordion-content" id="improver-prompt-div" {{ "" if improved.get('song', false) or improved.get('intro', false) else "hidden" }} >
+
+                  <div style="display:flex;align-items:center">
+                    <h6 class="section-title">Improver prompt </h6>
+                    <button class="btn btn-outline-secondary btn-sm" style="margin-left:auto" onClick="resetPrompt('improver')">Reset</button>
+                    
+                  </div>
+
+                  <p class="text" style="white-space: pre-wrap" id="improver-prompt-rules" >This prompt will be sent along the first gpt response in order to make the text more human-friendly. You can use the [old text] placeholder. Otherwise, the text to be improved will be added at the end of your prompt.</p>
+                  <textarea class="text basic-padding"  name="improver-prompt" id="improver-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{improver_prompt}}</textarea> 
+                    
+                  
+                  <div class="horizontal-container">
+                    <input type="checkbox" value="limited" id="default-improver-prompt" name="default-improver-prompt" class="checkbox"/>
+                    <label class="text" for="default-improver-prompt" >Set as default</label>
+                  </div>
+
+                </div> 
+              
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!--  LIMITS  -->
+        <div class="accordion-item accordion-last" id="limits-acc-label">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#limits-acc-item" aria-expanded="true" aria-controls="limits-acc-item">
+              Search parameters
+            </button>
+          </h2>
+
+          <div id="limits-acc-item" aria-labelledby="limits-acc-label" class="accordion-collapse collapse" data-bs-parent="#input-accordion">
+
+            <div class="container-fluid accordion-body">
+              <div class="row" style="width:100%">
+
+                <div class="accordion-content col-lg-3 col-6">
+
+                    <div class="horizontal-container">
+                      <input checked type="checkbox" value="limited" id="check-limit-kw" name="check-limit-kw" class="checkbox">
+                      <label for="limit-range-kw" >Limit results</label>
+                    </div>
+
+                    <div class="horizontal-container">
+                      <input  type="number" value="20" id="limit-range-kw-txt" name="limit-range-kw-txt" style="max-width:3em">  &nbsp
+                      <input type="range" id="limit-range-kw" min="1" max="50" step="1" value="20" style="flex:1">
+                    </div>
+
+                </div>
+
+                <div class="accordion-content col-lg-3 col-6">
+                      
+                  <div class="horizontal-container">
+
+                    <input type="checkbox" value="limited" id="check-offset" name="check-offset" class="checkbox">
+                    <label for="offset-range" >Result offset</label>
+                  </div>
+
+                  <div class="horizontal-container">
+                    <input disabled type="number" value="0" id="offset-range-txt" name="offset-range-txt" style="width:3em">  &nbsp
+                    <input disabled type="range" id="offset-range" min="0" max="50" step="1" value="0">
+                  </div>
+  
+                </div>
+
+                <div class="accordion-content col-lg-3 col-6">
+                  <span class="text" style="font-size:1em;font-weight:bold">Select OpenAI model</span>
+                  <div class="form-check">
+                    <input {{"checked" if model == "gpt-3.5-turbo" else "" }} class="form-check-input" type="radio" value="gpt-3.5-turbo" name="model" id="gpt-turbo">
+                    <label class="form-check-label" for="gpt-turbo">
+                      GPT 3.5 Turbo
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input {{"checked" if model == "text-davinci-003" else "" }}  class="form-check-input" type="radio" value="text-davinci-003" name="model" id="davinci">
+                    <label class="form-check-label" for="davinci">
+                      DaVinci 3
+                    </label>
+                  </div>
+                </div>
+
+                <div class="accordion-content col-lg-3 col-6">
+                  <input checked type="checkbox" value="limited" id="wordpress" name="wordpress" class="checkbox">
+                  <span class="text" style="font-size:1em">Generate Wordpress draft</span>
+                </div>
+              
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
-      <!--  LIMITS  -->
-      <div class="col-lg-3">
-
-        
-          <input hidden name="option" value="search">
-          <div class="nice-container basic-padding">
-            <div class="horizontal-container">
-              <input checked type="checkbox" value="limited" id="check-limit-kw" name="check-limit-kw" class="checkbox">
-              <label for="limit-range-kw" >Limit results by keyword</label></div>
-
-            <div class="horizontal-container">
-              <input  type="number" value="20" id="limit-range-kw-txt" name="limit-range-kw-txt" style="max-width:3em">  &nbsp
-              <input type="range" id="limit-range-kw" min="1" max="50" step="1" value="20" style="flex:1">
-            </div>
-
-          </div> 
-      </div> 
-      <div class="col-lg-3">
-            
-          <div class="nice-container basic-padding">
-            <div class="horizontal-container">
-
-            <input type="checkbox" value="limited" id="check-offset" name="check-offset" class="checkbox">
-            <label for="offset-range" >Result offset</label></div>
-
-            <div class="horizontal-container">
-            <input disabled type="number" value="0" id="offset-range-txt" name="offset-range-txt" style="width:3em">  &nbsp
-            <input disabled type="range" id="offset-range" min="0" max="50" step="1" value="0">
-            </div>
-
-        </div> 
-      </div>
-
-      <!--  SONG PROMPT  -->
-      <div class="col-lg-6">
-
-        <div class="nice-container basic-padding" >
-          <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
-
-          <input {{ "" if existing else "checked" }} type="checkbox" value="limited" id="check-prompt" name="check-prompt" class="checkbox">
-          <label class="text-big" for="prompt" >Use default prompt</label>
-          
-          <input {{"checked" if improved.get("song") else ""}} type="checkbox" value="limited" id="check-improve-song" name="improve-song" class="checkbox"/>
-          <label class="text" for="check-improve-song" >Improve song description</label>
-          </div>
-
-          <div {{ "" if existing else "hidden" }} id="prompt-div" class="horizontal-container">
-
-                {% if by=="artist" %}
-              <p class="text" style="white-space: pre-wrap" id="prompt-rules" >You can use the following placeholders that will be replaced with each song's data: 
-    [artist] [release year] [track name] [keyword]</p>
-                {% elif by=="keyword" %}
-                <p class="text" style="white-space: pre-wrap" id="prompt-rules" >You can use the following placeholders that will be replaced with each song's data: 
-      [artist] [release year] [track name]</p>
-                {% endif %}
-        <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="prompt" id="prompt" style="width:100%;border-radius:1em;min-height:7em" >{{prompt}}</textarea> 
-            <input type="checkbox" value="limited" id="default-prompt" name="default-prompt" class="checkbox"/>
-            
-          <label class="text" for="default-intro-prompt" >Set as default</label>
-
-          </div>
-
-      </div> 
-
-      </div>
-      <!--  INTRO PROMPT  -->
-      <div class="col-lg-6">
-
-        <div class="nice-container basic-padding" >
-          <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
-
-            <input {{ "" if existing else "checked" }} type="checkbox" value="limited" id="check-intro-prompt" name="check-intro-prompt" class="checkbox"/>
-            <label class="text-big" for="intro-prompt" >Use default prompt for intro</label>
-            
-            <input {{"checked" if improved.get("intro") else ""}} type="checkbox" value="limited" id="check-improve-intro" name="improve-intro" class="checkbox"/>
-            <label class="text" for="check-improve-intro" >Improve intro description</label>
-          </div>
-          
-          <div {{ "" if existing else "hidden" }} id="intro-prompt-div" class="horizontal-container">
-            
-            {% if by=="artist" %}
-            <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You must use the [keyword] placeholder.</p>
-              {% elif by=="keyword" %}
-              <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You must use the [artist] placeholder.</p>
-              {% endif %}
-          <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="intro-prompt" id="intro-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{intro_prompt}}</textarea> 
-          <input type="checkbox" value="limited" id="default-intro-prompt" name="default-intro-prompt" class="checkbox"/>
-          <label class="text" for="default-intro-prompt" >Set as default</label>
-          </div>
-
-      </div> 
-
-      </div>
-      <!--  IMPROVER PROMPT  -->
-      <div class="col-lg-6">
-
-        <div class="nice-container basic-padding" id="improver-div">
-          <div class="horizontal-container" style="white-space: nowrap;align-items:flex-end">
-
-          <input {{ "" if existing else "checked" }} type="checkbox" value="limited" id="check-improver-prompt" name="check-improver-prompt" class="checkbox"/>
-          <label for="improver-prompt" >Use default improver prompt</label></div>
-
-          
-          <div {{ "" if existing else "hidden" }} id="improver-prompt-div" class="horizontal-container">
-            <p class="text" style="white-space: pre-wrap" id="improver-prompt-rules" >This prompt will be sent along the first gpt response in order to make the text more human-friendly. You can use the [old text] placeholder. Otherwise, the text to be improved will be added at the end of your prompt.</p>
-          <textarea {{ "" if existing else "disabled" }} class="text basic-padding"  name="improver-prompt" id="improver-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{improver_prompt}}</textarea> 
-          <input type="checkbox" value="limited" id="default-improver-prompt" name="default-improver-prompt" class="checkbox"/>
-          <label class="text" for="default-improver-prompt" >Set as default</label>
-          </div>
-
-      </div> 
-
-      </div>
-
   </div>
 
   <!--  SUBMIT BTN   -->
-  <div class="row" style="margin-top:2em;text-align:center">
+  <div class="row" style="margin:2em;text-align:center">
 
-        <div class="col-md-12">
+        <div class="col-12">
           <button class="btn btn-primary basic-padding" id="btn-search" 
           onClick="search('{{by}}')" style="width:100%">
             Search
@@ -157,32 +219,7 @@
         </div>
 
   </div>
-  
-  <!--  MORE SETUP   -->
-  <div class="row" style="margin: 1em 0em;text-align:center">
-  
-          <div class="col">
-              <input checked type="checkbox" value="limited" id="wordpress" name="wordpress" class="checkbox">
-              <span class="text" style="font-size:1em">Generate Wordpress draft</span>
-          </div>
 
-        <div class="col" style="justify-content:flex-start">
-        <span class="text" style="font-size:1em">Select OpenAI model</span>
-          <div class="form-check">
-            <input {{"checked" if model == "gpt-3.5-turbo" else "" }} class="form-check-input" type="radio" value="gpt-3.5-turbo" name="model" id="gpt-turbo">
-            <label class="form-check-label" for="gpt-turbo">
-              GPT 3.5 Turbo
-            </label>
-          </div>
-          <div class="form-check">
-            <input {{"checked" if model == "text-davinci-003" else "" }}  class="form-check-input" type="radio" value="text-davinci-003" name="model" id="davinci">
-            <label class="form-check-label" for="davinci">
-              DaVinci 3
-            </label>
-          </div>
-        </div>
-  
-  </div>
       
 </div>
 

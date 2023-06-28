@@ -33,19 +33,37 @@ market = 'US'
 flagged_characters = ['-', '(']
 sleep_time_openai = 15  # seconds      #CHANGE THIS
 
-def getGptCompletion(prompt, engine):
+default_prompt_options = {}
+
+improver_prompt_options = {
+    'temperature':0.75,
+    'maximum_length': 1000,
+    'top_p': 1,
+    'frequency_penalty':1,
+    'presence_penalty':1
+}
+
+def getGptCompletion(prompt, engine, options=default_prompt_options):
 
     try:
         if 'davinci' in engine:
-            completion= openai.Completion.create(engine=engine,
-                                                        max_tokens=gpt_max_tokens,
-                                                        prompt=prompt)
+            completion= openai.Completion.create(
+                engine=engine,
+                max_tokens=gpt_max_tokens,
+                prompt=prompt,
+                n=1,
+                **options
+            )
             choice_response_text = completion['choices'][0].text.strip()
             choice_response_text = completion['choices'][0].text.strip().replace('"', '')
         else:
-            completion= openai.ChatCompletion.create(model=engine,
-                                                        max_tokens=gpt_max_tokens,
-                                                        messages=[{"role": "assistant", "content": prompt}])
+            completion= openai.ChatCompletion.create(
+                model=engine,
+                max_tokens=gpt_max_tokens,
+                messages=[{"role": "assistant", "content": prompt}],
+                n=1,
+                **options
+            )
                                                         
             choice_response_text = completion['choices'][0]['message']['content'].strip().replace('"', '')
         
@@ -431,7 +449,7 @@ class Search_Process():
             else:
                 prompt = self.improver_prompt + '\n\n' + old_text
 
-            return getGptCompletion(prompt, 'gpt-3.5-turbo')
+            return getGptCompletion(prompt, 'gpt-3.5-turbo', options=improver_prompt_options)
         
         
         raw_output_dfs = []

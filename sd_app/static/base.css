@@ -11,12 +11,53 @@
 }
 
 :root{
-    --background:#edf7fa;
+    --background: rgb(220, 218, 218);
     --background-secondary:#cfd3cf;
     --primary:#5eb9d5;
     --primary-title:#224753;
+    --on-primary-title:#cfd3cf;
     --secondary: #d57a5e;
     --text: #31140a;
+
+    --accordion-color: #d8eef4;
+    --accordion-color-header: #6a9cac;
+
+}
+
+
+.accordion-body {
+    background-color:var(--accordion-color);
+    overflow:hidden;
+    display:flex;
+    flex-direction:horizontal;
+    flex-wrap:wrap;
+    width:100%;
+}
+
+.accordion-button {
+    background-color:var(--accordion-color-header);
+    color:var(--primary-title);
+    font-weight:bold
+}
+.accordion-button:not(.collapsed) {
+    background-color:var(--primary-title);
+    color:var(--on-primary-title);
+    font-weight:bold
+}
+/*
+.accordion-first{
+    border-top-right-radius: 1em !important;
+    border-top-left-radius: 1em !important;
+    overflow:hidden
+}
+.accordion-last{
+    border-bottom-right-radius: 1em !important;
+    border-bottom-left-radius: 1em !important;
+    overflow:hidden
+}*/
+
+.accordion-content{
+    padding:0.6em;
 }
 
 .navbar-nav{
@@ -35,6 +76,11 @@
     font-weight:bold;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
+}
+
+.section-title{
+    font-family:roboto;
+    font-weight:bold;
 }
 
 table{
@@ -61,7 +107,6 @@ button, input, label{
     font-family: roboto;
     font-size: 1em;
     margin-right:0.5em;
-
 }
 
 .basic-padding{
@@ -72,6 +117,8 @@ button, input, label{
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    column-gap:0.5em;
+    flex-wrap:wrap
 }
 
 .nice-container{
@@ -84,12 +131,17 @@ button, input, label{
 }
 
 .checkbox{
-    margin-right:0.5em;
+    margin:0.5em;
 }
 
 .border{
     border-style: solid;
-    border-width: 5px;
+    border-width: 5px !important;
+    border-color:red !important
+}
+
+.gapped{
+    gap:0.5em
 }
 
 .truncate{
@@ -119,4 +171,9 @@ button, input, label{
 html, body {
     background-color: var(--background);
     margin:0; padding:0;;
+}
+
+.text-input{
+    width:100%;
+    max-width: 30em
 }

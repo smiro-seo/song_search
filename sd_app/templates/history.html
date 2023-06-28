@@ -1,18 +1,18 @@
 {% extends "base.html" %} {% block title %}Search history{% endblock %}
 {% block content %}
 
+<div class="basic-padding">
 <h1 class="page-title">Search history</h1>
-
 <table class="table" id="keyword-table">
     <thead>
         <tr>
         <th scope="col">Date</th>
         <th scope="col">Status</th>
         <!--<th scope="col">HTML</th>-->
-        <th scope="col">Intro Prompt</th>
-        <th scope="col">Song Prompt</th>
+        <th scope="col" class="d-none d-sm-table-cell">Intro Prompt</th>
+        <th scope="col" class="d-none d-sm-table-cell">Song Prompt</th>
         <th scope="col">Keyword</th>
-        <th scope="col" colspan="2">
+        <th scope="col" colspan="3">
           <button type="button" class="btn btn-danger" onClick="clearHistory()" style="font-size:70%;width:100%">Clear history</button>
         </th>
         </tr>
@@ -37,7 +37,7 @@
         In progress
         {% endif %}
     </td>-->
-        <td class="text">
+        <td class="text d-none d-sm-table-cell">
             <div class="truncate"><p>{{ search.intro_prompt }}</p></div>
             <button class="expand-btn" onClick="showAlert( {{ "`" + search.intro_prompt + "`" }} )" >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
@@ -45,7 +45,7 @@
                   </svg>
             </button>
         </td>
-        <td class="text">
+        <td class="text d-none d-sm-table-cell">
             <div class="truncate">
             <p>{{ search.prompt }} </p></div>
         <button class="expand-btn" onClick="showAlert( {{ "`" + search.prompt + "`" }} )" >
@@ -58,11 +58,11 @@
             {% if search.by=="artist" %}
             {{ search.keywords }}
             {% elif search.by=="keyword" %}
-            {{ search.keyword }}
+            {{ search.keyword}}  <span class="text" >{{" (" + ", ".join(search.sp_keywords) + ")" }}</span>
             {% endif %}
         </td>
         <td class="column_action">
-            <button type="button" class="btn btn-outline-info" onClick="repeatSearch({{ search.id }}, '{{search.by}}')">
+            <button type="button" class="btn btn-outline-success" onClick="repeatSearch({{ search.id }}, '{{search.by}}')">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                 <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
@@ -83,12 +83,71 @@
             {% endif %}
         </button>
     </td>
+    <td class="column_action">
+        <button type="button" class="btn btn-outline-info" onClick="showDetails({{ search.json_data() }})">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+              </svg>
+        </button>
+    </td>
     </tr>
         {% endfor %}
     
   </tbody>
 </table>
-    
+    </div>
+
+
+<div class="modal fade" id="modal-search-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content" style="align-self:center">
+            <div class="modal-header">
+                <h5 class="modal-title page-title">Search details</h5> 
+            </div>
+            <div class="modal-body" style="width:100%">
+
+                <table class="table">
+                    <tbody id="keyword-table-body">
+                        <tr>
+                            <td style="font-weight:bold">Date</td>
+                            <td><span id="details-date">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold">Status</td>
+                            <td><span id="details-status">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold">User</td>
+                            <td><span id="details-user">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold">Keywords</td>
+                            <td><span id="details-keywords">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold">Song prompt</td>
+                            <td><span id="details-prompt">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold">Intro prompt</td>
+                            <td><span id="details-intro-prompt">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold">Improver prompt</td>
+                            <td><span id="details-improver-prompt">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold">Model used</td>
+                            <td><span id="details-model">placeholder</span></td>
+                        </tr>
+                </tbody>
+                </table>
+                
+            </div>
+        </div>
+        
+    </div>
+</div>
 
 {% endblock %}
     

@@ -68,6 +68,38 @@ class Search(db.Model):
         kws = json.loads(self.keywords)
         return kws['keyword']
 
+    def json_data(self):
+        
+        if self.by=='artist':
+            keywords = self.keywords
+        elif self.by=='keyword':
+            keywords = self.keyword + " (" + ", ".join(self.sp_keywords) + ")"
+
+        model_name = {
+            'gpt-3.5-turbo': 'GPT 3.5 Turbo',
+            'text-davinci-003':'DaVinci 3'
+        }
+
+        model = self.model
+        for p, n in model_name.items():
+            model = model.replace(p,n)
+            
+        data = {
+            'id':self.id,
+            'date': self.date.strftime("%Y-%m-%d %H:%M"),
+            'user': self.user,
+            'status':self.status,
+            'keywords': keywords,
+            'prompt': self.prompt,
+            'intro-prompt': self.intro_prompt,
+            'improver-prompt': self.improver_prompt,
+            'improved_song': self.improved_song,
+            'improved_intro': self.improved_intro,
+            'model': model
+        }
+
+        return json.dumps(data)
+
 
 class Parameters(db.Model):
     name = db.Column(db.String(150), primary_key=True)
