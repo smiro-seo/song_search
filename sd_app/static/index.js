@@ -68,6 +68,20 @@ function showDetails(searchData) {
     $(`#details-${p}`).text(searchData[p]);
   }
 
+  if (searchData.improved_song)
+    $("#details-song-improved").attr("hidden", false);
+  else $("#details-song-improved").attr("hidden", true);
+
+  if (searchData.improved_intro)
+    $("#details-intro-improved").attr("hidden", false);
+  else $("#details-intro-improved").attr("hidden", true);
+
+  if (searchData.improved_song || searchData.improved_intro) {
+    $("#details-improver-row").attr("hidden", false);
+  } else {
+    $("#details-improver-row").attr("hidden", true);
+  }
+
   modal.show();
 }
 
@@ -232,6 +246,13 @@ function resetPrompt(prompt) {
 }
 
 $(document).ready(function () {
+  var tooltipTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  );
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+
   // ACCORDION TITLE UPDATE
   $("#artist").on("change", () => {
     const newArt = $("#artist").val();
@@ -248,7 +269,6 @@ $(document).ready(function () {
     const improving_enabled =
       $("#check-improve-song").is(":checked") ||
       $("#check-improve-intro").is(":checked");
-    console.log(improving_enabled);
 
     $("#improver-prompt-div").attr("hidden", !improving_enabled);
   };

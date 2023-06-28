@@ -112,6 +112,9 @@ button, input, label{
 .basic-padding{
     padding: 0.55em
 }
+.basic-padding-h{
+    padding: 0em 0.55em
+}
 
 .horizontal-container{
     flex-direction: row;
