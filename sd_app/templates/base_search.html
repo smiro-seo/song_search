@@ -56,10 +56,10 @@
 
           <div id="prompts-acc-item" aria-labelledby="prompts-acc-label" class="accordion-collapse collapse" data-bs-parent="#input-accordion">
             <div class="container-fluid accordion-body">
-              <div class="row">
+              <div class="row" style="width:100%">
 
                 <!--  SONG PROMPT  -->
-                <div class="col-sm-6 accordion-content">
+                <div class="accordion-content col-lg-6 col-12">
 
                   <div style="display:flex;align-items:flex-start">
                     <h6 class="section-title">Song description prompt </h6>
@@ -85,7 +85,7 @@
                 </div>
 
                 <!--  INTRO PROMPT  -->
-                <div class="col-sm-6 accordion-content">
+                <div class="accordion-content col-lg-6 col-12">
                 
                   <div style="display:flex;align-items:center">
                     <h6 class="section-title">Intro prompt </h6>
@@ -112,7 +112,7 @@
                 </div> 
             
                 <!--  IMPROVER PROMPT  -->
-                <div class="col-sm-6 accordion-content" id="improver-prompt-div" {{ "" if improved.get('song', false) or improved.get('intro', false) else "hidden" }} >
+                <div class="accordion-content col-lg-6 col-12" id="improver-prompt-div" {{ "" if improved.get('song', false) or improved.get('intro', false) else "hidden" }} >
 
                   <div style="display:flex;align-items:center">
                     <h6 class="section-title">Improver prompt </h6>
