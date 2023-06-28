@@ -61,12 +61,12 @@ class Search(db.Model):
     @property
     def sp_keywords(self):
         kws = json.loads(self.keywords)
-        return kws['sp_keywords']
+        return kws.get('sp_keywords', [])
 
     @property
     def keyword(self):
         kws = json.loads(self.keywords)
-        return kws['keyword']
+        return kws.get('keyword', '')
 
     def json_data(self):
         
