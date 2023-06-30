@@ -131,7 +131,7 @@ def search(by="keyword"):
                             improver_prompt=data['improver-prompt']
 
                         if data.get('default-img-prompt', False):
-                            current_user.default_improver_prompt = data['img-prompt']
+                            current_user.default_img_prompt = data['img-prompt']
                             improver_prompt=data['img-prompt']
                         
                         db.session.commit()

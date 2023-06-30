@@ -67,18 +67,22 @@ class Search(db.Model):
 
     @property
     def sp_keywords(self):
+        if self.by=="artist": return ""
         kws = json.loads(self.keywords)
         return kws.get('sp_keywords', [])
-
     @property
     def keyword(self):
+        if self.by=="artist": return ""
         kws = json.loads(self.keywords)
         return kws.get('keyword', '')
-
+    @property
+    def artist(self):
+        if self.by=="keyword": return ""
+        return self.keywords
+        
     @property
     def image_prompt_keywords(self):
         return json.loads(self.image_prompt_keywords_str)
-
     @property
     def image_nprompt_keywords(self):
         return json.loads(self.image_nprompt_keywords_str)
@@ -108,8 +112,11 @@ class Search(db.Model):
             'prompt': self.prompt,
             'intro-prompt': self.intro_prompt,
             'improver-prompt': self.improver_prompt,
+            'img-prompt': self.img_prompt,
             'improved_song': self.improved_song,
             'improved_intro': self.improved_intro,
+            'p-img-keywords': ", ".join(self.image_prompt_keywords),
+            'n-img-keywords': ", ".join(self.image_nprompt_keywords),
             'model': model,
             'by':self.by.title()
         }

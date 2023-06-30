@@ -244,6 +244,7 @@ class Search_Process():
             by=self.by,
             improved_song=self.improve_song,
             improved_intro=self.improve_intro,
+            img_prompt=self.img_prompt,
             image_prompt_keywords_str=json.dumps(self.image_prompt_keywords),
             image_nprompt_keywords_str=json.dumps(self.image_nprompt_keywords)
 
@@ -273,7 +274,6 @@ class Search_Process():
                 return "Stopped"
             else:
                 print("Error while running search")
-                raise e
                 print(e)
                 return "Failed"
 

@@ -227,7 +227,7 @@
                   </div>
                     
                   <div id="n-img-kws-container" class="horizontal-container basic-padding">
-                    {% for kw in search.image_prompt_keywords %}
+                    {% for kw in search.image_nprompt_keywords %}
                       <div class="btn-group" id="n-img-kw-{{kw.replace(' ', '-')}}" role="group" aria-label="keyword for image">
                         <button type="button" class="btn btn-secondary">{{kw}}</button>
                         <button type="button" class="btn btn-secondary" onClick="deleteImgKeyword('{{kw}}', 'n')">X</button>

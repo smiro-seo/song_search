@@ -105,8 +105,6 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
                 with open(filepath, 'wb') as img:
                     img.write(response.binary)
                 return response.binary, filename
-            else:
-                return None, ""
     
 def build_prompt(original_prompt, values_to_replace):
     
@@ -174,16 +172,17 @@ class Model_Generator():
 
         summ_response = get_gpt_response(summ_prompt, 'gpt-3.5-turbo', options=summarization_prompt_options)
 
-        sd_text_prompt = f"Based on the following article summary, provide a suitable prompt for a text-to-image generative model.\
-            \nSome examples are provided below:"
-        sd_text_prompt += "\n" + image_prompt_ex_1 + "\n" + image_prompt_ex_2
-        sd_text_prompt += "\n\nSummarized article:\n" + summ_response
+        sd_text_prompt = self.search.img_prompt
+        if "[summary]" in self.search.img_prompt:
+            sd_text_prompt = sd_text_prompt.replace('[summary]', summ_response) + "\n\nOnly reply with the prompt, do not add any text besides that"
+        else:
+            sd_text_prompt = sd_text_prompt + "\n\nOnly reply with the prompt, do not add any text besides that. Summarized article:\n" + summ_response
         
         sd_prompt = get_gpt_response(sd_text_prompt, 'gpt-3.5-turbo', options=image_prompt_options)
 
-        sd_prompt = sd_prompt + ", " + ", ".join(self.search.image_prompt_keywords)
+        sd_prompt = sd_prompt + " " + ", ".join(self.search.image_prompt_keywords)
         sd_negative_prompt = 'codeugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face'
-        sd_negative_prompt += ", ".join(self.search.image_nprompt_keywords)
+        sd_negative_prompt += ", " + ", ".join(self.search.image_nprompt_keywords)
 
         print("Prompt for stable diffusion:")
         print(sd_prompt)

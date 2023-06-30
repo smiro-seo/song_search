@@ -86,6 +86,9 @@ function showDetails(searchData) {
     "status",
     "keywords",
     "by",
+    "img-prompt",
+    "n-img-keywords",
+    "p-img-keywords",
   ];
 
   for (let p of properties) {
@@ -220,9 +223,23 @@ function searchByKeyword() {
 }
 
 function getFormData() {
+  let p_img_kw = [];
+  let n_img_kw = [];
+  $(`#p-img-kws-container`)
+    .children()
+    .each(function () {
+      p_img_kw.push($($(this).children()[0]).text());
+    });
+  $(`#n-img-kws-container`)
+    .children()
+    .each(function () {
+      n_img_kw.push($($(this).children()[0]).text());
+    });
+
   const improving_enabled =
     $("#check-improve-song").is(":checked") ||
     $("#check-improve-intro").is(":checked");
+
   return {
     "limit-range-kw-txt": $("#limit-range-kw-txt").val(),
     "offset-range-txt": $("#offset-range-txt").val(),
@@ -234,11 +251,15 @@ function getFormData() {
     "improver-prompt": improving_enabled ? $("#improver-prompt").val() : "",
     "default-prompt": $("#default-prompt").is(":checked"),
     "default-intro-prompt": $("#default-intro-prompt").is(":checked"),
+    "default-img-prompt": $("#default-img-prompt").is(":checked"),
     "default-improver-prompt":
       improving_enabled && $("#default-improver-prompt").is(":checked"),
     "improve-song": $("#check-improve-song").is(":checked"),
     "improve-intro": $("#check-improve-intro").is(":checked"),
     model: $("input[name=model]:checked").val(),
+    "img-prompt": $("#img-prompt").val(),
+    "image-prompt-keywords": p_img_kw,
+    "image-nprompt-keywords": n_img_kw,
   };
 }
 
