@@ -320,7 +320,7 @@ class Search_Process():
         if self.wordpress: 
             
             self.wp_draft(html, img_binary, img_name)
-        # output_html_name = generate_html_file(html)
+        output_html_name = generate_html_file(html)
 
         return True
 

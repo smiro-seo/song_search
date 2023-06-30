@@ -50,6 +50,8 @@ def add_wp_image(img_bin, img_name, keys):
     
     res = send_wp_request(url, media, headers).json()
 
+    print(res)
+
     return res.get('id', None)
     
 
