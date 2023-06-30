@@ -193,7 +193,7 @@
                     
                   <div id="p-img-kws-container" class="horizontal-container basic-padding">
                     {% for kw in search.image_prompt_keywords %}
-                      <div class="btn-group" id="-img-kw-{{kw.replace(' ', '-')}}" role="group" aria-label="keyword for image">
+                      <div class="btn-group" id="p-img-kw-{{kw.replace(' ', '-')}}" role="group" aria-label="keyword for image">
                         <button type="button" class="btn btn-secondary">{{kw}}</button>
                         <button type="button" class="btn btn-secondary" onClick="deleteImgKeyword('{{kw}}', 'p')">X</button>
                       </div>
