@@ -1,5 +1,4 @@
 
-from PIL import Image
 import time, os, openai
 from stability_sdk import client
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
