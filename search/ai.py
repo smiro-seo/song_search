@@ -186,8 +186,6 @@ class Model_Generator():
         sd_negative_prompt = 'codeugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face'
         sd_negative_prompt += ", ".join(self.search.image_nprompt_keywords)
 
-        sd_prompt = 'Create a dreamy and vibrant illustration that captures the complex emotions of love. Incorporate elements inspired by the songs "Another Love" and "Lovely," such as a piano, strings, gentle instrumentation, and a combination of wistfulness and heartfelt emotions. The illustration should evoke a sense of romance and connection, using a vibrant color palette and intricate detailing'
-
         print("Prompt for stable diffusion:")
         print(sd_prompt)
         print("Negative prompt:")
