@@ -49,6 +49,11 @@ query_106=[
     'ALTER TABLE search ADD COLUMN img_prompt STRING;',
     f"UPDATE user SET default_img_prompt = '{default_img_prompt}' ;"
 ]
+query_1061=[
+    f"UPDATE search SET image_prompt_keywords_str = '[]' ;",
+    f"UPDATE search SET image_nprompt_keywords_str = '[]' ;",
+    f"UPDATE search SET img_prompt = '' ;"
+]
 
 queries = {
     '1.0.0':query_100,
@@ -60,7 +65,8 @@ queries = {
     '1.0.3.1':query_1031,
     '1.0.4':query_104,
     '1.0.5':query_105,
-    '1.0.6':query_106
+    '1.0.6':query_106,
+    '1.0.6.1':query_1061
 }
 
 
