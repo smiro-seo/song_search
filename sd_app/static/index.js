@@ -532,10 +532,11 @@ $(document).ready(function () {
       $("#img-config-steps").val(150);
       $("#img-config-steps-txt").val(150);
     } else if (value < 10) {
-      $("#img-config-steps").val(0);
-      $("#img-config-steps-txt").val(0);
+      $("#img-config-steps").val(10);
+      $("#img-config-steps-txt").val(10);
     } else {
-      $("#img-config-steps").val(value);
+      $("#img-config-steps").val(Math.round(value));
+      $("#img-config-steps-txt").val(Math.round(value));
     }
   });
 });
