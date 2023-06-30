@@ -38,7 +38,7 @@ def add_wp_image(img_bin, img_name, keys):
 
     url = f"{base_url}/media"
     auth = get_wp_auth(keys)
-    headers = {'Authorization': auth, "Content-Type": "image/png", "Content-Disposition": f'attachment; filename:"{img_name}"'}
+    headers = {'Authorization': auth, "Content-Type": "image/png", "Content-Disposition": f'attachment; filename:"{img_name}.png"'}
 
     media = {
         'title': img_name,

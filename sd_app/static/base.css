@@ -67,6 +67,10 @@ textarea {
     padding:0.6em;
 }
 
+.hoverable:hover {
+    cursor:pointer
+}
+
 .navbar-nav{
     font-family: roboto;
     vertical-align: center;
