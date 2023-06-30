@@ -40,16 +40,9 @@ def add_wp_image(img_bin, img_name, keys):
     auth = get_wp_auth(keys)
     headers = {'Authorization': auth, "Content-Type": "image/png", "Content-Disposition": f'attachment; filename="{img_name}"'}
 
-    media = {
-        'title': img_name,
-        'status': 'draft',
-        'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
-
     print("Creating wordpress image...")
     print(headers)
-    
-    res = send_wp_request(url, {'data':media},  headers).json()
+    res = send_wp_request(url, {'data':img_bin},  headers).json()
 
     print(res)
 

@@ -121,18 +121,17 @@ function showDetails(searchData) {
     }
   }
 
-  if (searchData.improved_song)
-    $("#details-song-improved").attr("hidden", false);
-  else $("#details-song-improved").attr("hidden", true);
+  const hiddableProperties = {
+    "intro-improved": searchData.improved_intro,
+    "song-improved": searchData.improved_song,
+    "p-img-keywords-row": searchData["p-img-keywords"].length > 0,
+    "n-img-keywords-row": searchData["n-img-keywords"].length > 0,
+    "improver-row": searchData.improved_song || searchData.improved_intro,
+  };
 
-  if (searchData.improved_intro)
-    $("#details-intro-improved").attr("hidden", false);
-  else $("#details-intro-improved").attr("hidden", true);
-
-  if (searchData.improved_song || searchData.improved_intro) {
-    $("#details-improver-row").attr("hidden", false);
-  } else {
-    $("#details-improver-row").attr("hidden", true);
+  for (let k of Object.keys(hiddableProperties)) {
+    if (hiddableProperties[k]) $(`#details-${k}`).attr("hidden", false);
+    else $(`#details-${k}`).attr("hidden", true);
   }
 
   if (searchData.include_img) {
@@ -153,7 +152,6 @@ function showDetails(searchData) {
   } else {
     $("#details-img-row").attr("hidden", true);
   }
-
   modal.show();
 }
 
