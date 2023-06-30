@@ -1,6 +1,7 @@
 from .constants import DB_NAME, default_improver_prompt, default_model
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
+import json
 
 engine = create_engine(f"sqlite:///instance/{DB_NAME}")
 default_img_prompt = 'Based on the following article summary, provide a suitable prompt for a text-to-image generative model. Focus on the concept of [keyword]. Below are some examples:\
@@ -58,6 +59,16 @@ query_107=[
     'ALTER TABLE search ADD COLUMN include_img BOOLEAN;',
     f"UPDATE search SET include_img = FALSE ;"
 ]
+query_1071=[
+    'ALTER TABLE search ADD COLUMN img_config_str STRING;',
+    f"UPDATE search SET img_config_str = '{json.dumps({'steps':30})}' ;",
+    'ALTER TABLE user ADD COLUMN default_img_config STRING;',
+    f"UPDATE user SET default_img_config = '{json.dumps({'steps':30, 'aspect-ratio':'512x512'})}' ;",
+]
+query_1072=[
+    'ALTER TABLE search ADD COLUMN img_gen_prompt STRING;',
+    f"UPDATE search SET img_gen_prompt = '' ;",
+]
 
 queries = {
     '1.0.0':query_100,
@@ -71,7 +82,9 @@ queries = {
     '1.0.5':query_105,
     '1.0.6':query_106,
     '1.0.6.1':query_1061,
-    '1.0.7': query_107
+    '1.0.7': query_107,
+    '1.0.7.1':query_1071,
+    '1.0.7.2':query_1072
 }
 
 

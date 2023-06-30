@@ -166,8 +166,22 @@
                                 <table class="table align-middle">
                                     <tbody id="detail-table">
                                         <tr>
-                                            <th class="text">Prompt</th>
-                                            <td><span class="text" id="details-img-prompt"></span></td>
+                                            <th class="text">GPT Prompt</th>
+                                            <td>
+                                                <div style="display:flex;flex-direction:row">
+                                                    <span class="text" id="details-img-prompt" style="flex:1">placeholder</span>
+                                                    <i style="margin-left:1em" id="details-img-prompt-copy" class="bi bi-clipboard hoverable" data-bs-trigger="manual" data-bs-title="Copied!" onClick=""></i>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr id="details-p-img-keywords-row">
+                                            <th class="text">Stability prompt</th>
+                                            <td>
+                                                <div style="display:flex;flex-direction:row">
+                                                    <span class="text" id="details-img-gen-prompt" style="flex:1">placeholder</span>
+                                                    <i style="margin-left:1em" id="details-img-gen-prompt-copy" class="bi bi-clipboard hoverable" data-bs-trigger="manual" data-bs-title="Copied!" onClick=""></i>
+                                                </div>
+                                            </td>
                                         </tr>
                                         <tr id="details-p-img-keywords-row">
                                             <th class="text">Positive keywords</th>

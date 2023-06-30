@@ -240,6 +240,7 @@ class Search_Process():
         self.by=""
 
         self.record = None
+        self.img_config = data.get('img-config', {'steps':30})
  
     def create_record(self, Search, current_user):
         self.record = Search(
@@ -259,7 +260,8 @@ class Search_Process():
             include_img=self.include_img,
             img_prompt=self.img_prompt,
             image_prompt_keywords_str=json.dumps(self.image_prompt_keywords),
-            image_nprompt_keywords_str=json.dumps(self.image_nprompt_keywords)
+            image_nprompt_keywords_str=json.dumps(self.image_nprompt_keywords),
+            img_config_str=json.dumps(self.img_config)
 
         )
 
@@ -332,7 +334,8 @@ class Search_Process():
             if self.record is None: filename=None
             else: filename = json.loads(self.record.json_data())['img_name']
 
-            img_binary, img_name = generator.feat_image(filename=filename)
+            img_binary, img_name, img_gen_prompt = generator.feat_image(filename=filename)
+            self.record.img_gen_prompt = img_gen_prompt
         else:
             img_binary=None
             img_name=None

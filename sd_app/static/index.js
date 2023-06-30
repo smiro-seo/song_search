@@ -23,6 +23,10 @@ function copyTextToClipboard(text, ident) {
     }
   );
 }
+function setAr(dim, ar) {
+  $("#img-config-ar").val(dim);
+  $("#img-config-ar-btn").text(`${dim} (${ar})`);
+}
 
 function deleteKeyword(sp_kw) {
   const id = `tr-${sp_kw}`;
@@ -108,6 +112,7 @@ function showDetails(searchData) {
     "img-prompt",
     "n-img-keywords",
     "p-img-keywords",
+    "img-gen-prompt",
   ];
 
   for (let p of properties) {
@@ -283,6 +288,14 @@ function getFormData() {
     $("#check-improve-song").is(":checked") ||
     $("#check-improve-intro").is(":checked");
 
+  const img_config = {
+    steps: $("#img-config-steps-txt").val(),
+    "aspect-ratio": $("#img-config-ar").val(),
+  };
+  const def_img_config = Object.keys(img_config).filter((c) =>
+    $(`#default-img-${c}`).is(":checked")
+  );
+
   return {
     "limit-range-kw-txt": $("#limit-range-kw-txt").val(),
     "offset-range-txt": $("#offset-range-txt").val(),
@@ -305,6 +318,9 @@ function getFormData() {
     "img-prompt": $("#img-prompt").val(),
     "image-prompt-keywords": p_img_kw,
     "image-nprompt-keywords": n_img_kw,
+
+    "img-config": img_config,
+    "default-img-config": def_img_config,
   };
 }
 
@@ -502,6 +518,24 @@ $(document).ready(function () {
       );
     } else {
       $("#upper-limit").text("infinity");
+    }
+  });
+
+  //  IMG CONFIG
+  $("#img-config-steps").on("change", function () {
+    let value = $("#img-config-steps").val();
+    $("#img-config-steps-txt").val(value);
+  });
+  $("#img-config-steps-txt").on("change", function () {
+    let value = $("#img-config-steps-txt").val();
+    if (value > 150) {
+      $("#img-config-steps").val(150);
+      $("#img-config-steps-txt").val(150);
+    } else if (value < 10) {
+      $("#img-config-steps").val(0);
+      $("#img-config-steps-txt").val(0);
+    } else {
+      $("#img-config-steps").val(value);
     }
   });
 });

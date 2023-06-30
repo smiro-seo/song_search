@@ -20,3 +20,16 @@ default_improver_prompt = ""
 DB_NAME = "database.db"
 db_string_conn = f"sqlite:///{DB_NAME}"
 default_model = 'text-davinci-003'
+
+aspect_ratios = [
+    ('1024x1024', '1:1'),
+    ('1152x896','9:7'),
+    ('896x1152', '7:9'),
+    ('1216x832', '19:13'),
+    ('832x216', '3.85:1'),
+    ('1344x768', '7:4'),
+    ('768x1344','4:7'),
+    ('1536x640', '12:5'),
+    ('640x1536', '5:12'),
+    ('512x512', '1:1')
+]

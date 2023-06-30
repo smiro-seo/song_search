@@ -73,6 +73,7 @@ def get_gpt_response(prompt, engine, options=default_gpt_options):
         return ""
 
 def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_options, filename=None):
+    
     # Set up our connection to the API.
     stability = client.StabilityInference(
         key=keys['sd_key'], # API Key reference.
@@ -106,6 +107,8 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
                 with open(filepath, 'wb') as img:
                     img.write(response.binary)
                 return response.binary, filename
+    
+    return None, None
     
 def build_prompt(original_prompt, values_to_replace):
     
@@ -192,4 +195,12 @@ class Model_Generator():
         print("Negative prompt:")
         print(sd_negative_prompt)
 
-        return get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename)
+        options=self.search.img_config
+
+        options['height'] = options['aspect-ratio'].split('x')[1]
+        options['width'] = options['aspect-ratio'].split('x')[0]
+        del options['aspect-ratio']
+
+        bin_file, filename = get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename, options=self.search.img_config)
+
+        return bin_file, filename, sd_prompt

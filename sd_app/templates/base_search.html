@@ -241,6 +241,45 @@
                   </div>
 
                 </div>
+                
+                <!--  IMG CONFIG - STEPS  -->
+                <div class="accordion-content col-lg-4 col-md-6 col-12">
+                  <label style="font-weight:bold" >Steps</label>
+                  <div class="horizontal-container">
+                    <input type="number" min="10" max="150" value="{{search.img_config.get('steps')}}" id="img-config-steps-txt" style="max-width:3.5em">  &nbsp
+                    <input type="range" id="img-config-steps" min="10" max="150" step="1" value="{{search.img_config.get('steps')}}" style="flex:1">
+                    <div>
+                      <input type="checkbox" value="limited" id="default-img-steps" class="checkbox">
+                      <label for="default-img-steps" >Default</label>
+                    </div>
+                  </div>
+  
+                </div>
+                
+                <div class="accordion-content col-lg-4 col-12"></div>
+                <!--  IMG CONFIG - ASPECT RATIO  -->
+                <div class="accordion-content col-lg-4 col-md-6 col-12">
+                  <label style="font-weight:bold" >Aspect ratio</label>
+                  <div class="horizontal-container">
+                    <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle" id="img-config-ar-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{search.img_config.get('aspect-ratio')}}
+                      </button>
+                      <ul class="dropdown-menu">
+                        {% for dim, ar in aspect_ratios %}
+                        <li><button class="dropdown-item" onClick="setAr('{{dim}}', '{{ar}}')">{{dim + "(" + ar + ")"}}</button></li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                    <div>
+                      <input type="checkbox" value="limited" id="default-img-aspect-ratio" class="checkbox">
+                      <label for="default-img-aspect-ratio" >Default</label>
+                    </div>
+
+                  <input type="text" hidden id="img-config-ar" value="{{search.img_config.get('aspect-ratio')}}">
+  
+                  </div>
+                </div>
               
               </div>
             </div>

@@ -11,7 +11,7 @@ import pandas as pd
 import sys
 import os
 from . import db, app
-from .constants import keys, default_prompt, default_intro_prompt, default_intro_prompt_artist
+from .constants import keys, default_prompt, default_intro_prompt, default_intro_prompt_artist, aspect_ratios
 sys.path.append('/..')
 
 
@@ -78,7 +78,6 @@ def search(by="keyword"):
         else:
             flash("There was an error recovering search data", category='error')
             
-
     elif request.method == 'POST':
         data = json.loads(request.data)
         print(data)
@@ -134,6 +133,14 @@ def search(by="keyword"):
                             current_user.default_img_prompt = data['img-prompt']
                             improver_prompt=data['img-prompt']
                         
+
+                        img_config = data.get('img-config', json.loads(current_user.default_img_config))
+                        def_img_config = {}
+                        for config in data.get('default-img-config', []):
+                            def_img_config[config]= img_config.get(config, "")
+                        current_user.default_img_config = json.dumps(json.loads(current_user.default_img_config) | def_img_config)
+
+
                         db.session.commit()
                         flash(
                             f'Search running in background. Check the search history in about {int(time_to_complete/60)+1} minutes for the download link.', category='success')
@@ -149,7 +156,8 @@ def search(by="keyword"):
     return render_template(f"search_by_{by}.html", 
                            search=search,
                            user=current_user.dict_data(),
-                           existing = search_id is not None
+                           existing = search_id is not None,
+                           aspect_ratios=aspect_ratios
                            )
 
 

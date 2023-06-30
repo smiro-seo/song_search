@@ -18,6 +18,8 @@ class User(db.Model, UserMixin):
     default_improver_prompt = db.Column(db.String(512))
     default_img_prompt = db.Column(db.String(512))
 
+    default_img_config= db.Column(db.String(512))
+
     searches = db.relationship("Search", back_populates="user_inst")
 
     def __init__(self, username, password):
@@ -29,6 +31,8 @@ class User(db.Model, UserMixin):
         self.default_intro_prompt = default_intro_prompt
         self.default_intro_prompt_artist = default_intro_prompt_artist
         self.default_improver_prompt = default_improver_prompt
+        self.default_img_prompt = ""
+        self.default_img_config = json.dumps({'steps':30})
 
     def dict_data(self):
         return {
@@ -40,6 +44,7 @@ class User(db.Model, UserMixin):
             'default_intro_prompt_artist': self.default_intro_prompt_artist,
             'default_improver_prompt': self.default_improver_prompt,
             'default_img_prompt': self.default_img_prompt,
+            'default_img_config': json.loads(self.default_img_config),
             'is_authenticated': current_user.is_authenticated and current_user.id == self.id
         }
 
@@ -58,6 +63,8 @@ class Search(db.Model):
     image_prompt_keywords_str = db.Column(db.String(516))
     image_nprompt_keywords_str = db.Column(db.String(516))
     include_img = db.Column(db.Boolean)
+    img_config_str = db.Column(db.String(516))
+    img_gen_prompt = db.Column(db.String(516))
 
     model = db.Column(db.String(64))
     improved_song = db.Column(db.Boolean)
@@ -81,13 +88,16 @@ class Search(db.Model):
     def artist(self):
         if self.by=="keyword": return ""
         return self.keywords
-        
+
     @property
     def image_prompt_keywords(self):
         return json.loads(self.image_prompt_keywords_str)
     @property
     def image_nprompt_keywords(self):
         return json.loads(self.image_nprompt_keywords_str)
+    @property
+    def img_config(self):
+        return json.loads(self.img_config_str)
 
     def json_data(self):
         
@@ -122,7 +132,9 @@ class Search(db.Model):
             'include_img':self.include_img,
             'model': model,
             'by':self.by.title(),
-            'img_name': f"feat_img_{self.id}"
+            'img_name': f"feat_img_{self.id}",
+            "img_config": self.img_config,
+            'img-gen-prompt':self.img_gen_prompt
         }
 
         return json.dumps(data)
@@ -172,4 +184,9 @@ class Def_Search():
         self.keyword=""
         self.sp_keywords=""
         self.model='gpt-3.5-turbo'
+
         self.include_img=True
+        self.img_config=json.loads(current_user.default_img_config)
+
+
+        
