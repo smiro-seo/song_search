@@ -138,13 +138,18 @@ function showDetails(searchData) {
   if (searchData.include_img) {
     $("#details-img-row").attr("hidden", false);
 
-    var searchImg = new File([""], `${imgSrc}/${searchData.img_name}.png`);
-    if (searchImg.exists) {
-      $("#details-img-src").attr("src", `${imgSrc}/${searchData.img_name}.png`);
-      $("#details-img-row-src").attr("hidden", false);
-    } else {
-      $("#details-img-row-src").attr("hidden", true);
-    }
+    const img_url = `${imgSrc}/${searchData.img_name}.png`;
+    $.get(img_url)
+      .done(function () {
+        $("#details-img-src").attr(
+          "src",
+          `${imgSrc}/${searchData.img_name}.png`
+        );
+        $("#details-img-row-src").attr("hidden", false);
+      })
+      .fail(function () {
+        $("#details-img-row-src").attr("hidden", true);
+      });
   } else {
     $("#details-img-row").attr("hidden", true);
   }
