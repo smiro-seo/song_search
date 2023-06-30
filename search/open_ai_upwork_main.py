@@ -210,9 +210,18 @@ class Search_Process():
         self.prompt = data.get('prompt', current_user['default_intro_prompt_artist'])
         self.improver_prompt = data.get('improver-prompt', current_user['default_improver_prompt'])
         self.intro_prompt = data.get('intro-prompt', current_user['default_intro_prompt_artist'])
-        self.img_prompt = data.get('img-prompt', current_user['default_img_prompt'])
-        self.image_prompt_keywords = data.get('image-prompt-keywords', [])
-        self.image_nprompt_keywords = data.get('image-nprompt-keywords', [])
+
+        self.include_img = data.get('include-img', False)
+
+        if self.include_img:
+            self.img_prompt = data.get('img-prompt', current_user['default_img_prompt'])
+            self.image_prompt_keywords = data.get('image-prompt-keywords', [])
+            self.image_nprompt_keywords = data.get('image-nprompt-keywords', [])
+
+        else:
+            self.img_prompt = ""
+            self.image_prompt_keywords = []
+            self.image_nprompt_keywords = []
 
         self.improve_song = data.get('improve-song', False)
         self.improve_intro = data.get('improve-intro', False)
@@ -229,6 +238,8 @@ class Search_Process():
         self.wp_title=""
         self.slug=""
         self.by=""
+
+        self.record = None
  
     def create_record(self, Search, current_user):
         self.record = Search(
@@ -244,6 +255,8 @@ class Search_Process():
             by=self.by,
             improved_song=self.improve_song,
             improved_intro=self.improve_intro,
+
+            include_img=self.include_img,
             img_prompt=self.img_prompt,
             image_prompt_keywords_str=json.dumps(self.image_prompt_keywords),
             image_nprompt_keywords_str=json.dumps(self.image_nprompt_keywords)
@@ -314,11 +327,18 @@ class Search_Process():
         print("Getting HTML")
         html, self.full_text = generate_html(clean_data, intro, return_full_text=True)
         #   Generate feat. image
-        print("Getting featured image")
-        img_binary, img_name = generator.feat_image()
+        if self.include_img:
+            print("Getting featured image")
+            if self.record is None: filename=None
+            else: filename = json.loads(self.record.json_data())['img_name']
+
+            img_binary, img_name = generator.feat_image(filename=filename)
+        else:
+            img_binary=None
+            img_name=None
+
         #   Post to wp
         if self.wordpress: 
-            
             self.wp_draft(html, img_binary, img_name)
         output_html_name = generate_html_file(html)
 

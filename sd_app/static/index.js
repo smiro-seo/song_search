@@ -5,6 +5,12 @@ const trashSvg = (onClick) =>
   '<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>' +
   "</svg>";
 
+var imgSrc = document.body.getAttribute("data-img-src");
+var default_prompt = $("#user-default-prompt").text();
+var default_intro_prompt = $("#user-default-intro-prompt").text();
+var default_improver_prompt = $("#user-default-improver-prompt").text();
+var default_img_prompt = $("#user-default-img-prompt").text();
+
 function deleteKeyword(sp_kw) {
   const id = `tr-${sp_kw}`;
   $(`#${id}`).remove();
@@ -107,6 +113,13 @@ function showDetails(searchData) {
     $("#details-improver-row").attr("hidden", false);
   } else {
     $("#details-improver-row").attr("hidden", true);
+  }
+
+  if (searchData.include_img) {
+    $("#details-img-row").attr("hidden", false);
+    $("#details-img-src").attr("src", `${imgSrc}/${searchData.img_name}.png`);
+  } else {
+    $("#details-img-row").attr("hidden", true);
   }
 
   modal.show();
@@ -257,6 +270,8 @@ function getFormData() {
     "improve-song": $("#check-improve-song").is(":checked"),
     "improve-intro": $("#check-improve-intro").is(":checked"),
     model: $("input[name=model]:checked").val(),
+
+    "include-img": $("#include-img").is(":checked"),
     "img-prompt": $("#img-prompt").val(),
     "image-prompt-keywords": p_img_kw,
     "image-nprompt-keywords": n_img_kw,
@@ -271,11 +286,6 @@ function clearHistory() {
     window.location.href = "/history";
   });
 }
-
-var default_prompt = $("#user-default-prompt").text();
-var default_intro_prompt = $("#user-default-intro-prompt").text();
-var default_improver_prompt = $("#user-default-improver-prompt").text();
-var default_img_prompt = $("#user-default-img-prompt").text();
 
 function resetPrompt(prompt) {
   switch (prompt) {
@@ -327,6 +337,31 @@ $(document).ready(function () {
   $("#check-improve-intro").on("change", function () {
     checkImprove();
   });
+
+  // INCLUDE IMAGE
+  $("#include-img").on("change", function () {
+    const enabled = $("#include-img").is(":checked");
+
+    $("#acc-btn-img").attr("disabled", !enabled);
+    if (!enabled) {
+      $("#img-acc-item").collapse("hide");
+      $("#acc-btn-img").addClass("collapsed");
+    }
+  }); //data-bs-toggle="collapse" data-bs-target="#img-acc-item"
+
+  $("#acc-btn-img").on("click", function () {
+    const enabled = $("#include-img").is(":checked");
+
+    if (enabled) {
+      if ($("#img-acc-item").hasClass("show")) {
+        $("#img-acc-item").collapse("hide");
+        $("#acc-btn-img").addClass("collapsed");
+      } else {
+        $("#img-acc-item").collapse("show");
+        $("#acc-btn-img").removeClass("collapsed");
+      }
+    }
+  }); //data-bs-toggle="collapse" data-bs-target="#img-acc-item"
 
   //  OFFSET / LIMIT
   $("#check-limit-kw").on("change", function () {

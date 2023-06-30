@@ -4,7 +4,7 @@ from stability_sdk import client
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 
 cwd = os.path.dirname(__file__)
-output_dir = os.path.join(cwd, '..', 'sd_app', 'model_outputs', 'feat_images')
+output_dir = os.path.join(cwd, '..', 'sd_app', 'static', 'feat_images')
 
 image_prompt_ex_1=""
 image_prompt_ex_2=""
@@ -22,7 +22,7 @@ improver_prompt_options = {
 summarization_prompt_options = {}
 image_prompt_options = {}
 
-default_sd_options={}
+default_sd_options={'steps':20}
 '''
     steps=50, # Amount of inference steps performed on image generation. Defaults to 30.
     cfg_scale=8.0, # Influences how strongly your generation is guided to match your prompt.
@@ -98,6 +98,7 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
         for response in resp.artifacts:
 
             if response.type == generation.ARTIFACT_IMAGE:
+                
                 if filename is None: filename = str(response.seed) + '.png'
                 elif filename[-4:] != '.png': filename = filename + '.png'
                 filepath =  os.path.join(output_dir,filename)
@@ -164,7 +165,7 @@ class Model_Generator():
 
         return get_gpt_response(prompt, 'gpt-3.5-turbo', options=improver_prompt_options)
 
-    def feat_image(self):
+    def feat_image(self, filename=None):
 
         print("Generating article summary")
         summ_prompt = f"Summarize the following article about {self.search.wp_title}:\n\n"
@@ -184,9 +185,11 @@ class Model_Generator():
         sd_negative_prompt = 'codeugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face'
         sd_negative_prompt += ", " + ", ".join(self.search.image_nprompt_keywords)
 
+        # sd_prompt = "Photo realistic illustration of a full-body cat eating pizza. Hyper realistic, low contrast, bohemian, old, grey cat, greasy pizza, "
+
         print("Prompt for stable diffusion:")
         print(sd_prompt)
         print("Negative prompt:")
         print(sd_negative_prompt)
 
-        return get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys)
+        return get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename)

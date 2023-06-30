@@ -141,8 +141,12 @@
         <!--  IMAGE  -->
         <div class="accordion-item" id="img-acc-label">
           <h2 class="accordion-header" id="headingOne">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#img-acc-item" aria-expanded="true" aria-controls="img-acc-item">
-              Featured image parameters
+            <button {{"" if search.include_img else "disabled"}} class="accordion-button collapsed" id="acc-btn-img" style="display:flex" type="button" aria-expanded="true" aria-controls="img-acc-item">
+              <span style="flex:1">Featured image parameters</span>
+              <div class="horizontal-container" style="margin-right:2em;">
+                <input {{"checked" if search.include_img else ""}} type="checkbox" value="limited" id="include-img" name="include-img" onclick="event.stopPropagation();" class="checkbox"/>
+                <label class="text" for="include-img" >Generate image</label>
+              </div>
             </button>
           </h2>
 

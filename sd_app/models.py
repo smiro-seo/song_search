@@ -3,6 +3,7 @@ from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
 from .constants import default_prompt, default_intro_prompt, default_intro_prompt_artist, default_improver_prompt
 import json
+from uuid import uuid4
 
 
 
@@ -56,6 +57,7 @@ class Search(db.Model):
 
     image_prompt_keywords_str = db.Column(db.String(516))
     image_nprompt_keywords_str = db.Column(db.String(516))
+    include_img = db.Column(db.Boolean)
 
     model = db.Column(db.String(64))
     improved_song = db.Column(db.Boolean)
@@ -117,8 +119,10 @@ class Search(db.Model):
             'improved_intro': self.improved_intro,
             'p-img-keywords': ", ".join(self.image_prompt_keywords),
             'n-img-keywords': ", ".join(self.image_nprompt_keywords),
+            'include_img':self.include_img,
             'model': model,
-            'by':self.by.title()
+            'by':self.by.title(),
+            'img_name': f"feat_img_{self.id}"
         }
 
         return json.dumps(data)
@@ -162,9 +166,10 @@ class Def_Search():
             self.intro_prompt = current_user.default_intro_prompt
             self.prompt = current_user.default_prompt
         
-        self.improved_intro = True,
+        self.improved_intro = True
         self.improved_song=True
         self.artist=""
         self.keyword=""
         self.sp_keywords=""
         self.model='gpt-3.5-turbo'
+        self.include_img=True

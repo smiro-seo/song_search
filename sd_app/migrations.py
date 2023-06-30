@@ -54,6 +54,10 @@ query_1061=[
     f"UPDATE search SET image_nprompt_keywords_str = '[]' ;",
     f"UPDATE search SET img_prompt = '' ;"
 ]
+query_107=[
+    'ALTER TABLE search ADD COLUMN include_img BOOLEAN;',
+    f"UPDATE search SET include_img = FALSE ;"
+]
 
 queries = {
     '1.0.0':query_100,
@@ -66,7 +70,8 @@ queries = {
     '1.0.4':query_104,
     '1.0.5':query_105,
     '1.0.6':query_106,
-    '1.0.6.1':query_1061
+    '1.0.6.1':query_1061,
+    '1.0.7': query_107
 }
 
 
