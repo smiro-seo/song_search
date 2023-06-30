@@ -4,18 +4,25 @@ import json
 import threading
 from flask_login import login_required, current_user
 from jinja2 import Environment, PackageLoader, select_autoescape
-from .models import Search
+from .models import Search, Def_Search
 from datetime import datetime as dt
-from sqlalchemy.orm import scoped_session, sessionmaker, Query
-from sqlalchemy import create_engine
 import time
 import pandas as pd
 import sys
 import os
 from . import db, app
-# from .func.wordpress import create_draft
 from .constants import keys, default_prompt, default_intro_prompt, default_intro_prompt_artist
 sys.path.append('/..')
+
+
+
+def fix_str_html(string):
+    new_string = string.replace('[NEWLINE]', '<br/>')
+    print(new_string)
+    return new_string
+test = 'Based on the following article summary, provide a suitable prompt for a text-to-image generative model. Focus on the concept of [keyword]. Below are some examples:\nExample 1:\nA dreamy, vibrant illustration about [keyword]; aesthetically pleasing anime style, trending on popular art platforms, minutely detailed, with precise, sharp lines, a composition that qualifies as an award-winning illustration, presented in 4K resolution, inspired by master artists like Eugene de Blaas and Ross Tran, employing a vibrant color palette, intricately detailed.\nExample 2:\nAn illustration exuding van gogh distinctive style; an ultra-detailed and hyper-realistic portrayal of [keyword], designed with Lisa Frank aesthetics, featuring popular art elements such as butterflies and florals, sharp focus, akin to a high-quality studio photograph, with meticulous detailing.'
+fix_str_html(test)
+
 
 flag_bkg = threading.Event()
 stopper = threading.Event()
@@ -33,7 +40,6 @@ def background_search(local_app, local_db, input_data, limit, offset,user,  by="
         flag_bkg.set()
         print("Background search running.")
         print(f"Limiting results to {limit}. Offset: {offset}")
-        print(user)
         
         if by=="keyword": search = Search_Keyword(input_data, limit, offset, keys, user)
         elif by=="artist": search = Search_Artist(input_data, limit, offset, keys, user)
@@ -54,46 +60,24 @@ def background_search(local_app, local_db, input_data, limit, offset,user,  by="
         local_db.session.close()
 
 
-
 @views.route('/', methods=['GET', 'POST'])
 @views.route('/search/<by>', methods=['GET', 'POST'])
 @login_required
 def search(by="keyword"):
 
     global input_data, flag_bkg, app, stopper
-
-    if by=="artist":
-        intro_prompt = current_user.default_intro_prompt_artist
-        prompt = current_user.default_prompt_artist
-    elif by=="keyword":
-        intro_prompt = current_user.default_intro_prompt
-        prompt = current_user.default_prompt
-        
-    improver_prompt = current_user.default_improver_prompt
-    improved = {'intro':True,'song':True}
     search_id = request.args.get('search_id', None)
-    model='gpt-3.5-turbo'
+    search = Def_Search(current_user, by)
 
-    artist=""
-    keywords = {'keyword': '', 'sp_keywords':[]}
-    
-    if request.method == 'GET':
+    if request.method == 'GET' and search_id is not None:
 
-        if search_id is not None:
+        search_found = Search.query.get(search_id)
+        if search_found: 
             flash('Input data restored.', category='success')
-            search = Search.query.get(search_id)
-
-            if by=="keyword":
-                keywords = {'sp_keywords':search.sp_keywords, 'keyword': search.keyword}
-
-            elif by=="artist":
-                artist = search.keywords
-
-            prompt = search.prompt
-            intro_prompt = search.intro_prompt
-            improver_prompt = search.improver_prompt
-            improved = {'intro':search.improved_intro,'song':search.improved_song}
-            model=search.model
+            search = search_found
+        else:
+            flash("There was an error recovering search data", category='error')
+            
 
     elif request.method == 'POST':
         data = json.loads(request.data)
@@ -145,6 +129,10 @@ def search(by="keyword"):
                         if data.get('default-improver-prompt', False):
                             current_user.default_improver_prompt = data['improver-prompt']
                             improver_prompt=data['improver-prompt']
+
+                        if data.get('default-img-prompt', False):
+                            current_user.default_improver_prompt = data['img-prompt']
+                            improver_prompt=data['img-prompt']
                         
                         db.session.commit()
                         flash(
@@ -158,18 +146,11 @@ def search(by="keyword"):
                 print("ERROR")
                 print(e)
 
-
     return render_template(f"search_by_{by}.html", 
-                           keywords=keywords,
-                           artist=artist,
+                           search=search,
                            user=current_user.dict_data(),
-                           prompt=prompt,
-                           intro_prompt=intro_prompt,
-                           improver_prompt=improver_prompt,
-                           existing = search_id is not None,
-                           improved=improved,
-                           model=model,
-                           by=by)
+                           existing = search_id is not None
+                           )
 
 
 @views.route('/history', methods=['GET'])

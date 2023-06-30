@@ -11,7 +11,7 @@
 }
 
 :root{
-    --background: rgb(220, 218, 218);
+    --background: rgb(212, 205, 205);
     --background-secondary:#cfd3cf;
     --primary:#5eb9d5;
     --primary-title:#224753;
@@ -22,6 +22,13 @@
     --accordion-color: #d8eef4;
     --accordion-color-header: #6a9cac;
 
+}
+
+textarea {
+    white-space: pre-wrap;
+    border-radius:1em;
+    min-height:7em;
+    border-color:lightGray
 }
 
 
@@ -44,7 +51,7 @@
     color:var(--on-primary-title);
     font-weight:bold
 }
-/*
+
 .accordion-first{
     border-top-right-radius: 1em !important;
     border-top-left-radius: 1em !important;
@@ -54,7 +61,7 @@
     border-bottom-right-radius: 1em !important;
     border-bottom-left-radius: 1em !important;
     overflow:hidden
-}*/
+}
 
 .accordion-content{
     padding:0.6em;
@@ -117,6 +124,7 @@ button, input, label{
 }
 
 .horizontal-container{
+    display:flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;

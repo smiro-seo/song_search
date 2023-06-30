@@ -35,6 +35,29 @@ function clearKeywordTable() {
     });
 }
 
+function clearImgKeywords(where) {
+  $(`[id^='${where}-img-kw-']`).remove();
+  return;
+}
+function addImgKeyword(where) {
+  const kw = $(`#${where}-img-keyword`).val();
+  const kwId = where + "-img-kw-" + kw.replace(" ", "-");
+
+  $(`#${where}-img-kws-container`).append(
+    `<div class="btn-group" role="group" id="${kwId}" aria-label="keyword for image">` +
+      `<button type="button" class="btn btn-secondary">${kw}</button>` +
+      `<button type="button" class="btn btn-secondary" onClick="deleteImgKeyword('${kw}', '${where}')">X</button>` +
+      `</div>`
+  );
+
+  $(`#${where}-img-keyword`).val("");
+}
+function deleteImgKeyword(kw, where) {
+  const kwId = where + "-img-kw-" + kw.replace(" ", "-");
+  console.log(kwId);
+  $("#" + kwId).remove();
+}
+
 function deleteSearch(idx) {
   fetch("/delete_search", {
     method: "POST",
@@ -231,6 +254,7 @@ function clearHistory() {
 var default_prompt = $("#user-default-prompt").text();
 var default_intro_prompt = $("#user-default-intro-prompt").text();
 var default_improver_prompt = $("#user-default-improver-prompt").text();
+var default_img_prompt = $("#user-default-img-prompt").text();
 
 function resetPrompt(prompt) {
   switch (prompt) {
@@ -242,6 +266,9 @@ function resetPrompt(prompt) {
       break;
     case "improver":
       $("#improver-prompt").val(default_improver_prompt);
+      break;
+    case "img":
+      $("#img-prompt").val(default_img_prompt);
       break;
   }
 }

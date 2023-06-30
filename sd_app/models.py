@@ -15,6 +15,7 @@ class User(db.Model, UserMixin):
     default_intro_prompt = db.Column(db.String(512))
     default_intro_prompt_artist = db.Column(db.String(512))
     default_improver_prompt = db.Column(db.String(512))
+    default_img_prompt = db.Column(db.String(512))
 
     searches = db.relationship("Search", back_populates="user_inst")
 
@@ -37,6 +38,7 @@ class User(db.Model, UserMixin):
             'default_intro_prompt': self.default_intro_prompt,
             'default_intro_prompt_artist': self.default_intro_prompt_artist,
             'default_improver_prompt': self.default_improver_prompt,
+            'default_img_prompt': self.default_img_prompt,
             'is_authenticated': current_user.is_authenticated and current_user.id == self.id
         }
 
@@ -50,6 +52,11 @@ class Search(db.Model):
     prompt = db.Column(db.String(516))
     intro_prompt = db.Column(db.String(516))
     improver_prompt = db.Column(db.String(516))
+    img_prompt = db.Column(db.String(516))
+
+    image_prompt_keywords_str = db.Column(db.String(516))
+    image_nprompt_keywords_str = db.Column(db.String(516))
+
     model = db.Column(db.String(64))
     improved_song = db.Column(db.Boolean)
     improved_intro = db.Column(db.Boolean)
@@ -67,6 +74,14 @@ class Search(db.Model):
     def keyword(self):
         kws = json.loads(self.keywords)
         return kws.get('keyword', '')
+
+    @property
+    def image_prompt_keywords(self):
+        return json.loads(self.image_prompt_keywords_str)
+
+    @property
+    def image_nprompt_keywords(self):
+        return json.loads(self.image_nprompt_keywords_str)
 
     def json_data(self):
         
@@ -125,3 +140,24 @@ class Parameters(db.Model):
             new_parameter = Parameters(name=name, value=value)
         
         return
+
+
+class Def_Search():
+    def __init__(self, current_user, by):
+        self.improver_prompt = current_user.default_improver_prompt
+        self.img_prompt = current_user.default_img_prompt
+        self.by = by
+
+        if by=="artist":
+            self.intro_prompt = current_user.default_intro_prompt_artist
+            self.prompt = current_user.default_prompt_artist
+        elif by=="keyword":
+            self.intro_prompt = current_user.default_intro_prompt
+            self.prompt = current_user.default_prompt
+        
+        self.improved_intro = True,
+        self.improved_song=True
+        self.artist=""
+        self.keyword=""
+        self.sp_keywords=""
+        self.model='gpt-3.5-turbo'

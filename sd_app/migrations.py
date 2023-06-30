@@ -3,6 +3,11 @@ from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 
 engine = create_engine(f"sqlite:///instance/{DB_NAME}")
+default_img_prompt = 'Based on the following article summary, provide a suitable prompt for a text-to-image generative model. Focus on the concept of [keyword]. Below are some examples:\
+ Example 1:\
+ A dreamy, vibrant illustration about [keyword]; aesthetically pleasing anime style, trending on popular art platforms, minutely detailed, with precise, sharp lines, a composition that qualifies as an award-winning illustration, presented in 4K resolution, inspired by master artists like Eugene de Blaas and Ross Tran, employing a vibrant color palette, intricately detailed.\
+ Example 2:\
+ An illustration exuding van gogh distinctive style; an ultra-detailed and hyper-realistic portrayal of [keyword], designed with Lisa Frank aesthetics, featuring popular art elements such as butterflies and florals, sharp focus, akin to a high-quality studio photograph, with meticulous detailing.'
 
 query_100= [text("SELECT 'first version'")]
 query_101= [text("ALTER TABLE search ADD COLUMN improver_prompt STRING;"),
@@ -35,6 +40,15 @@ query_104=[
     'UPDATE search SET "by"=\'keyword\' WHERE by_artist=0;',
     "ALTER TABLE search DROP COLUMN by_artist"
 ]
+query_105=[
+    'ALTER TABLE search ADD COLUMN image_prompt_keywords_str STRING;',
+    'ALTER TABLE search ADD COLUMN image_nprompt_keywords_str STRING;'
+]
+query_106=[
+    'ALTER TABLE user ADD COLUMN default_img_prompt STRING;',
+    'ALTER TABLE search ADD COLUMN img_prompt STRING;',
+    f"UPDATE user SET default_img_prompt = '{default_img_prompt}' ;"
+]
 
 queries = {
     '1.0.0':query_100,
@@ -44,7 +58,9 @@ queries = {
     '1.0.2.3':query_100,
     '1.0.3':query_103,
     '1.0.3.1':query_1031,
-    '1.0.4':query_104
+    '1.0.4':query_104,
+    '1.0.5':query_105,
+    '1.0.6':query_106
 }
 
 

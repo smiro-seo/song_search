@@ -72,31 +72,25 @@
             {% if category == 'error' %}
                 <div class="alert alert-danger alter-dismissable fade show" role="alert">
                 {{ message }}
-                <button type="button" class="close" data-bs-dismiss="alert">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="alert"></button>
                 </div>
             {% elif category == 'success' %}
                 <div class="alert alert-success alter-dismissable fade show" role="alert">
                 {{ message }}
-                <button type="button" class="close" data-bs-dismiss="alert">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="alert"></button>
                 </div>
             {% elif category == 'download' %}
                 <div class="alert alert-success alter-dismissable fade show" role="alert">
                 {{ message }}&nbsp;
                 <a href="{{ url_for('views.download', filename=download_link) }}">Download CSV file</a>
-                <button type="button" class="close" data-bs-dismiss="alert">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="alert"></button>
                 </div>
             {% endif %}
         {% endfor %}
     {% endif %}
     {% endwith %}
 
-    <div >{% block content %}
+    <div style="margin:1.2em" >{% block content %}
 
     {% endblock %}
     </div>

@@ -6,9 +6,10 @@ spotify_img = '<img class="gb-image gb-image-1d75b3e9" \
     alt="spotify", title="listen-spotify-button" />'
 
 
-def generate_html(data, intro):
+def generate_html(data, intro, return_full_text=False):
 
     print("Generating HTML")
+    full_text = intro
 
     a = Airium()
 
@@ -17,6 +18,7 @@ def generate_html(data, intro):
 
     # Generate HTML file
     for i, song_data in data.iterrows():
+        full_text += '\n' + song_data["model_response"]
         title = f"{song_data['Track Name']} &#8211; {song_data['Artist'].title()}"    
 
         #   Title
@@ -51,5 +53,6 @@ def generate_html(data, intro):
     # Casting the file to a string to extract the value
     html = str(a)
 
-    return html
+    if return_full_text: return html, full_text
+    else: return html
 

@@ -2,15 +2,16 @@
 {% block title %}Song search{% endblock %}
 {% block content %}
 
-{% if by=="artist" %}
+{% if search.by=="artist" %}
   <p hidden id="user-default-intro-prompt">{{user.get('default_intro_prompt_artist')}}</p>
   <p hidden id="user-default-prompt" >{{user.get('default_prompt_artist')}}</p>
-{% elif by=="keyword" %}
+{% elif search.by=="keyword" %}
   <p hidden id="user-default-intro-prompt">{{user.get('default_intro_prompt')}}</p>
   <p hidden id="user-default-prompt" >{{user.get('default_prompt')}}</p>
 {% endif %}
 
 <p hidden id="user-default-improver-prompt" >{{user.get('default_improver_prompt')}}</p>
+<p hidden id="user-default-img-prompt" >{{user.get('default_img_prompt')}}</p>
 
 <div class="container-fluid" style="width:100%;margin:0px" >
   <!--  TITLE   
@@ -29,7 +30,7 @@
         <div class="accordion-item accordion-first" id="input-acc-label">
           <h2 class="accordion-header" id="headingOne">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#input-acc-item" aria-expanded="true" aria-controls="input-acc-item">
-              {% block accordion_title %} {{ "Keyword selection" if by=="keyword" else "Artist search" if by=="artist" else "" }} {% endblock %}
+              {% block accordion_title %} {{ "Keyword selection" if search.by=="keyword" else "Artist search" if search.by=="artist" else "" }} {% endblock %}
             </button>
           </h2>
 
@@ -67,19 +68,19 @@
                     
                   </div>
 
-                  {% if by=="keyword" %}
+                  {% if search.by=="keyword" %}
                     <p class="text" style="white-space: pre-wrap" id="prompt-rules" >You can use the following placeholders that will be replaced with each song's data: [artist] [release year] [track name] [keyword]</p>
-                  {% elif by=="artist" %}
+                  {% elif search.by=="artist" %}
                     <p class="text" style="white-space: pre-wrap" id="prompt-rules" >You can use the following placeholders that will be replaced with each song's data: [artist] [release year] [track name]</p>
                   {% endif %}
 
-                  <textarea class="text basic-padding"  name="prompt" id="prompt" style="width:100%;border-radius:1em;min-height:7em" >{{prompt}}</textarea> 
+                  <textarea class="text basic-padding"  name="prompt" id="prompt" style="width:100%" >{{search.prompt}}</textarea> 
                   
                   <div id="prompt-div" class="horizontal-container">
                     <input type="checkbox" value="limited" id="default-prompt" name="default-prompt" class="checkbox"/>
-                    <label class="text" for="default-intro-prompt" >Set as default</label>
+                    <label class="text" for="default-prompt" >Set as default</label>
 
-                    <input {{"checked" if improved.get("song") else ""}} type="checkbox" value="limited" id="check-improve-song" name="improve-song" class="checkbox"/>
+                    <input {{"checked" if search.improved_song else ""}} type="checkbox" value="limited" id="check-improve-song" name="improve-song" class="checkbox"/>
                     <label class="text" for="check-improve-song" >Improve song description</label>
                   </div>
                 </div>
@@ -93,26 +94,26 @@
                     
                   </div>
                       
-                  {% if by=="keyword" %}
+                  {% if search.by=="keyword" %}
                     <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You must use the [keyword] placeholder.</p>
-                  {% elif by=="artist" %}
+                  {% elif search.by=="artist" %}
                     <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You must use the [artist] placeholder.</p>
                   {% endif %}
-                  <textarea class="text basic-padding"  name="intro-prompt" id="intro-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{intro_prompt}}</textarea> 
+                  <textarea class="text basic-padding"  name="intro-prompt" id="intro-prompt" style="width:100%" >{{search.intro_prompt}}</textarea> 
                   
                     
                   <div id="intro-prompt-div" class="horizontal-container">
                     <input type="checkbox" value="limited" id="default-intro-prompt" name="default-intro-prompt" class="checkbox"/>
                     <label class="text" for="default-intro-prompt" >Set as default</label>
 
-                    <input {{"checked" if improved.get("intro") else ""}} type="checkbox" value="limited" id="check-improve-intro" name="improve-intro" class="checkbox"/>
+                    <input {{"checked" if search.improved_intro else ""}} type="checkbox" value="limited" id="check-improve-intro" name="improve-intro" class="checkbox"/>
                     <label class="text" for="check-improve-intro" >Improve intro description</label>
                   </div>
 
                 </div> 
             
                 <!--  IMPROVER PROMPT  -->
-                <div class="accordion-content col-lg-6 col-12" id="improver-prompt-div" {{ "" if improved.get('song', false) or improved.get('intro', false) else "hidden" }} >
+                <div class="accordion-content col-lg-6 col-12" id="improver-prompt-div" {{ "" if search.improved_song or search.improved_intro else "hidden" }} >
 
                   <div style="display:flex;align-items:center">
                     <h6 class="section-title">Improver prompt </h6>
@@ -121,7 +122,7 @@
                   </div>
 
                   <p class="text" style="white-space: pre-wrap" id="improver-prompt-rules" >This prompt will be sent along the first gpt response in order to make the text more human-friendly. You can use the [old text] placeholder. Otherwise, the text to be improved will be added at the end of your prompt.</p>
-                  <textarea class="text basic-padding"  name="improver-prompt" id="improver-prompt" style="width:100%;border-radius:1em;min-height:7em" >{{improver_prompt}}</textarea> 
+                  <textarea class="text basic-padding"  name="improver-prompt" id="improver-prompt" style="width:100%" >{{search.improver_prompt}}</textarea> 
                     
                   
                   <div class="horizontal-container">
@@ -130,6 +131,112 @@
                   </div>
 
                 </div> 
+              
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!--  IMAGE  -->
+        <div class="accordion-item" id="img-acc-label">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#img-acc-item" aria-expanded="true" aria-controls="img-acc-item">
+              Featured image parameters
+            </button>
+          </h2>
+
+          <div id="img-acc-item" aria-labelledby="img-acc-label" class="accordion-collapse collapse" data-bs-parent="#input-accordion">
+            <div class="container-fluid accordion-body">
+              <div class="row" style="width:100%">
+
+                <!--  IMG PROMPT  -->
+                <div class="accordion-content col-12">
+
+                  <div style="display:flex;align-items:flex-start">
+                    <h6 class="section-title">ChatGPT Prompt</h6>
+                    <button class="btn btn-outline-secondary btn-sm" style="margin-left:auto" onClick="resetPrompt('img')">Reset</button>
+                    
+                  </div>
+
+                  <p class="text" style="white-space: pre-wrap" id="img-prompt-rules" >This prompt will be used to ask ChatGPT for a Stable Diffusion Prompt. You can use the {{ "[" + search.by + "]" }} and [summary] placeholders. A summary of the article will be appended at the end of this prompt if [summary] is not used.</p>
+                  <textarea class="text basic-padding"  name="img-prompt" id="img-prompt" style="width:100%" >{{search.img_prompt}}</textarea> 
+                  
+                  <div id="img-prompt-div" class="horizontal-container">
+                    <input type="checkbox" value="limited" id="default-img-prompt" name="default-img-prompt" class="checkbox"/>
+                    <label class="text" for="default-img-prompt" >Set as default</label>
+                  </div>
+                </div>
+
+                <!--  SD KEYWORDS  -->
+                <div class="accordion-content col-lg-6 col-12">
+                
+                  <div style="display:flex;align-items:center">
+                    <h6 class="section-title">Positive keywords for featured image</h6>
+                    <button class="btn btn-outline-secondary btn-sm" style="margin-left:auto" onClick="clearImgKeywords('p')">Clear</button>
+                  </div>
+                  
+                  <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You can add keywords such as styles or colors (eg. vibrant, colorful, van gogh). These will be appended to the GPT-generated prompt.</p>
+                  
+                  <div class="horizontal-container">
+                    <input
+                      style="flex:1"
+                      type="text"
+                      class="form-control"
+                      id="p-img-keyword"
+                      placeholder="Vibrant"
+                      onKeyDown="if(event.keyCode==13) addImgKeyword('p');"
+                    />
+                    <button class="btn btn-outline-primary btn-sm" style="margin-left:auto" onClick="addImgKeyword('p')">Add</button>
+                  
+                  </div>
+                    
+                  <div id="p-img-kws-container" class="horizontal-container basic-padding">
+                    {% for kw in search.image_prompt_keywords %}
+                      <div class="btn-group" id="-img-kw-{{kw.replace(' ', '-')}}" role="group" aria-label="keyword for image">
+                        <button type="button" class="btn btn-secondary">{{kw}}</button>
+                        <button type="button" class="btn btn-secondary" onClick="deleteImgKeyword('{{kw}}', 'p')">X</button>
+                      </div>
+                  
+                    {% endfor %}
+                  </div>
+
+                </div> 
+            
+                <!--  SD NEGATIVE KEYWORDS  -->
+                <div class="accordion-content col-lg-6 col-12">
+                
+                  <div style="display:flex;align-items:center">
+                    <h6 class="section-title">Negative keywords for featured image</h6>
+                    <button class="btn btn-outline-secondary btn-sm" style="margin-left:auto" onClick="clearImgKeywords('n')">Clear</button>
+                  </div>
+                  
+                  <p class="text" style="white-space: pre-wrap" id="intro-prompt-rules" >You can add negative keywords for the Stable Diffusion prompt (eg. ugly, badly drawn). These will be appended to a general list of negative keywords.</p>
+                  
+                  <div class="form-group horizontal-container">
+                    <input
+                      style="flex:1"
+                      type="text"
+                      class="form-control"
+                      id="n-img-keyword"
+                      placeholder="Out of frame"
+                      onKeyDown="if(event.keyCode==13) addImgKeyword('n');"
+                    />
+                    <button class="btn btn-outline-primary btn-sm" style="margin-left:auto" onClick="addImgKeyword('n')">Add</button>
+                  
+                  </div>
+                    
+                  <div id="n-img-kws-container" class="horizontal-container basic-padding">
+                    {% for kw in search.image_prompt_keywords %}
+                      <div class="btn-group" id="n-img-kw-{{kw.replace(' ', '-')}}" role="group" aria-label="keyword for image">
+                        <button type="button" class="btn btn-secondary">{{kw}}</button>
+                        <button type="button" class="btn btn-secondary" onClick="deleteImgKeyword('{{kw}}', 'n')">X</button>
+                      </div>
+                  
+                    {% endfor %}
+                  </div>
+
+                </div>
               
               </div>
             </div>
@@ -150,7 +257,7 @@
             <div class="container-fluid accordion-body">
               <div class="row" style="width:100%">
 
-                <div class="accordion-content col-lg-3 col-6">
+                <div class="accordion-content col-lg-3 col-md-6 col-12">
 
                     <div class="horizontal-container">
                       <input checked type="checkbox" value="limited" id="check-limit-kw" name="check-limit-kw" class="checkbox">
@@ -164,38 +271,37 @@
 
                 </div>
 
-                <div class="accordion-content col-lg-3 col-6">
+                <div class="accordion-content col-lg-3 col-md-6 col-12">
                       
                   <div class="horizontal-container">
-
                     <input type="checkbox" value="limited" id="check-offset" name="check-offset" class="checkbox">
                     <label for="offset-range" >Result offset</label>
                   </div>
 
                   <div class="horizontal-container">
-                    <input disabled type="number" value="0" id="offset-range-txt" name="offset-range-txt" style="width:3em">  &nbsp
-                    <input disabled type="range" id="offset-range" min="0" max="50" step="1" value="0">
+                    <input disabled type="number" value="0" id="offset-range-txt" name="offset-range-txt" style="max-width:3em">  &nbsp
+                    <input disabled type="range" id="offset-range" min="0" max="50" step="1" value="0" style="flex:1">
                   </div>
   
                 </div>
 
-                <div class="accordion-content col-lg-3 col-6">
+                <div class="accordion-content col-lg-3 col-md-6 col-12">
                   <span class="text" style="font-size:1em;font-weight:bold">Select OpenAI model</span>
                   <div class="form-check">
-                    <input {{"checked" if model == "gpt-3.5-turbo" else "" }} class="form-check-input" type="radio" value="gpt-3.5-turbo" name="model" id="gpt-turbo">
+                    <input {{"checked" if search.model == "gpt-3.5-turbo" else "" }} class="form-check-input" type="radio" value="gpt-3.5-turbo" name="model" id="gpt-turbo">
                     <label class="form-check-label" for="gpt-turbo">
                       GPT 3.5 Turbo
                     </label>
                   </div>
                   <div class="form-check">
-                    <input {{"checked" if model == "text-davinci-003" else "" }}  class="form-check-input" type="radio" value="text-davinci-003" name="model" id="davinci">
+                    <input {{"checked" if search.model == "text-davinci-003" else "" }}  class="form-check-input" type="radio" value="text-davinci-003" name="model" id="davinci">
                     <label class="form-check-label" for="davinci">
                       DaVinci 3
                     </label>
                   </div>
                 </div>
 
-                <div class="accordion-content col-lg-3 col-6">
+                <div class="accordion-content col-lg-3 col-md-6 col-12">
                   <input checked type="checkbox" value="limited" id="wordpress" name="wordpress" class="checkbox">
                   <span class="text" style="font-size:1em">Generate Wordpress draft</span>
                 </div>
@@ -213,7 +319,7 @@
 
         <div class="col-12">
           <button class="btn btn-primary basic-padding" id="btn-search" 
-          onClick="search('{{by}}')" style="width:100%">
+          onClick="search('{{search.by}}')" style="width:100%">
             Search
           </button>
         </div>

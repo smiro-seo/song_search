@@ -18,7 +18,7 @@ Keyword selection &nbsp<span id="keyword-accordion-title" class="text" ></span>
       id="keyword"
       name="keyword"
       placeholder="Animals"
-      {{'value=' + keywords.get('keyword', '') if keywords.get('keyword', '') != '' else ''}}
+      {{'value=' + search.keyword if search.keyword != '' else ''}}
     />
   </div>
 </div>
@@ -34,7 +34,7 @@ Keyword selection &nbsp<span id="keyword-accordion-title" class="text" ></span>
           </tr>
       </thead>
       <tbody id="keyword-table-body">
-          {% for sp_kw in keywords.get("sp_keywords") %}
+          {% for sp_kw in search.sp_keywords %}
       <tr id="{{ 'tr-' + sp_kw }}">
       <td>
           {{sp_kw.title()}}
@@ -58,6 +58,7 @@ Keyword selection &nbsp<span id="keyword-accordion-title" class="text" ></span>
               id="sp_keyword"
               name="sp_keyword"
               placeholder="Cat"
+              onKeyDown="if(event.keyCode==13) addKeyword();"
             />
           </div>
         </td>
