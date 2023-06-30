@@ -29,7 +29,7 @@ def create_wp_draft(title, html, slug, keys, image_id=None):
 
     print("Creating wordpress draft...")
     
-    send_wp_request(url, post, headers)
+    send_wp_request(url, {"json":post}, headers)
     
 
     return
@@ -47,8 +47,9 @@ def add_wp_image(img_bin, img_name, keys):
     }
 
     print("Creating wordpress image...")
+    print(headers)
     
-    res = send_wp_request(url, media, headers).json()
+    res = send_wp_request(url, {'data':media},  headers).json()
 
     print(res)
 
@@ -64,7 +65,7 @@ def get_wp_auth(keys):
 
 def send_wp_request(url, post, headers):
 
-    response = requests.post(url, json=post, headers=headers)
+    response = requests.post(url, headers=headers, **post)
     return response
     '''
     if response.status_code==401 or response.status_code=="401":
