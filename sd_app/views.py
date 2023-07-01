@@ -50,6 +50,7 @@ def background_search(local_app, local_db, input_data, limit, offset,user,  by="
 
         # Run search
         status = search.run(flag_bkg, stopper)
+        local_db.session.commit()
         
         # Update status
         search_record.status = status

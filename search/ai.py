@@ -92,19 +92,21 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
 
     # Set up our warning to print to the console if the adult content classifier is tripped.
     # If adult content classifier is not tripped, save generated images.
-    
-    for resp in answers:
-        for response in resp.artifacts:
+    try:
+        for resp in answers:
+            for response in resp.artifacts:
 
-            if response.type == generation.ARTIFACT_IMAGE:
-                
-                if filename is None: filename = str(response.seed) + '.png'
-                elif filename[-4:] != '.png': filename = filename + '.png'
-                filepath =  os.path.join(output_dir,filename)
+                if response.type == generation.ARTIFACT_IMAGE:
+                    
+                    if filename is None: filename = str(response.seed) + '.png'
+                    elif filename[-4:] != '.png': filename = filename + '.png'
+                    filepath =  os.path.join(output_dir,filename)
 
-                with open(filepath, 'wb') as img:
-                    img.write(response.binary)
-                return response.binary, filename
+                    with open(filepath, 'wb') as img:
+                        img.write(response.binary)
+                    return response.binary, filename
+    except:
+        return None, None
     
     return None, None
     
