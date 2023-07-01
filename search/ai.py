@@ -195,8 +195,8 @@ class Model_Generator():
 
         options=self.search.img_config
 
-        options['height'] = options['aspect-ratio'].split('x')[1]
-        options['width'] = options['aspect-ratio'].split('x')[0]
+        options['height'] = int(options['aspect-ratio'].split('x')[1])
+        options['width'] = int(options['aspect-ratio'].split('x')[0])
         del options['aspect-ratio']
 
         bin_file, filename = get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename, options=self.search.img_config)
