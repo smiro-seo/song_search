@@ -86,8 +86,6 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
     # Set up our initial generation parameters.
     answers = stability.generate(
         prompt=prompt,
-        width=512, # Generation width, if not included defaults to 512 or 1024 depending on the engine.
-        height=512, # Generation height, if not included defaults to 512 or 1024 depending on the engine.
         samples=1, # Number of images to generate, defaults to 1 if not included.
         **options
     )
