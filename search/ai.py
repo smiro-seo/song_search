@@ -194,10 +194,13 @@ class Model_Generator():
         print(sd_negative_prompt)
 
         options=self.search.img_config
+        print(options)
 
         options['height'] = int(options['aspect-ratio'].split('x')[1])
         options['width'] = int(options['aspect-ratio'].split('x')[0])
+        options['steps'] = int(options['steps'])
         del options['aspect-ratio']
+        print(options)
 
         bin_file, filename = get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename, options=self.search.img_config)
 
