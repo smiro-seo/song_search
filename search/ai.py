@@ -98,8 +98,8 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
 
                 if response.type == generation.ARTIFACT_IMAGE:
                     
-                    if filename is None: filename = str(response.seed) + '.png'
-                    elif filename[-4:] != '.png': filename = filename + '.png'
+                    if filename is None: filename = str(response.seed) + '.jpg'
+                    elif filename[-4:] != '.jpg': filename = filename + '.jpg'
                     filepath =  os.path.join(output_dir,filename)
 
                     with open(filepath, 'wb') as img:
