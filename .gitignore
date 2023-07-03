@@ -12,5 +12,6 @@ __pycache__/
 *input.csv
 sd_app/static/feat_images
 !sd_app/static/feat_images/placeholder.txt
+!sd_app/static/feat_images/rename_pictures.py
 node_modules/
 test/
