@@ -5,6 +5,9 @@ from .constants import default_prompt, default_intro_prompt, default_intro_promp
 import json
 from uuid import uuid4
 
+def clean_name(name):
+    new_name = name.replace(' ', '_').replace('-', '_').replace('(', '').replace(')', '').replace('.', '').replace(',', '')
+    return new_name
 
 
 class User(db.Model, UserMixin):
@@ -132,7 +135,7 @@ class Search(db.Model):
             'include_img':self.include_img,
             'model': model,
             'by':self.by.title(),
-            'img_name': f"{self.keyword or self.artist}_{self.id}" ,
+            'img_name': f"{clean_name(name)(self.keyword or self.artist)}_songs_{self.id}" ,
             "img_config": self.img_config,
             'img-gen-prompt':self.img_gen_prompt
         }

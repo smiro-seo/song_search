@@ -13,3 +13,4 @@ __pycache__/
 sd_app/static/feat_images
 !sd_app/static/feat_images/placeholder.txt
 node_modules/
+test/

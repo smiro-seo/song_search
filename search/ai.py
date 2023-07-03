@@ -4,6 +4,8 @@ from stability_sdk import client
 from .const import default_img_format
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from .img_compressor import compress_image
+from PIL import Image
+import io
 
 cwd = os.path.dirname(__file__)
 output_dir = os.path.join(cwd, '..', 'sd_app', 'static', 'feat_images')
@@ -104,13 +106,18 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
                     elif filename[-3:] != default_img_format: filename = filename + '.' + default_img_format
                     filepath =  os.path.join(output_dir,filename)
 
-                    with open(filepath, 'wb') as img:
-                        img.write(compress_image(response.binary))
-                    return compress_image(response.binary), filename
+                    data = response.binary
+
     except:
         return None, None
+
+    img = Image.open(io.BytesIO(data))
+    img.save(filepath, optimize=True, quality=85) 
+
+    with open(filepath, 'rb') as f:
+        opt_data = f.read()
     
-    return None, None
+    return opt_data, filename
     
 def build_prompt(original_prompt, values_to_replace):
     
