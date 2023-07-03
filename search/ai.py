@@ -1,6 +1,7 @@
 
 import time, os, openai
 from stability_sdk import client
+from .const import default_img_format
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 
 cwd = os.path.dirname(__file__)
@@ -98,8 +99,8 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
 
                 if response.type == generation.ARTIFACT_IMAGE:
                     
-                    if filename is None: filename = str(response.seed) + '.jpg'
-                    elif filename[-4:] != '.jpg': filename = filename + '.jpg'
+                    if filename is None: filename = f'{str(response.seed)}.{default_img_format}'
+                    elif filename[-3:] != default_img_format: filename = filename + '.' + default_img_format
                     filepath =  os.path.join(output_dir,filename)
 
                     with open(filepath, 'wb') as img:

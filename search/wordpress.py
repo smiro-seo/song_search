@@ -2,6 +2,7 @@ import requests
 import json
 from base64 import b64encode
 from datetime import datetime
+from .const import default_img_format
 from requests.auth import HTTPBasicAuth
 
 base_url = "https://songpier.com/wp-json/wp/v2"
@@ -38,10 +39,9 @@ def add_wp_image(img_bin, img_name, keys):
 
     url = f"{base_url}/media"
     auth = get_wp_auth(keys)
-    headers = {'Authorization': auth, "Content-Type": "image/png", "Content-Disposition": f'attachment; filename="{img_name}"'}
+    headers = {'Authorization': auth, "Content-Type": f"image/{default_img_format}", "Content-Disposition": f'attachment; filename="{img_name}"'}
 
     print("Creating wordpress image...")
-    print(headers)
     res = send_wp_request(url, {'data':img_bin},  headers).json()
 
     print(res)
