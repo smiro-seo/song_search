@@ -135,7 +135,7 @@ class Search(db.Model):
             'include_img':self.include_img,
             'model': model,
             'by':self.by.title(),
-            'img_name': f"{clean_name(name)(self.keyword or self.artist)}_songs_{self.id}" ,
+            'img_name': f"{clean_name(self.keyword or self.artist)}_songs_{self.id}" ,
             "img_config": self.img_config,
             'img-gen-prompt':self.img_gen_prompt
         }
