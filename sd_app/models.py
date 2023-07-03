@@ -132,7 +132,7 @@ class Search(db.Model):
             'include_img':self.include_img,
             'model': model,
             'by':self.by.title(),
-            'img_name': f"feat_img_{self.id}",
+            'img_name': f"{self.keyword or self.artist}_{self.id}" ,
             "img_config": self.img_config,
             'img-gen-prompt':self.img_gen_prompt
         }
