@@ -3,7 +3,6 @@ import time, os, openai
 from stability_sdk import client
 from .const import default_img_format
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
-from .img_compressor import compress_image
 from PIL import Image
 import io
 
