@@ -3,6 +3,7 @@ import time, os, openai
 from stability_sdk import client
 from .const import default_img_format
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
+from .img_compressor import compress_image
 
 cwd = os.path.dirname(__file__)
 output_dir = os.path.join(cwd, '..', 'sd_app', 'static', 'feat_images')
@@ -104,8 +105,8 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
                     filepath =  os.path.join(output_dir,filename)
 
                     with open(filepath, 'wb') as img:
-                        img.write(response.binary)
-                    return response.binary, filename
+                        img.write(compress_image(response.binary))
+                    return compress_image(response.binary), filename
     except:
         return None, None
     

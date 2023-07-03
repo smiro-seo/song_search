@@ -41,6 +41,7 @@ MarkupSafe==2.1.1
 multidict==6.0.4
 numpy==1.24.0
 openai==0.27.0
+opencv-python==4.8.0.74
 openpyxl==3.0.10
 packaging==22.0
 pandas==1.5.2
@@ -63,6 +64,7 @@ six==1.16.0
 spotipy==2.22.0
 SQLAlchemy==1.4.45
 stability-sdk==0.8.2
+tabulate==0.9.0
 tomli==2.0.1
 tqdm==4.64.1
 types-pytz==2022.7.0.0
