@@ -43,6 +43,7 @@ def get_gpt_response(prompt, engine, options=default_gpt_options):
 
     try:
         if 'davinci' in engine:
+            # Davinci engines need Completion API
             completion= openai.Completion.create(
                 engine=engine,
                 max_tokens=gpt_max_tokens,
@@ -53,6 +54,7 @@ def get_gpt_response(prompt, engine, options=default_gpt_options):
             choice_response_text = completion['choices'][0].text.strip()
             choice_response_text = completion['choices'][0].text.strip().replace('"', '')
         else:
+            # Every other engine (GPTs) need ChatCompletion API
             completion= openai.ChatCompletion.create(
                 model=engine,
                 max_tokens=gpt_max_tokens,
@@ -63,7 +65,7 @@ def get_gpt_response(prompt, engine, options=default_gpt_options):
                                                         
             choice_response_text = completion['choices'][0]['message']['content'].strip().replace('"', '')
         
-
+        # Required timeout for OpenAI API
         print(f"Sleeping for {str(sleep_time_openai)} seconds")
         time.sleep(sleep_time_openai)
 
@@ -77,7 +79,7 @@ def get_gpt_response(prompt, engine, options=default_gpt_options):
 
 def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_options, filename=None):
     
-    # Set up our connection to the API.
+    # Set up connection to the API.
     stability = client.StabilityInference(
         key=keys['sd_key'], # API Key reference.
         verbose=True, # Print debug messages.
@@ -86,21 +88,20 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
         # stable-diffusion-512-v2-1 stable-diffusion-768-v2-1 stable-diffusion-xl-beta-v2-2-2 stable-inpainting-v1-0 stable-inpainting-512-v2-0
     )
 
-    # Set up our initial generation parameters.
+    # Set up initial generation parameters.
     answers = stability.generate(
         prompt=prompt,
         samples=1, # Number of images to generate, defaults to 1 if not included.
         **options
     )
 
-    # Set up our warning to print to the console if the adult content classifier is tripped.
-    # If adult content classifier is not tripped, save generated images.
     try:
         for resp in answers:
             for response in resp.artifacts:
 
                 if response.type == generation.ARTIFACT_IMAGE:
                     
+                    # Generate unique filename
                     if filename is None: filename = f'{str(response.seed)}.{default_img_format}'
                     elif filename[-3:] != default_img_format: filename = filename + '.' + default_img_format
                     filepath =  os.path.join(output_dir,filename)
@@ -110,16 +111,19 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
     except:
         return None, None
 
+    # Get binary data from response and save to file
     img = Image.open(io.BytesIO(data))
     img.save(filepath, optimize=True, quality=85) 
 
     with open(filepath, 'rb') as f:
+        # Need to do this in order to get optimized image binary
         opt_data = f.read()
     
     return opt_data, filename
     
 def build_prompt(original_prompt, values_to_replace):
-    
+    # Builds prompt based on placeholder text such as [Artist]
+
     prompt = original_prompt.lower()
     for placeholder, value in values_to_replace.items():
         prompt = prompt.replace(placeholder, value)
@@ -130,7 +134,7 @@ def build_prompt(original_prompt, values_to_replace):
 
 class Model_Generator():
     def __init__(self, search, keys):
-
+        #Creates a generator based on search data and keys
         openai.api_key = keys['openai_key']
         self.sd_key = keys['sd_key']
         self.search = search
@@ -158,7 +162,6 @@ class Model_Generator():
     def intro(self):
     
         print("Getting OpenAI introduction")
-        print("prompt: " + self.search.intro_prompt)
 
         response = get_gpt_response(self.search.intro_prompt, self.search.model)
         
@@ -178,12 +181,14 @@ class Model_Generator():
 
     def feat_image(self, filename=None):
 
+        # Generate article summary through GPT
         print("Generating article summary")
         summ_prompt = f"Summarize the following article about {self.search.wp_title}:\n\n"
         summ_prompt = summ_prompt + self.search.full_text
 
         summ_response = get_gpt_response(summ_prompt, 'gpt-3.5-turbo', options=summarization_prompt_options)
 
+        # Add summary to user-inputted image prompt
         sd_text_prompt = self.search.img_prompt
         if "[summary]" in self.search.img_prompt:
             sd_text_prompt = sd_text_prompt.replace('[summary]', summ_response) + "\n\nOnly reply with the prompt, do not add any text besides that"
@@ -192,25 +197,20 @@ class Model_Generator():
         
         sd_prompt = get_gpt_response(sd_text_prompt, 'gpt-3.5-turbo', options=image_prompt_options)
 
+        # Add positive and negative keywords to prompt
         sd_prompt = sd_prompt + " " + ", ".join(self.search.image_prompt_keywords)
         sd_negative_prompt = 'codeugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face'
         sd_negative_prompt += ", " + ", ".join(self.search.image_nprompt_keywords)
 
         # sd_prompt = "Photo realistic illustration of a full-body cat eating pizza. Hyper realistic, low contrast, bohemian, old, grey cat, greasy pizza, "
 
-        print("Prompt for stable diffusion:")
-        print(sd_prompt)
-        print("Negative prompt:")
-        print(sd_negative_prompt)
-
+        # Get stability options
         options=self.search.img_config
-        print(options)
 
         options['height'] = int(options['aspect-ratio'].split('x')[1])
         options['width'] = int(options['aspect-ratio'].split('x')[0])
         options['steps'] = int(options['steps'])
         del options['aspect-ratio']
-        print(options)
 
         bin_file, filename = get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename, options=self.search.img_config)
 
