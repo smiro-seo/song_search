@@ -111,7 +111,8 @@ class Search(db.Model):
 
         model_name = {
             'gpt-3.5-turbo': 'GPT 3.5 Turbo',
-            'text-davinci-003':'DaVinci 3'
+            'text-davinci-003':'DaVinci 3',
+            'gpt-4': 'GPT 4'
         }
 
         model = self.model
