@@ -115,10 +115,9 @@ class Search(db.Model):
             'gpt-4': 'GPT 4'
         }
 
-        model = self.model
-        for p, n in model_name.items():
-            model = model.replace(p,n)
-            
+        model = model_name.get(self.model, self.model)
+        img_name = f"{clean_name(self.keyword if self.by=='keyword' else self.artist)}_songs_{self.id}"
+
         data = {
             'id':self.id,
             'date': self.date.strftime("%Y-%m-%d %H:%M"),
@@ -136,7 +135,7 @@ class Search(db.Model):
             'include_img':self.include_img,
             'model': model,
             'by':self.by.title(),
-            'img_name': f"{clean_name(self.keyword or self.artist)}_songs_{self.id}" ,
+            'img_name': img_name,
             "img_config": self.img_config,
             'img-gen-prompt':self.img_gen_prompt
         }
