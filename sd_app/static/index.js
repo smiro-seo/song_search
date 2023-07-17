@@ -141,6 +141,7 @@ function showDetails(searchData) {
 
   if (searchData.include_img) {
     $("#details-img-row").attr("hidden", false);
+    console.log("Looking for image " + searchData.img_name);
 
     const img_url = `${imgSrc}/${searchData.img_name}.png`;
     $.get(img_url)
@@ -152,6 +153,7 @@ function showDetails(searchData) {
         $("#details-img-row-src").attr("hidden", false);
       })
       .fail(function () {
+        console.log("Failed search for the image");
         $("#details-img-row-src").attr("hidden", true);
       });
   } else {
