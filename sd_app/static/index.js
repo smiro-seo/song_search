@@ -141,7 +141,7 @@ function showDetails(searchData) {
 
   if (searchData.include_img) {
     $("#details-img-row").attr("hidden", false);
-    console.log("Looking for image " + searchData.img_name);
+    console.log("Looking for image " + `${imgSrc}/${searchData.img_name}.png`);
 
     const img_url = `${imgSrc}/${searchData.img_name}.png`;
     $.get(img_url)
