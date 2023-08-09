@@ -4,6 +4,14 @@ from airium import Airium
 spotify_img = '<img class="gb-image gb-image-1d75b3e9" \
     src="https://songpier.com/wp-content/uploads/2022/05/listen-spotify-button-edited-e1671691367203.png" \
     alt="spotify", title="listen-spotify-button" />'
+flagged_characters_title = ['-']
+
+def clean_name(name):
+    for c in flagged_characters_title:
+        end = name.find(c)
+        if end>-1:
+            name = name[:end-1]
+    return name
 
 
 def generate_html(data, intro, return_full_text=False):
@@ -17,9 +25,10 @@ def generate_html(data, intro, return_full_text=False):
     a.p(_t=intro)
 
     # Generate HTML file
+    print(data)
     for i, song_data in data.iterrows():
         full_text += '\n' + song_data["model_response"]
-        title = f"{song_data['Track Name']} &#8211; {song_data['Artist'].title()}"    
+        title = f"{clean_name(song_data['Track Name'])} &#8211; {song_data['Artist'].title()}"    
 
         #   Title
         with a.h2(klass="wp-block-heading"):

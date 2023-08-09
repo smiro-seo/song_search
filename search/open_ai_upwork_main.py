@@ -150,21 +150,20 @@ def get_youtube_search_results(data, stopper):
     return video_id
 
 def cleanse_track_duplicates(df):
-        def delete_after_character(track_name):
-            for c in flagged_characters:
-                end = track_name.find(c)
-                if end != -1:
-                    track_name = track_name[:end-1]
-                    break
-            return track_name
+    def delete_after_character(track_name):
+        for c in flagged_characters:
+            end = track_name.find(c)
+            if end != -1:
+                track_name = track_name[:end-1]
+        return track_name
 
-        # Use clean track names
-        df['track_name_clean'] = df.apply(
-            lambda x: delete_after_character(x['track_name']), axis=1)
+    # Use clean track names
+    df['track_name_clean'] = df.apply(
+        lambda x: delete_after_character(x['track_name']), axis=1)
 
-        df.drop_duplicates(subset='track_name_clean', keep='first', inplace=True)
-        print(df[['track_name', 'popularity']])
-        return df
+    df.drop_duplicates(subset='track_name_clean', keep='first', inplace=True)
+    print(df[['track_name', 'popularity']])
+    return df
 
 def clean_and_sort(df):
     # Order by most popular songs (total)
@@ -174,6 +173,7 @@ def clean_and_sort(df):
     df_relevant = df[column_list]
 
     df_clean = df_relevant.rename(columns=column_name_transform)
+    df_clean.reset_index(inplace=True)
     return df_clean
 
 
@@ -387,6 +387,7 @@ class Search_Keyword(Search_Process):
 
 
         # drop duplicates
+        print("Dropping duplicates")
         out_df_no_duplicates = cleanse_track_duplicates(st_out_sp_df)
         if self.limit != -1:
             if out_df_no_duplicates.shape[0] > self.offset + self.limit:
@@ -436,6 +437,9 @@ class Search_Artist(Search_Process):
         df_w_spot_df.sort_values('popularity', ascending=False, inplace=True)
         print("Limiting search results to " + str(self.limit))
 
+        # drop duplicates
+        print("Dropping duplicates")
+        df_w_spot_df = cleanse_track_duplicates(df_w_spot_df)
         if self.limit != -1:
             if df_w_spot_df.shape[0] > self.offset + self.limit:
                 # search_term-level filtering
