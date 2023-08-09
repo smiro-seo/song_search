@@ -14,7 +14,7 @@ from .search_youtube import youtube_search
 
 market = 'US'
 # Characters after which the track name does not matter for duplicates
-flagged_characters = ['-', '(']
+flagged_characters = ['-', '(', '/']
    
 
 column_list = ['artist', 'track_name', 'release_year', 'album', 'yt_video_id',
