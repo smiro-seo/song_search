@@ -40,7 +40,7 @@ def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=No
             Example: "Perfect (Remix) (feat. Doja Cat & BIA)" comes up when searching for "Cat"
             By applying this function, that track would come up as only "Perfect", so it would not appear in the search results
         '''
-        start = max(track_name.find('('), track_name.find('-'))
+        start = min([track_name.find(c) for c in flagged_characters])
         if start != -1:
             track_name = track_name[:start]
 
@@ -148,7 +148,6 @@ def get_youtube_search_results(data, stopper):
 
  #   video_url = f'https://www.youtube.com/watch?v={video_id}'
     return video_id
-
 
 def cleanse_track_duplicates(df):
         def delete_after_character(track_name):
