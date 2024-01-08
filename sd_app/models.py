@@ -110,9 +110,11 @@ class Search(db.Model):
             keywords = self.keyword + " (" + ", ".join(self.sp_keywords) + ")"
 
         model_name = {
-            'gpt-3.5-turbo': 'GPT 3.5 Turbo',
-            'text-davinci-003':'DaVinci 3',
-            'gpt-4': 'GPT 4'
+            'gpt-3.5-turbo': '(OLD) GPT 3.5 Turbo',
+            'text-davinci-003':'(OLD) DaVinci 3',
+            'gpt-4': '(OLD) GPT 4',
+            'gpt-3.5-turbo-1106':'GPT 3.5 Turbo',
+            'gpt-4-1106-preview': 'GPT 4',
         }
 
         model = model_name.get(self.model, self.model)
@@ -186,7 +188,7 @@ class Def_Search():
         self.artist=""
         self.keyword=""
         self.sp_keywords=""
-        self.model='gpt-3.5-turbo'
+        self.model='gpt-4-1106-preview'
 
         self.include_img=True
         self.img_config=json.loads(current_user.default_img_config)

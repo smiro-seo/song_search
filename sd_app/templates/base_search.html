@@ -331,20 +331,14 @@
                 <div class="accordion-content col-lg-3 col-md-6 col-12">
                   <span class="text" style="font-size:1em;font-weight:bold">Select OpenAI model</span>
                   <div class="form-check">
-                    <input {{"checked" if search.model == "gpt-3.5-turbo" else "" }} class="form-check-input" type="radio" value="gpt-3.5-turbo" name="model" id="gpt-turbo">
+                    <input {{"checked" if search.model == "gpt-3.5-turbo-1106" else "" }} class="form-check-input" type="radio" value="gpt-3.5-turbo-1106" name="model" id="gpt-turbo">
                     <label class="form-check-label" for="gpt-turbo">
                       GPT 3.5 Turbo
                     </label>
                   </div>
                   <div class="form-check">
-                    <input {{"checked" if search.model == "text-davinci-003" else "" }}  class="form-check-input" type="radio" value="text-davinci-003" name="model" id="davinci">
-                    <label class="form-check-label" for="davinci">
-                      DaVinci 3
-                    </label>
-                  </div>
-                  <div class="form-check">
-                    <input {{"checked" if search.model == "gpt-4" else "" }}  class="form-check-input" type="radio" value="gpt-4" name="model" id="gpt-4">
-                    <label class="form-check-label" for="davinci">
+                    <input {{"checked" if search.model == "gpt-4-1106-preview" else "" }}  class="form-check-input" type="radio" value="gpt-4-1106-preview" name="model" id="gpt-4">
+                    <label class="form-check-label" for="gpt-4">
                       GPT 4
                     </label>
                   </div>

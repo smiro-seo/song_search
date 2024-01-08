@@ -226,7 +226,7 @@ class Search_Process():
         self.improve_intro = data.get('improve-intro', False)
 
         self.wordpress =  data.get('wordpress', False)
-        self.model = data.get('model','gpt-3.5-turbo' )
+        self.model = data.get('model','gpt-4-1106-preview' )
         
         self.limit = limit_st
         self.offset = offset_res

@@ -2,11 +2,11 @@ const trashSvg = (onClick) =>
   `<button type="button" class="btn btn-outline-danger" onClick="${onClick}">` +
   '<i class="bi bi-trash-fill"></i></button>';
 
-var imgSrc = document.body.getAttribute("data-img-src");
-var default_prompt = $("#user-default-prompt").text();
-var default_intro_prompt = $("#user-default-intro-prompt").text();
-var default_improver_prompt = $("#user-default-improver-prompt").text();
-var default_img_prompt = $("#user-default-img-prompt").text();
+let imgSrc = document.body.getAttribute("data-img-src");
+let default_prompt = $("#user-default-prompt").text();
+let default_intro_prompt = $("#user-default-intro-prompt").text();
+let default_improver_prompt = $("#user-default-improver-prompt").text();
+let default_img_prompt = $("#user-default-img-prompt").text();
 
 function copyTextToClipboard(text, ident) {
   if (!navigator.clipboard) {
@@ -352,10 +352,10 @@ function resetPrompt(prompt) {
 }
 
 $(document).ready(function () {
-  var tooltipTriggerList = [].slice.call(
+  let tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')
   );
-  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl);
   });
 
