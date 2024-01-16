@@ -33,3 +33,6 @@ aspect_ratios = [
     ('640x1536', '5:12'),
     ('512x512', '1:1')
 ]
+
+
+database_path="/opt/var/song_search/"
