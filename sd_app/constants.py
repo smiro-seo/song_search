@@ -35,4 +35,4 @@ aspect_ratios = [
 ]
 
 
-database_path="/opt/var/song_search/"
+database_path="/opt/var/song_search"

@@ -215,7 +215,7 @@ def clear_history(flash_msg=True):
 @login_required
 def download(filename):
     # Appending app path to upload folder path within app root folder
-    path = os.path.join(views.root_path, 'model_outputs', filename)
+    path = os.path.join(views.root_path, '..', '..', '..', 'var', 'song_search', 'model_outputs', filename)
     # Returning file from appended path
     return send_file(path, as_attachment=True)
 
@@ -223,7 +223,7 @@ def download(filename):
 @login_required
 def seeHTML(filename):
     # Appending app path to upload folder path within app root folder
-    path = os.path.join(views.root_path, 'model_outputs', filename)
+    path = os.path.join(views.root_path, '..', '..', '..', 'var', 'song_search', 'model_outputs', filename)
 
     with open(path, 'r') as f:
         html = f.read()

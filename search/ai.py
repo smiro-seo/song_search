@@ -7,7 +7,7 @@ from PIL import Image
 import io
 
 cwd = os.path.dirname(__file__)
-output_dir = os.path.join(cwd, '..', 'sd_app', 'static', 'feat_images')
+output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images')
 
 image_prompt_ex_1=""
 image_prompt_ex_2=""

@@ -47,7 +47,7 @@ def create_app():
 
 
 def create_database(app):
-    if not path.exists(database_path + DB_NAME):
+    if not path.exists(f'{database_path}/{DB_NAME}'):
         with app.app_context():
             db.create_all()
             set_db_version_current()

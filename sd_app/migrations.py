@@ -1,9 +1,9 @@
-from .constants import DB_NAME, default_improver_prompt, default_model
+from .constants import DB_NAME, default_improver_prompt, default_model, database_path
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 import json
 
-engine = create_engine(f"sqlite:///instance/{DB_NAME}")
+engine = create_engine(f"sqlite:///{database_path}/{DB_NAME}")
 default_img_prompt = 'Based on the following article summary, provide a suitable prompt for a text-to-image generative model. Focus on the concept of [keyword]. Below are some examples:\
  Example 1:\
  A dreamy, vibrant illustration about [keyword]; aesthetically pleasing anime style, trending on popular art platforms, minutely detailed, with precise, sharp lines, a composition that qualifies as an award-winning illustration, presented in 4K resolution, inspired by master artists like Eugene de Blaas and Ross Tran, employing a vibrant color palette, intricately detailed.\

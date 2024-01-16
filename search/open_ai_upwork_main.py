@@ -27,7 +27,7 @@ cwd = os.path.dirname(__file__)
 youtube_api_key = ''
 
 # paths
-output_dir = os.path.join(cwd, '..', 'sd_app', 'model_outputs')
+path = os.path.join(cwd,'..', '..', '..', '..', 'var', 'song_search', 'model_outputs', filename)
 
 
 def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=None):
