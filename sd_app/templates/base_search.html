@@ -263,7 +263,7 @@
                   <div class="horizontal-container">
                     <div class="dropup">
                       <button class="btn btn-secondary dropdown-toggle" id="img-config-ar-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{search.img_config.get('aspect-ratio')}}
+                        {{search.img_config.get('aspect-ratio', '1344x768')}}
                       </button>
                       <ul class="dropdown-menu">
                         {% for dim, ar in aspect_ratios %}
@@ -276,7 +276,7 @@
                       <label for="default-img-aspect-ratio" >Default</label>
                     </div>
 
-                  <input type="text" hidden id="img-config-ar" value="{{search.img_config.get('aspect-ratio')}}">
+                  <input type="text" hidden id="img-config-ar" value="{{search.img_config.get('aspect-ratio', '1344x768')}}">
   
                   </div>
                 </div>
