@@ -199,7 +199,7 @@ class Model_Generator():
 
         # Add positive and negative keywords to prompt
         sd_prompt = sd_prompt + " " + ", ".join(self.search.image_prompt_keywords)
-        sd_negative_prompt = 'codeugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face'
+        sd_negative_prompt = 'ugly, blurry, '
         sd_negative_prompt += ", " + ", ".join(self.search.image_nprompt_keywords)
 
         # sd_prompt = "Photo realistic illustration of a full-body cat eating pizza. Hyper realistic, low contrast, bohemian, old, grey cat, greasy pizza, "
