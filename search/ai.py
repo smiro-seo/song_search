@@ -2,13 +2,14 @@
 import time, os, openai
 from stability_sdk import client
 from .const import default_img_format
+import requests
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from PIL import Image
 import io
 
 cwd = os.path.dirname(__file__)
-output_dir = os.path.join(cwd, '..', 'model_outputs')
-#output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images')
+#output_dir = os.path.join(cwd,'feat_images')
+output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images')
 
 image_prompt_ex_1=""
 image_prompt_ex_2=""
@@ -26,7 +27,7 @@ improver_prompt_options = {
 summarization_prompt_options = {}
 image_prompt_options = {}
 
-default_sd_options={'steps':20}
+default_sd_options={'steps':20, 'style_preset':'cinematic'}
 '''
     steps=50, # Amount of inference steps performed on image generation. Defaults to 30.
     cfg_scale=8.0, # Influences how strongly your generation is guided to match your prompt.
@@ -203,8 +204,6 @@ class Model_Generator():
         sd_negative_prompt = 'ugly, blurry'
         sd_negative_prompt += ", " + ", ".join(self.search.image_nprompt_keywords)
 
-        # sd_prompt = "Photo realistic illustration of a full-body cat eating pizza. Hyper realistic, low contrast, bohemian, old, grey cat, greasy pizza, "
-
         # Get stability options
         options=self.search.img_config
 
@@ -212,6 +211,7 @@ class Model_Generator():
         options['width'] = int(options['aspect-ratio'].split('x')[0])
         options['steps'] = int(options['steps'])
         del options['aspect-ratio']
+        options['extras']={ '$IPC': { "preset": 'cinematic' } }
 
         bin_file, filename = get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename, options=self.search.img_config)
 

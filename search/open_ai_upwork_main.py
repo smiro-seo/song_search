@@ -11,6 +11,7 @@ from .html_generator import generate_html
 from .wordpress import create_wp_draft, add_wp_image
 from .ai import Model_Generator
 from .search_youtube import youtube_search
+local=False
 
 market = 'US'
 # Characters after which the track name does not matter for duplicates
@@ -27,7 +28,7 @@ cwd = os.path.dirname(__file__)
 youtube_api_key = ''
 
 # paths
-path = os.path.join(cwd,'..', '..', '..', '..', 'var', 'song_search', 'model_outputs')
+path = os.path.join(cwd,'..', '..', '..', '..', 'var', 'song_search', 'model_outputs') if not local else os.path.join(cwd,'model_outputs')
 
 
 def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=None):
@@ -199,7 +200,7 @@ def clean_and_sort(df):
 
 def generate_html_file(html):
     output_html_name = f'sample_keywords_output_html_{datetime.now().strftime("%Y%m%d-%H%M%S")}.html'
-    output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'model_outputs')
+    output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'model_outputs') if not local else os.path.join(cwd,'model_outputs')
     output_path = os.path.join(output_dir, output_html_name)
 
     print(f"Saving HTML file to : {output_path}")
@@ -349,6 +350,8 @@ class Search_Process():
         print("Getting HTML")
         html, self.full_text = generate_html(clean_data, intro, return_full_text=True)
         #   Generate feat. image
+        print("//////////////////////////////")
+        print(generator.search.img_prompt)
         if self.include_img:
             print("Getting featured image")
             if self.record is None: filename=None

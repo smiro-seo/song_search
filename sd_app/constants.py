@@ -16,10 +16,10 @@ default_intro_prompt = "Write a simple, interesting and captivating introduction
 default_intro_prompt_artist = "Write a simple, interesting and captivating introduction for an article that describes the best songs from [artist]. The text should be at least 70 words but no longer than 100 words written in easy-to-understand language. Do not use any quotation marks in the text."
 default_improver_prompt = ""
 
-
+local=False
 DB_NAME = "database.db"
-database_path="/opt/var/song_search"
-db_string_conn = f"sqlite:///{database_path}/{DB_NAME}"#
+database_path="/opt/var/song_search" if not local else "instance"
+db_string_conn = f"sqlite:///{database_path}/{DB_NAME}" if not local else f"sqlite:///{DB_NAME}"
 default_model = 'text-davinci-003'
 
 aspect_ratios = [
