@@ -111,11 +111,29 @@ def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=No
 
 
 def scrape_youtube_search_results(track_title):
+    def is_same_song(song1, song2):
+    
+        song1_words = set(song1.lower().split())
+        song2_words = set(song2.lower().split())
+        common_words = song2_words.intersection(song2_words)
+
+        if len(common_words) >= 2:
+            return True
+        else: return False
+
     input = urllib.parse.urlencode({'search_query': track_title})
     try:
         html = urllib.request.urlopen(
             "http://www.youtube.com/results?" + input)
-        video_id = re.findall(r"watch\?v=(\S{11})", html.read().decode())[0]
+        all_results = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+        video_id=None
+        for song_id in all_results:
+            song_html = urllib.request.urlopen("http://www.youtube.com/results?" + song_id)
+            yt_title = re.search(r'>(.*?)</title>', song_html, re.DOTALL | re.IGNORECASE)
+            if is_same_song(track_title, yt_title):
+                video_id=song_id
+                break
+
     except:
         video_id = ''
 
