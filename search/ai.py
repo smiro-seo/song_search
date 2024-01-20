@@ -7,7 +7,8 @@ from PIL import Image
 import io
 
 cwd = os.path.dirname(__file__)
-output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images')
+output_dir = os.path.join(cwd, '..', 'model_outputs')
+#output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images')
 
 image_prompt_ex_1=""
 image_prompt_ex_2=""
@@ -199,7 +200,7 @@ class Model_Generator():
 
         # Add positive and negative keywords to prompt
         sd_prompt = sd_prompt + " " + ", ".join(self.search.image_prompt_keywords)
-        sd_negative_prompt = 'ugly, blurry, '
+        sd_negative_prompt = 'ugly, blurry'
         sd_negative_prompt += ", " + ", ".join(self.search.image_nprompt_keywords)
 
         # sd_prompt = "Photo realistic illustration of a full-body cat eating pizza. Hyper realistic, low contrast, bohemian, old, grey cat, greasy pizza, "
