@@ -27,7 +27,8 @@ cwd = os.path.dirname(__file__)
 youtube_api_key = ''
 
 # paths
-path = os.path.join(cwd,'..', '..', '..', '..', 'var', 'song_search', 'model_outputs')
+output_dir = os.path.join(cwd,'instance')
+#path = os.path.join(cwd,'..', '..', '..', '..', 'var', 'song_search', 'model_outputs')
 
 
 def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=None):
@@ -127,10 +128,13 @@ def scrape_youtube_search_results(track_title):
         html = urllib.request.urlopen(
             "http://www.youtube.com/results?" + input)
         all_results = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+        print("/////////////")
+        print(track_title)
         video_id=None
         for song_id in all_results:
-            song_html = urllib.request.urlopen("http://www.youtube.com/results?" + song_id)
-            yt_title = re.search(r'>(.*?)</title>', song_html.read().decode(), re.DOTALL | re.IGNORECASE)
+            song_html = urllib.request.urlopen("http://www.youtube.com/watch?v=" + song_id)
+            yt_title = re.findall(r'>(.*?)</title>', song_html.read().decode(), re.DOTALL | re.IGNORECASE)[0]
+            print(yt_title)
             if is_same_song(track_title, yt_title):
                 video_id=song_id
                 break
@@ -198,7 +202,8 @@ def clean_and_sort(df):
 
 def generate_html_file(html):
     output_html_name = f'sample_keywords_output_html_{datetime.now().strftime("%Y%m%d-%H%M%S")}.html'
-    output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'model_outputs')
+    output_dir = os.path.join(cwd,'instance')
+   # output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'model_outputs')
     output_path = os.path.join(output_dir, output_html_name)
 
     print(f"Saving HTML file to : {output_path}")

@@ -18,8 +18,8 @@ default_improver_prompt = ""
 
 
 DB_NAME = "database.db"
-database_path="/opt/var/song_search"
-db_string_conn = f"sqlite:///{database_path}/{DB_NAME}"
+database_path="instance"#"/opt/var/song_search"
+db_string_conn = f"sqlite:///{DB_NAME}"#{database_path}/
 default_model = 'text-davinci-003'
 
 aspect_ratios = [
