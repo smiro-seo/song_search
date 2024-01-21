@@ -85,7 +85,7 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
     seed=None
 
     answers = requests.post(
-        f"https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v0-9/text-to-image",
+        f"https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image",
         headers={
             "Content-Type": "application/json",
             "Accept": "application/json",
