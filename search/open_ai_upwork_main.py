@@ -9,9 +9,9 @@ import urllib.request
 import urllib.parse
 from .html_generator import generate_html
 from .wordpress import create_wp_draft, add_wp_image
-from .ai import Model_Generator
+from .ai import Model_Generator, local
 from .search_youtube import youtube_search
-local=False
+
 
 market = 'US'
 # Characters after which the track name does not matter for duplicates
@@ -129,9 +129,14 @@ def scrape_youtube_search_results(track_title):
             "http://www.youtube.com/results?" + input)
         all_results = re.findall(r"watch\?v=(\S{11})", html.read().decode())
         video_id=None
+        print("/////////////////////")
         for song_id in all_results:
             song_html = urllib.request.urlopen("http://www.youtube.com/watch?v=" + song_id)
-            yt_title = re.findall(r'>(.*?)</title>', song_html.read().decode(), re.DOTALL | re.IGNORECASE)[0]
+            yt_title = re.findall(r'<title>(.*?)</title>', song_html.read().decode(), re.DOTALL | re.IGNORECASE)[0]
+            print("YT title")
+            print(yt_title)
+            print("Track name")
+            print(track_name)
 
             if is_same_song(track_title, yt_title):
                 video_id=song_id
@@ -271,7 +276,7 @@ class Search_Process():
             keywords=self.keyword_descriptor,
             status="In progress",
             prompt=self.prompt,
-            intro_prompt=self.intro_prompt,
+            intro_prompt=self.intro_prompt_original,
             improver_prompt=self.improver_prompt,
             model=self.model,
             by=self.by,
@@ -279,7 +284,7 @@ class Search_Process():
             improved_intro=self.improve_intro,
 
             include_img=self.include_img,
-            img_prompt=self.img_prompt,
+            img_prompt=self.img_prompt_original,
             image_prompt_keywords_str=json.dumps(self.image_prompt_keywords),
             image_nprompt_keywords_str=json.dumps(self.image_nprompt_keywords),
             img_config_str=json.dumps(self.img_config)
@@ -380,6 +385,8 @@ class Search_Keyword(Search_Process):
         self.keyword = data.get('keyword', '')
         self.keyword_descriptor = json.dumps({'keyword': self.keyword, 'sp_keywords':self.sp_keywords})
 
+        self.intro_prompt_original = self.intro_prompt
+        self.img_prompt_original = self.img_prompt
         self.intro_prompt = self.intro_prompt.replace('[keyword]', self.keyword)
         self.img_prompt = self.img_prompt.replace('[artist]', self.keyword).replace('[keyword]', self.keyword)
         self.values_to_replace = {'[keyword]': self.keyword}
@@ -439,6 +446,8 @@ class Search_Artist(Search_Process):
         self.artist_name=data.get('artist-name', None)
         self.artist_id=data.get('artist-id', None)
 
+        self.intro_prompt_original = self.intro_prompt
+        self.img_prompt_original = self.img_prompt
         self.intro_prompt = self.intro_prompt.replace('[artist]', self.artist_name)
         self.img_prompt = self.img_prompt.replace('[artist]', self.artist_name).replace('[keyword]', self.artist_name)
         

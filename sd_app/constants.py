@@ -1,5 +1,5 @@
 import os
-local=False
+local=True
 
 keys = {}
 

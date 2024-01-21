@@ -7,10 +7,10 @@ import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from PIL import Image
 import io, base64
 import requests
+local=True
 
 cwd = os.path.dirname(__file__)
-#output_dir = os.path.join(cwd,'feat_images')
-output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images')
+output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images') if not local else os.path.join(cwd,'feat_images')
 
 image_prompt_ex_1=""
 image_prompt_ex_2=""
@@ -81,22 +81,7 @@ def get_gpt_response(prompt, engine, options=default_gpt_options):
         return ""
 
 def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_options, filename=None):
-    '''
-    # Set up connection to the API.
-    stability = client.StabilityInference(
-        key=keys['sd_key'], # API Key reference.
-        verbose=True, # Print debug messages.
-        engine="stable-diffusion-xl-1024-v0-9", # Set the engine to use for generation.
-        # Available engines: stable-diffusion-xl-1024-v0-9 stable-diffusion-v1 stable-diffusion-v1-5 stable-diffusion-512-v2-0 stable-diffusion-768-v2-0
-        # stable-diffusion-512-v2-1 stable-diffusion-768-v2-1 stable-diffusion-xl-beta-v2-2-2 stable-inpainting-v1-0 stable-inpainting-512-v2-0
-    )
-
-    # Set up initial generation parameters.
-    answers = stability.generate(
-        prompt=prompt,
-        samples=1, # Number of images to generate, defaults to 1 if not included.
-        **options
-    )'''
+    
     seed=None
 
     answers = requests.post(
@@ -113,7 +98,7 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
                 }
             ],
             'samples':1,
-            'style-preset':'cinematic',
+            'style_preset':'cinematic',
             **options
         },
     )
@@ -217,6 +202,7 @@ class Model_Generator():
     
         print("Getting OpenAI introduction")
 
+
         response = get_gpt_response(self.search.intro_prompt, self.search.model)
         
         if self.search.improve_intro: response = self.improve(response)
@@ -239,6 +225,7 @@ class Model_Generator():
         print("Generating article summary")
         summ_prompt = f"Summarize the following article about {self.search.wp_title}:\n\n"
         summ_prompt = summ_prompt + self.search.full_text
+
 
         summ_response = get_gpt_response(summ_prompt, 'gpt-3.5-turbo', options=summarization_prompt_options)
 
