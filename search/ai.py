@@ -152,10 +152,11 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
                 data = response.binary
             '''
             if response['finishReason']=='SUCCESS':
-                if filename is None: filename = f'{str(response.seed)}.{default_img_format}'
+                if filename is None: filename = f'{str(response["seed"])}.{default_img_format}'
                 elif filename[-3:] != default_img_format: filename = filename + '.' + default_img_format
                 filepath =  os.path.join(output_dir,filename)
                 data = response['base64']
+                print(data[:30])
                 seed = response['seed']
 
     except:
