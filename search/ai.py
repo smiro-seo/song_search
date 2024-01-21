@@ -164,7 +164,7 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
 
     # Get binary data from response and save to file
     img = Image.open(io.BytesIO(base64.b64decode(data)))
-    img.show()
+
     
     #img = Image.open(io.BytesIO(data))
     img.save(filepath, optimize=True, quality=85) 
