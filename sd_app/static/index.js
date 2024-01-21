@@ -110,6 +110,7 @@ function showDetails(searchData) {
     "keywords",
     "by",
     "img-prompt",
+    "seed",
     "n-img-keywords",
     "p-img-keywords",
     "img-gen-prompt",

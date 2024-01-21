@@ -5,7 +5,8 @@ from .const import default_img_format
 import requests
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from PIL import Image
-import io
+import io, base64
+import requests
 
 cwd = os.path.dirname(__file__)
 #output_dir = os.path.join(cwd,'feat_images')
@@ -80,7 +81,7 @@ def get_gpt_response(prompt, engine, options=default_gpt_options):
         return ""
 
 def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_options, filename=None):
-    
+    '''
     # Set up connection to the API.
     stability = client.StabilityInference(
         key=keys['sd_key'], # API Key reference.
@@ -95,33 +96,83 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
         prompt=prompt,
         samples=1, # Number of images to generate, defaults to 1 if not included.
         **options
+    )'''
+    seed=None
+
+    answers = requests.post(
+        f"https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v0-9/text-to-image",
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {keys['sd_key']}"
+        },
+        json={
+            "text_prompts": [
+                {
+                    "text": prompt
+                }
+            ],
+            'samples':1,
+            'style-preset':'cinematic',
+            **options
+        },
     )
+    answers = answers.json()
+    def truncate_string(s, max_length=10):
+        return s[:max_length] if len(s) > max_length else s
+
+    def print_nested_dict(d, max_length=10, indent=0):
+        for key, value in d.items():
+            print(" " * indent, f"{key}:", end=" ")
+            if isinstance(value, dict):
+                print("{")
+                print_nested_dict(value, max_length, indent + 2)
+                print(" " * indent, "}")
+            elif isinstance(value, list):
+                print("[")
+                for item in value:
+                    if isinstance(item, dict) or isinstance(item, list):
+                        print_nested_dict(item, max_length, indent + 2)
+                    else:
+                        print(" " * (indent + 2), truncate_string(str(item), max_length))
+                print(" " * indent, "]")
+            else:
+                print(truncate_string(str(value), max_length))
+
+
 
     try:
-        for resp in answers:
-            for response in resp.artifacts:
+        print(print_nested_dict(answers))
+        for response in answers['artifacts']:
+            '''
+            if response.type == generation.ARTIFACT_IMAGE:
+                
+                # Generate unique filename
 
-                if response.type == generation.ARTIFACT_IMAGE:
-                    
-                    # Generate unique filename
-                    if filename is None: filename = f'{str(response.seed)}.{default_img_format}'
-                    elif filename[-3:] != default_img_format: filename = filename + '.' + default_img_format
-                    filepath =  os.path.join(output_dir,filename)
-
-                    data = response.binary
+                data = response.binary
+            '''
+            if response['finishReason']=='SUCCESS':
+                if filename is None: filename = f'{str(response.seed)}.{default_img_format}'
+                elif filename[-3:] != default_img_format: filename = filename + '.' + default_img_format
+                filepath =  os.path.join(output_dir,filename)
+                data = response['base64']
+                seed = response['seed']
 
     except:
-        return None, None
+        return None, None, None
 
     # Get binary data from response and save to file
-    img = Image.open(io.BytesIO(data))
+    img = Image.open(io.BytesIO(base64.b64decode(data)))
+    img.show()
+    
+    #img = Image.open(io.BytesIO(data))
     img.save(filepath, optimize=True, quality=85) 
 
     with open(filepath, 'rb') as f:
         # Need to do this in order to get optimized image binary
         opt_data = f.read()
     
-    return opt_data, filename
+    return opt_data, filename, seed
     
 def build_prompt(original_prompt, values_to_replace):
     # Builds prompt based on placeholder text such as [Artist]
@@ -211,8 +262,7 @@ class Model_Generator():
         options['width'] = int(options['aspect-ratio'].split('x')[0])
         options['steps'] = int(options['steps'])
         del options['aspect-ratio']
-        options['extras']={ '$IPC': { "preset": 'cinematic' } }
 
-        bin_file, filename = get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename, options=self.search.img_config)
+        bin_file, filename, seed = get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename, options=self.search.img_config)
 
-        return bin_file, filename, sd_prompt
+        return bin_file, filename, sd_prompt, seed

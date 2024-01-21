@@ -350,15 +350,14 @@ class Search_Process():
         print("Getting HTML")
         html, self.full_text = generate_html(clean_data, intro, return_full_text=True)
         #   Generate feat. image
-        print("//////////////////////////////")
-        print(generator.search.img_prompt)
         if self.include_img:
             print("Getting featured image")
             if self.record is None: filename=None
             else: filename = json.loads(self.record.json_data())['img_name']
 
-            img_binary, img_name, img_gen_prompt = generator.feat_image(filename=filename)
+            img_binary, img_name, img_gen_prompt, seed = generator.feat_image(filename=filename)
             self.record.img_gen_prompt = img_gen_prompt
+            self.record.img_config['seed']=seed
         else:
             img_binary=None
             img_name=None
