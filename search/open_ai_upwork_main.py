@@ -129,14 +129,9 @@ def scrape_youtube_search_results(track_title):
             "http://www.youtube.com/results?" + input)
         all_results = re.findall(r"watch\?v=(\S{11})", html.read().decode())
         video_id=None
-        print("/////////////////////")
         for song_id in all_results:
             song_html = urllib.request.urlopen("http://www.youtube.com/watch?v=" + song_id)
-            yt_title = re.findall(r'<title>(.*?)</title>', song_html.read().decode(), re.DOTALL | re.IGNORECASE)[0]
-            print("YT title")
-            print(yt_title)
-            print("Track name")
-            print(track_name)
+            yt_title = re.findall(r'<title>(.*?)</title>', song_html.read().decode())[0]
 
             if is_same_song(track_title, yt_title):
                 video_id=song_id

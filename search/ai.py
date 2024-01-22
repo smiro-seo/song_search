@@ -7,7 +7,7 @@ import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from PIL import Image
 import io, base64
 import requests
-local=True
+local=False
 
 cwd = os.path.dirname(__file__)
 output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images') if not local else os.path.join(cwd,'feat_images')
@@ -85,7 +85,7 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
     seed=None
 
     answers = requests.post(
-        f"https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image",
+        f"https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v0-9/text-to-image",
         headers={
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -240,7 +240,7 @@ class Model_Generator():
 
         # Add positive and negative keywords to prompt
         sd_prompt = sd_prompt + " " + ", ".join(self.search.image_prompt_keywords)
-        sd_negative_prompt = 'lowres, error, cropped, worst quality, low quality, jpeg artifacts, out of frame, watermark, signature, ugly, blurry, illustration, painting, drawing, art, sketch'
+        sd_negative_prompt = 'ugly, blurry'
         sd_negative_prompt += ", " + ", ".join(self.search.image_nprompt_keywords)
 
         # Get stability options
