@@ -240,7 +240,7 @@ class Model_Generator():
 
         # Add positive and negative keywords to prompt
         sd_prompt = sd_prompt + " " + ", ".join(self.search.image_prompt_keywords)
-        sd_negative_prompt = 'ugly, blurry'
+        sd_negative_prompt = 'lowres, error, cropped, worst quality, low quality, jpeg artifacts, out of frame, watermark, signature, ugly, blurry, illustration, painting, drawing, art, sketch'
         sd_negative_prompt += ", " + ", ".join(self.search.image_nprompt_keywords)
 
         # Get stability options
