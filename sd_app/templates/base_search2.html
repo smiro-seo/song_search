@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Song search{% endblock %}
+{% block content %}
+
+{% if search.by=="artist" %}
+  <p hidden id="user-default-intro-prompt">{{user.get('default_intro_prompt_artist')}}</p>
+  <p hidden id="user-default-prompt" >{{user.get('default_prompt_artist')}}</p>
+{% elif search.by=="keyword" %}
+  <p hidden id="user-default-intro-prompt">{{user.get('default_intro_prompt')}}</p>
+  <p hidden id="user-default-prompt" >{{user.get('default_prompt')}}</p>
+{% endif %}
+
+<p hidden id="user-default-improver-prompt" >{{user.get('default_improver_prompt')}}</p>
+<p hidden id="user-default-img-prompt" >{{user.get('default_img_prompt')}}</p>
+
+<div class="container-fluid" style="width:100%;margin:0px" >
+  <!--  TITLE   
+  <div class="row">
+    <div class="col" style="justify-content:center;text-align:center">
+      <h1 class="page-title">{% block page_title %}Search songs{% endblock %}</h1>
+    </div>
+  </div>-->
+
+  <!--  CONFIG   -->
+  <div class="row">
+    <div class="col-12" style="padding:0">
+      <div class="accordion" id="input-accordion">
+
+        <!--  INPUTS   -->
+        <div class="accordion-item accordion-first" id="input-acc-label">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#input-acc-item" aria-expanded="true" aria-controls="input-acc-item">
+              {% block accordion_title %} {{ "Keyword selection" if search.by=="keyword" else "Artist search" if search.by=="artist" else "" }} {% endblock %}
+            </button>
+          </h2>
+
+          <div id="input-acc-item" aria-labelledby="input-acc-label" class="accordion-collapse collapse show" data-bs-parent="#input-accordion" >
+
+            <div class="accordion-body container-fluid ">
+              <div class="row justify-content-center" style="width:100%">
+                  {% block searchinput %}
+
+                  {% endblock %}
+                </div>
+            </div>
+                  
+          </div>
+        </div>
+
+        <!--  LIMITS  -->
+        <div class="accordion-item accordion-last" id="limits-acc-label">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#limits-acc-item" aria-expanded="true" aria-controls="limits-acc-item">
+              Search parameters
+            </button>
+          </h2>
+
+          <div id="limits-acc-item" aria-labelledby="limits-acc-label" class="accordion-collapse collapse" data-bs-parent="#input-accordion">
+
+            <div class="container-fluid accordion-body">
+              <div class="row" style="width:100%">
+
+                <div class="accordion-content col-lg-6 col-md-6 col-12">
+
+                    <div class="horizontal-container">
+                      <input checked type="checkbox" value="limited" id="check-limit-kw" name="check-limit-kw" class="checkbox">
+                      <label for="limit-range-kw" >Limit results</label>
+                    </div>
+
+                    <div class="horizontal-container">
+                      <input  type="number" value="20" id="limit-range-kw-txt" name="limit-range-kw-txt" style="max-width:3em">  &nbsp
+                      <input type="range" id="limit-range-kw" min="1" max="50" step="1" value="20" style="flex:1">
+                    </div>
+
+                </div>
+
+                <div class="accordion-content col-lg-6 col-md-6 col-12">
+                      
+                  <div class="horizontal-container">
+                    <input type="checkbox" value="limited" id="check-offset" name="check-offset" class="checkbox">
+                    <label for="offset-range" >Result offset</label>
+                  </div>
+
+                  <div class="horizontal-container">
+                    <input disabled type="number" value="0" id="offset-range-txt" name="offset-range-txt" style="max-width:3em">  &nbsp
+                    <input disabled type="range" id="offset-range" min="0" max="50" step="1" value="0" style="flex:1">
+                  </div>
+  
+                </div>
+              
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  SUBMIT BTN   -->
+  <div class="row" style="margin:2em;text-align:center">
+
+        <div class="col-12">
+          <button class="btn btn-success basic-padding" id="btn-search" 
+          onClick="searchSpotify('{{search.by}}')" style="width:100%">
+            Search on Spotify
+          </button>
+        </div>
+
+  </div>
+
+      
+</div>
+
+
+{% block modal_container %}
+{% endblock %}
+
+{% endblock %}
+    

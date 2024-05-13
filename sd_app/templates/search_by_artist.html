@@ -1,0 +1,46 @@
+{% extends "base_search2.html" %} 
+
+{% block page_title %}Search songs by artist{% endblock %}
+
+
+{% block accordion_title %}
+Artist &nbsp<span id="artist-accordion-title" class="text" ></span>
+{% endblock %}
+
+{% block searchinput %}
+
+
+<div class="col">
+  <div class="form-group">
+    <input
+      autofocus
+      type="text"
+      class="form-control"
+      id="artist"
+      placeholder="Artist"
+      {{"value=" + search.artist if existing else "" }}
+    />
+  </div>
+</div>
+{% endblock %}
+
+{% block modal_container %}
+<div class="modal fade" id="modal_artist_select" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="width:85%;align-self:center">
+      <div class="modal-header">
+          <h5 class="modal-title page-title">Select an artist</h5>
+          
+      </div>
+      <div class="modal-body">
+        <div id="artist-list">
+
+        </div>  
+        
+      </div>
+      </div>
+      
+  </div>
+</div>
+{% endblock %}
+    

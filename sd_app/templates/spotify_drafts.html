@@ -1,0 +1,44 @@
+{% extends "base.html" %} {% block title %}Search history{% endblock %}
+{% block content %}
+
+<div class="basic-padding">
+    <h1 class="page-title">Spotify Draft</h1>
+    <table class="table" id="keyword-table">
+      <thead>
+        <tr>
+          <th>Artist</th> 
+          <th>Track</th>
+          <th>Remove</th>
+          <th scope="col" colspan="3">
+            {% if drafts|length != 0 %}
+            <button type="button" class="btn btn-warning" onClick="clearySpotifyDraft()" style="font-size:90%;width:100%">Discard Draft</button>
+            {% endif %}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for draft in drafts %}
+        <tr>
+          <td>{{draft.artist}}</td> 
+          <td>{{draft.track_name}}</td>
+          <td>
+            {% if draft.searchedby == "artist" %}
+                <button type="button" class="btn btn-danger" onClick="deleteSpotifyDraft({{ draft.id }}, 'artist')">Remove</button>
+            {% elif draft.searchedby == "keyword" %}
+                <button type="button" class="btn btn-danger" onClick="deleteSpotifyDraft({{ draft.id }}, 'keyword')">Remove</button>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if drafts|length != 0 %}
+    <div class="text-right">
+      <button type="button" class="btn btn-success" onClick="proceed('artist')" style="font-size:90%;width:50%;">Proceed Artist</button>
+      <button type="button" class="btn btn-success" onClick="proceed('keyword')" style="font-size:90%;width:50%;">Proceed Keyword</button>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

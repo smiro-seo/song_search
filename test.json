@@ -1,0 +1,167 @@
+{
+  "artists": {
+    "href": "https://api.spotify.com/v1/search?query=artist%3Aguns&type=artist&offset=0&limit=5",
+    "items": [
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/3qm84nBOXUEQ2vnTfUTTFC"
+        },
+        "followers": { "href": null, "total": 28753175 },
+        "genres": ["glam metal", "hard rock", "rock"],
+        "href": "https://api.spotify.com/v1/artists/3qm84nBOXUEQ2vnTfUTTFC",
+        "id": "3qm84nBOXUEQ2vnTfUTTFC",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/ab6761610000e5eb50defaf9fc059a1efc541f4c",
+            "width": 640
+          },
+          {
+            "height": 320,
+            "url": "https://i.scdn.co/image/ab6761610000517450defaf9fc059a1efc541f4c",
+            "width": 320
+          },
+          {
+            "height": 160,
+            "url": "https://i.scdn.co/image/ab6761610000f17850defaf9fc059a1efc541f4c",
+            "width": 160
+          }
+        ],
+        "name": "Guns N' Roses",
+        "popularity": 80,
+        "type": "artist",
+        "uri": "spotify:artist:3qm84nBOXUEQ2vnTfUTTFC"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/0sJqZPLoTiqTqXz4nxKw94"
+        },
+        "followers": { "href": null, "total": 64061 },
+        "genres": ["red dirt"],
+        "href": "https://api.spotify.com/v1/artists/0sJqZPLoTiqTqXz4nxKw94",
+        "id": "0sJqZPLoTiqTqXz4nxKw94",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/ab6761610000e5eba245272f72814ff8ebaff8cd",
+            "width": 640
+          },
+          {
+            "height": 320,
+            "url": "https://i.scdn.co/image/ab67616100005174a245272f72814ff8ebaff8cd",
+            "width": 320
+          },
+          {
+            "height": 160,
+            "url": "https://i.scdn.co/image/ab6761610000f178a245272f72814ff8ebaff8cd",
+            "width": 160
+          }
+        ],
+        "name": "Giovannie and the Hired Guns",
+        "popularity": 52,
+        "type": "artist",
+        "uri": "spotify:artist:0sJqZPLoTiqTqXz4nxKw94"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/3PALZKWkpwjRvBsRmhlVSS"
+        },
+        "followers": { "href": null, "total": 191325 },
+        "genres": ["popwave"],
+        "href": "https://api.spotify.com/v1/artists/3PALZKWkpwjRvBsRmhlVSS",
+        "id": "3PALZKWkpwjRvBsRmhlVSS",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/ab6761610000e5eb1761eb5fdbb5d5cbad65cf09",
+            "width": 640
+          },
+          {
+            "height": 320,
+            "url": "https://i.scdn.co/image/ab676161000051741761eb5fdbb5d5cbad65cf09",
+            "width": 320
+          },
+          {
+            "height": 160,
+            "url": "https://i.scdn.co/image/ab6761610000f1781761eb5fdbb5d5cbad65cf09",
+            "width": 160
+          }
+        ],
+        "name": "Gunship",
+        "popularity": 50,
+        "type": "artist",
+        "uri": "spotify:artist:3PALZKWkpwjRvBsRmhlVSS"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/22TEmHXBBLjTec2LOAuMdS"
+        },
+        "followers": { "href": null, "total": 406998 },
+        "genres": ["glam metal", "hard rock", "sleaze rock"],
+        "href": "https://api.spotify.com/v1/artists/22TEmHXBBLjTec2LOAuMdS",
+        "id": "22TEmHXBBLjTec2LOAuMdS",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/ab6761610000e5eb675bd55eb391e6623d2ec1cc",
+            "width": 640
+          },
+          {
+            "height": 320,
+            "url": "https://i.scdn.co/image/ab67616100005174675bd55eb391e6623d2ec1cc",
+            "width": 320
+          },
+          {
+            "height": 160,
+            "url": "https://i.scdn.co/image/ab6761610000f178675bd55eb391e6623d2ec1cc",
+            "width": 160
+          }
+        ],
+        "name": "L.A. Guns",
+        "popularity": 46,
+        "type": "artist",
+        "uri": "spotify:artist:22TEmHXBBLjTec2LOAuMdS"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/6UocZe4AprSYBvmn3J0oqY"
+        },
+        "followers": { "href": null, "total": 124537 },
+        "genres": ["electronic rock", "indietronica"],
+        "href": "https://api.spotify.com/v1/artists/6UocZe4AprSYBvmn3J0oqY",
+        "id": "6UocZe4AprSYBvmn3J0oqY",
+        "images": [
+          {
+            "height": 666,
+            "url": "https://i.scdn.co/image/2fda38920840919fea511221c22fb82a73b2b0bc",
+            "width": 999
+          },
+          {
+            "height": 427,
+            "url": "https://i.scdn.co/image/cd6609ea3553e7ec57ae643551b079f1cc4689e0",
+            "width": 640
+          },
+          {
+            "height": 133,
+            "url": "https://i.scdn.co/image/309aa1bf0ae9ef6c0374ad64109d8aa1fae0dfdb",
+            "width": 200
+          },
+          {
+            "height": 43,
+            "url": "https://i.scdn.co/image/f6bf28a3b0948088a82472c3b077c1bd2b27a704",
+            "width": 64
+          }
+        ],
+        "name": "Shiny Toy Guns",
+        "popularity": 42,
+        "type": "artist",
+        "uri": "spotify:artist:6UocZe4AprSYBvmn3J0oqY"
+      }
+    ],
+    "limit": 5,
+    "next": "https://api.spotify.com/v1/search?query=artist%3Aguns&type=artist&offset=5&limit=5",
+    "offset": 0,
+    "previous": null,
+    "total": 889
+  }
+}

@@ -1,0 +1,229 @@
+{% extends "base.html" %} {% block title %}Search history{% endblock %}
+{% block content %}
+
+<div class="basic-padding">
+<h1 class="page-title">Search history</h1>
+<table class="table" id="keyword-table">
+    <thead>
+        <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Status</th>
+        <!--<th scope="col">HTML</th>-->
+        <th scope="col" class="d-none d-sm-table-cell">Intro Prompt</th>
+        <th scope="col" class="d-none d-sm-table-cell">Song Prompt</th>
+        <th scope="col">Keyword</th>
+        <th scope="col" colspan="3">
+          <button type="button" class="btn btn-danger" onClick="clearHistory()" style="font-size:70%;width:100%">Clear history</button>
+        </th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for search in searches %}
+    <tr>
+    <td class="text">
+        {{search.date.strftime('%b %d %H:%M')}}
+    </td>
+    <td>
+        {% if search.status != 'In progress' and search.status != 'Failed' %}
+        {{search.status}}
+        {% else %}
+        {{search.status}}
+        {% endif %}
+    </td>
+    <!--<td>
+        {% if search.html_path != 'In progress' %}
+      <a href="{{ url_for('views.seeHTML', filename=search.html_path) }}">Download HTML</a>
+        {% else %}
+        In progress
+        {% endif %}
+    </td>-->
+        <td class="text d-none d-sm-table-cell">
+            <div class="truncate"><p>{{ search.intro_prompt }}</p></div>
+            <button class="expand-btn" onClick="showAlert( {{ "`" + search.intro_prompt + "`" }} )" >
+                <i class="bi bi-three-dots"></i>
+            </button>
+        </td>
+        <td class="text d-none d-sm-table-cell">
+            <div class="truncate">
+            <p>{{ search.prompt }} </p></div>
+        <button class="expand-btn" onClick="showAlert( {{ "`" + search.prompt + "`" }} )" >
+            <i class="bi bi-three-dots"></i>
+        </button>
+    </td>
+        <td>
+            {% if search.by=="artist" %}
+            {{ search.keywords }}
+            {% elif search.by=="keyword" %}
+            {{ search.keyword}}  <span class="text" >{{" (" + ", ".join(search.sp_keywords) + ")" }}</span>
+            {% endif %}
+        </td>
+        <td class="column_action">
+            <button type="button" class="btn btn-outline-success" onClick="repeatSearch({{ search.id }}, '{{search.by}}')">
+            <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </td>
+    <td class="column_action">
+        <button type="button" class="btn btn-outline-danger" onClick="deleteSearch({{ search.id }})">
+            <i class="bi {{'bi-stop-fill' if search.status=='In progress' else 'bi-trash'}}" ></i>
+            
+        </button>
+    </td>
+    <td class="column_action">
+        <button type="button" class="btn btn-outline-info" onClick="showDetails({{ search.json_data() }})">
+            <i class="bi bi-info-circle-fill" ></i>
+        </button>
+    </td>
+    </tr>
+        {% endfor %}
+    
+  </tbody>
+</table>
+    </div>
+
+
+<div class="modal fade" id="modal-search-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" >
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content" style="align-self:center">
+            <div class="modal-header">
+                <h5 class="modal-title page-title">Search details</h5> 
+                <i class="bi bi-x-lg hoverable" data-bs-dismiss="modal"></i>
+            </div>
+            <div class="modal-body" style="width:100%">
+
+                <table class="table table-striped align-middle">
+                    <tbody id="detail-table">
+                        <tr>
+                            <th>Date</th>
+                            <td><span id="details-date">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td><span id="details-status">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <th>User</th>
+                            <td><span id="details-user">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <th id="details-by">Keywords</th>
+                            <td><span id="details-keywords">placeholder</span></td>
+                        </tr>
+                        <tr>
+                            <th style="display:flex;flex:1">
+                                Song prompt
+                                <div 
+                                    style="align-self:center" 
+                                    class="basic-padding-h" 
+                                    id="details-song-improved"
+                                    hidden
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="right"
+                                    title="Improved"
+                                >
+                                    <i class="bi bi-arrow-up-circle-fill text-success"  ></i>
+                                </div>
+                            </th>
+                            <td >
+                                <div style="display:flex;flex-direction:row">
+                                 <span id="details-prompt" style="flex:1">placeholder</span>
+                                 <i style="margin-left:1em" id="details-prompt-copy" class="bi bi-clipboard hoverable" data-bs-trigger="manual" data-bs-title="Copied!" onClick=""></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" style="display:flex;flex:1">
+                                Intro prompt
+                                <div 
+                                    style="align-self:center" 
+                                    class="basic-padding-h" 
+                                    id="details-intro-improved"
+                                    hidden
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="right"
+                                    title="Improved"
+                                >
+                                    <i class="bi bi-arrow-up-circle-fill text-success" ></i>
+                                </div>
+                            </th>
+                            <td>
+                                <div style="display:flex;flex-direction:row">
+                                 <span id="details-intro-prompt" style="flex:1">placeholder</span>
+                                 <i style="margin-left:1em" id="details-intro-prompt-copy" class="bi bi-clipboard hoverable" data-bs-trigger="manual" data-bs-title="Copied!" onClick=""></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="details-improver-row">
+                            <th>Improver prompt</th>
+                            <td>
+                                <div style="display:flex;flex-direction:row">
+                                 <span id="details-improver-prompt" style="flex:1">placeholder</span>
+                                 <i style="margin-left:1em" id="details-improver-prompt-copy" class="bi bi-clipboard hoverable" data-bs-trigger="manual" data-bs-title="Copied!" onClick=""></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="details-img-row">
+                            <th>Image generation</th>
+                            <td>
+                                <table class="table align-middle">
+                                    <tbody id="detail-table">
+                                        <tr>
+                                            <th class="text">GPT Prompt</th>
+                                            <td>
+                                                <div style="display:flex;flex-direction:row">
+                                                    <span class="text" id="details-img-prompt" style="flex:1">placeholder</span>
+                                                    <i style="margin-left:1em" id="details-img-prompt-copy" class="bi bi-clipboard hoverable" data-bs-trigger="manual" data-bs-title="Copied!" onClick=""></i>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text">Stability prompt</th>
+                                            <td>
+                                                <div style="display:flex;flex-direction:row">
+                                                    <span class="text" id="details-img-gen-prompt" style="flex:1">placeholder</span>
+                                                    <i style="margin-left:1em" id="details-img-gen-prompt-copy" class="bi bi-clipboard hoverable" data-bs-trigger="manual" data-bs-title="Copied!" onClick=""></i>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr id="details-p-img-keywords-row">
+                                            <th class="text">Positive keywords</th>
+                                            <td><span class="text" id="details-p-img-keywords"></span></td>
+                                        </tr>
+                                        <tr id="details-n-img-keywords-row">
+                                            <th class="text">Negative keywords</th>
+                                            <td><span class="text" id="details-n-img-keywords"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text">Random seed</th>
+                                            <td><span class="text" id="details-img-seed"></span></td>
+                                        </tr>
+                                        <tr id="details-img-row-src">
+                                            <td colspan="2" style="justify-content:center">
+                                                <img 
+                                                    src="" 
+                                                    id="details-img-src" 
+                                                    class="img-fluid" 
+                                                    alt="Generated Image"
+                                                    width="200"
+                                                    height="200"
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Model used</th>
+                            <td><span id="details-model">placeholder</span></td>
+                        </tr>
+                </tbody>
+                </table>
+                
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+{% endblock %}
+    

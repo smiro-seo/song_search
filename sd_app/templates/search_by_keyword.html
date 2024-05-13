@@ -1,0 +1,74 @@
+{% extends "base_search2.html" %} 
+
+{% block page_title %}Search songs{% endblock %}
+
+{% block accordion_title %}
+Keyword selection &nbsp<span id="keyword-accordion-title" class="text" ></span>
+{% endblock %}
+
+{% block searchinput %}
+
+<div class="col-sm-6">
+  <div class="form-group" style="margin-bottom:1.2em">
+    <label for="keyword" style="font-weight:bold">Keyword</label>
+    <input
+      autofocus
+      type="text"
+      class="form-control"
+      id="keyword"
+      name="keyword"
+      placeholder="Animals"
+      {{'value=' + search.keyword if search.keyword != '' else ''}}
+    />
+  </div>
+</div>
+
+<div class="col-sm-6">
+  <table class="table" id="keyword-table">
+      <thead>
+          <tr>
+          <th scope="col">Specific keywords</th>
+          <th scope="col">
+            <button type="button" class="btn btn-outline-danger" onClick="clearKeywordTable()" style="font-size:70%">Clear</button>
+          </th>
+          </tr>
+      </thead>
+      <tbody id="keyword-table-body">
+          {% for sp_kw in search.sp_keywords %}
+      <tr id="{{ 'tr-' + sp_kw }}">
+      <td>
+          {{sp_kw.title()}}
+      </td>
+      <td class="column_action">
+          <button type="button" class="btn btn-outline-danger" onClick="deleteKeyword('{{ sp_kw }}')">
+              <i class="bi bi-trash" ></i>
+          </button>
+      </td>
+      </tr>
+          {% endfor %}
+      <tr id="keyword-input-row">
+        <td>
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              id="sp_keyword"
+              name="sp_keyword"
+              placeholder="Cat"
+              onKeyDown="if(event.keyCode==13) addKeyword();"
+            />
+          </div>
+        </td>
+        <td class="column_action">
+          <button onClick="addKeyword()" class="btn btn-success" id="btn-new-row">
+            Add
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+{% endblock %}
+    
