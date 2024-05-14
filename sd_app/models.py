@@ -5,6 +5,7 @@ from .constants import default_prompt, default_intro_prompt, default_intro_promp
 import json
 from uuid import uuid4
 
+
 def clean_name(name):
     new_name = name.replace(' ', '_').replace('-', '_').replace('(', '').replace(')', '').replace('.', '').replace(',', '')
     return new_name
