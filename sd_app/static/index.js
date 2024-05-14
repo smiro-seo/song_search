@@ -389,12 +389,12 @@ function clearHistory() {
   });
 }
 
-function clearySpotifyDraft(){
+function clearySpotifyDraft(by){
   fetch("/clear-spotifyDraft", {
     method: "POST",
     body: JSON.stringify({}),
   }).then((_res) => {
-    window.location.href = "/spotifyDrafts";
+    window.location.href = "/search/keyword";
   });
 }
 

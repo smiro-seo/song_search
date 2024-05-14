@@ -343,9 +343,6 @@ class Search_Process():
 
         print("spotify data" , result_df)
 
-        # get the first two rows of result_df
-        result_df = result_df.head(1)
-
         #   Get youtube data
         print(f"Getting Youtube data")
         for i, track in result_df.iterrows():

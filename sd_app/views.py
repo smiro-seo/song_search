@@ -42,7 +42,7 @@ def background_search(local_app, local_db, input_data, limit, offset,user,  by="
         print(f"Limiting results to {limit}. Offset: {offset}")
 
         if by=="keyword": search = Search_Keyword(input_data, limit, offset, keys, user)
-        elif by=="artist": search = Search_Artist(input_data, limit, offset, keys, user)
+        elif by=="artist": search = Search_Artist(input_data, limit, offset, keys, usery)
         # Create db record
         search_record = search.create_record(Search, user)
         local_db.session.add(search_record)
@@ -396,6 +396,7 @@ def spotifyDrafts(by):
     if by == 'artist':
         print('searching by artist')
         return render_template("spotify_drafts.html",
+                            by=by,
                             user=current_user,
                             drafts=SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains(by)).order_by(SpotifyDraft.date.desc()).all(),
                             json_load=json.loads,
@@ -403,6 +404,7 @@ def spotifyDrafts(by):
     else :
         print("searching by keyword")
         return render_template("spotify_drafts.html",
+                            by=by,
                             user=current_user,
                             drafts=SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains(by)).order_by(SpotifyDraft.date.desc()).all(),
                             json_load=json.loads,

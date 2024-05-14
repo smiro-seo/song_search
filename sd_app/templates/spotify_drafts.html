@@ -8,6 +8,7 @@
         <tr>
           <th>Artist</th> 
           <th>Track</th>
+          <th>Keyword</th>
           <th>Remove</th>
           <th scope="col" colspan="3">
             {% if drafts|length != 0 %}
@@ -22,6 +23,15 @@
           <td>{{draft.artist}}</td> 
           <td>{{draft.track_name}}</td>
           <td>
+            {% if draft.searchedby=="artist" %}
+            {{ draft.keywords }}
+            {% elif draft.searchedby=="keyword" %}
+            {{ draft.keyword }}
+             <span class="text">
+              ({{ draft.sp_keywords|join(', ') }})</span>
+            {% endif %}
+          </td>
+          <td>
             {% if draft.searchedby == "artist" %}
                 <button type="button" class="btn btn-danger" onClick="deleteSpotifyDraft({{ draft.id }}, 'artist')">Remove</button>
             {% elif draft.searchedby == "keyword" %}
@@ -34,8 +44,13 @@
     </table>
     {% if drafts|length != 0 %}
     <div class="text-right" style="display: flex; justify-content: space-between;">
-      <button type="button" class="btn btn-success" onClick="proceed('artist')" style="font-size:90%;width:45%;">Proceed with Artist List</button>
+      {% if by == 'artist' %}
+        <button type="button" class="btn btn-success" onClick="proceed('artist')" style="font-size:90%;width:45%;">Proceed with Artist List</button>
+      {% endif %}
+
+      {% if by == 'keyword' %}
       <button type="button" class="btn btn-success" onClick="proceed('keyword')" style="font-size:90%;width:45%;">Proceed with Keyword List</button>
+      {% endif %}
     </div>
     {% endif %}
 
