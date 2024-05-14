@@ -37,7 +37,7 @@ importlib-metadata==5.2.0
 iniconfig==1.1.1
 itsdangerous==2.1.2
 Jinja2==3.1.2
-kombu==5.2.4ßß
+kombu==5.2.4
 Mako==1.2.4
 MarkupSafe==2.1.1
 multidict==6.0.4
