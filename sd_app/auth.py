@@ -90,3 +90,4 @@ def change_password():
             flash('Incorrect password, try again.', category='error')
 
     return render_template("change_password.html", user=current_user)
+
