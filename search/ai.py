@@ -7,7 +7,7 @@ import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from PIL import Image
 import io, base64
 import requests
-local=False
+local=True
 
 cwd = os.path.dirname(__file__)
 output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images') if not local else os.path.join(cwd,'feat_images')
@@ -223,6 +223,7 @@ class Model_Generator():
 
         # Generate article summary through GPT
         print("Generating article summary")
+        print(self.search)
         summ_prompt = f"Summarize the following article about {self.search.wp_title}:\n\n"
         summ_prompt = summ_prompt + self.search.full_text
 

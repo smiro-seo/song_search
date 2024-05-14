@@ -21,10 +21,10 @@ market = 'US'
 flagged_characters = ['-', '(', '/']
    
 
-column_list = ['artist', 'track_name', 'release_year', 'album', 'yt_video_id',
+column_list = ['artist', 'track_name', 'release_year', 'yt_video_id',
                'model_response', 'popularity', 'duration_ms', 'track_id']
 column_name_transform = {'artist': 'Artist', 'track_name': 'Track Name',
-                         'release_year': 'Release Year', 'album': 'Album'}
+                         'release_year': 'Release Year'}
 cwd = os.path.dirname(__file__)
 
 # define auth keys
@@ -332,27 +332,36 @@ class Search_Process():
 
         #   Get spotify data
         result_df = self.get_search_results(stopper)
+        spotify_drafts_dicts = [obj.__dict__ for obj in result_df[0]]
+        result_df = pd.DataFrame(spotify_drafts_dicts)
+
+
+        print('print result dfåå',result_df)
         if not isinstance(result_df, pd.DataFrame): return False
 
+
         print("spotify data" , result_df)
+
+        # get the first two rows of result_df
+        result_df = result_df.head(1)
 
         #   Get youtube data
         print(f"Getting Youtube data")
         for i, track in result_df.iterrows():
-            if result_df.loc[i, 'yt_video_id']:
-                result_df.loc[i, 'yt_video_id']=get_youtube_search_results(track, stopper)
-            else:
-                result_df.loc[i, 'yt_video_id']=[]
+            yt_video_id = get_youtube_search_results(track, stopper)
+            print('yt',yt_video_id)
+            result_df.loc[i, 'yt_video_id'] = yt_video_id
 
         #   Get openai data
         print(f"Getting OpenAI response")
         for i, track in result_df.iterrows(): 
-            if result_df.loc[i, 'model_response']:
-                result_df.loc[i, 'model_response']=generator.song_description(track, stopper)
-            else:
-                result_df.loc[i,'model_response']=[]
-
-
+            self.intro_prompt = self.intro_prompt.replace('[keyword]', track.keyword)
+            self.img_prompt = self.img_prompt.replace('[artist]', track.artist).replace('[keyword]', self.keyword)
+            self.values_to_replace = {'[keyword]': self.keyword} 
+            model_reponse = generator.song_description(track, stopper)
+            result_df.loc[i, 'model_response'] = model_reponse
+        
+        print("result_df",result_df)
         #   Clean and sort results
         clean_data = clean_and_sort(result_df)
 
@@ -362,13 +371,16 @@ class Search_Process():
         #   Create html
         print("Getting HTML")
         html, self.full_text = generate_html(clean_data, intro, return_full_text=True)
+
         #   Generate feat. image
         if self.include_img:
             print("Getting featured image")
             if self.record is None: filename=None
             else: filename = json.loads(self.record.json_data())['img_name']
-
-            img_binary, img_name, img_gen_prompt, seed = generator.feat_image(filename=filename)
+            try:
+                img_binary, img_name, img_gen_prompt, seed = generator.feat_image(filename=filename)
+            except Exception as e:
+                print('error on geerating',e)
             self.record.img_gen_prompt = img_gen_prompt
             self.record.img_config['seed']=seed
         else:
@@ -664,12 +676,13 @@ class Search_Keyword(Search_Process):
     def __init__(self, data, limit_st, offset_res, keys, current_user):
         Search_Process.__init__(self, data, limit_st, offset_res, keys, current_user)
         self.by="keyword"
-        self.sp_keywords=data.get('sp_keywords', [])
-        self.keyword = data.get('keyword', '')
+        self.sp_keywords=''
+        self.keyword = ''
         self.keyword_descriptor = json.dumps({'keyword': self.keyword, 'sp_keywords':self.sp_keywords})
 
         self.intro_prompt_original = self.intro_prompt
         self.img_prompt_original = self.img_prompt
+        
         self.intro_prompt = self.intro_prompt.replace('[keyword]', self.keyword)
         self.img_prompt = self.img_prompt.replace('[artist]', self.keyword).replace('[keyword]', self.keyword)
         self.values_to_replace = {'[keyword]': self.keyword}
@@ -750,9 +763,11 @@ class Search_Spotify_Keyword(Search_Spotify):
         self.slug = 'songs-about-' + self.keyword.lower()
         self.wp_title = f'{str(limit_st)} Songs About {self.keyword.title()}'
     
-    def create_spotify_draft(self, SpotifyDraft, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
+    def create_spotify_draft(self, SpotifyDraft, keyword, sp_keywords, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
         try:
             self.record = SpotifyDraft(
+                keyword=keyword,
+                sp_keywords=sp_keywords,
                 #create_spotify_draft
                 user=current_user['username'],
                 #user_id=current_user['id'],
@@ -872,10 +887,12 @@ class Search_Spotify_Artist(Search_Spotify):
         self.slug = self.artist_name.replace(" ", "-").lower() + "-songs"
         self.wp_title = f'{limit_st} Best {self.artist_name.title()} Songs'
     
-    def create_spotify_draft(self, SpotifyDraft, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
+    def create_spotify_draft(self, SpotifyDraft,keyword, sp_keywords, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
         try:
             self.record = SpotifyDraft(
                 #create_spotify_draft
+                keyword=keyword,
+                sp_keywords=sp_keywords,
                 user=current_user['username'],
                 #user_id=current_user['id'],
                 searchedby = searchedby,

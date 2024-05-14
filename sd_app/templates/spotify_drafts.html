@@ -33,9 +33,9 @@
       </tbody>
     </table>
     {% if drafts|length != 0 %}
-    <div class="text-right">
-      <button type="button" class="btn btn-success" onClick="proceed('artist')" style="font-size:90%;width:50%;">Proceed Artist</button>
-      <button type="button" class="btn btn-success" onClick="proceed('keyword')" style="font-size:90%;width:50%;">Proceed Keyword</button>
+    <div class="text-right" style="display: flex; justify-content: space-between;">
+      <button type="button" class="btn btn-success" onClick="proceed('artist')" style="font-size:90%;width:45%;">Proceed with Artist List</button>
+      <button type="button" class="btn btn-success" onClick="proceed('keyword')" style="font-size:90%;width:45%;">Proceed with Keyword List</button>
     </div>
     {% endif %}
 

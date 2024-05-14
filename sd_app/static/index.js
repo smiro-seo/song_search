@@ -109,7 +109,16 @@ function repeatSearch(id, by) {
 }
 
 function proceed(by){
-  window.location.href = `/proceed/${by}`;
+  let body = {
+    ...getFormData(),
+  };
+
+  fetch(`/proceed/${by}`, {
+    method: "GET",
+    params: JSON.stringify(body),
+  }).then((_res) => {
+    window.location.href = `/proceed/${by}`;
+  });
 }
 
 function showDetails(searchData) {

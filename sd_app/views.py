@@ -40,7 +40,7 @@ def background_search(local_app, local_db, input_data, limit, offset,user,  by="
         flag_bkg.set()
         print("Background search running.")
         print(f"Limiting results to {limit}. Offset: {offset}")
-        
+
         if by=="keyword": search = Search_Keyword(input_data, limit, offset, keys, user)
         elif by=="artist": search = Search_Artist(input_data, limit, offset, keys, user)
         # Create db record
@@ -61,7 +61,8 @@ def background_search(local_app, local_db, input_data, limit, offset,user,  by="
         local_db.session.close()
 
 
-def background_spotify_search(local_app, local_db, input_data, limit, offset,user,  by="keyword"):
+def background_spotify_search(local_app, local_db, input_data, limit, offset, user, by="keyword", keyword=None, sp_keywords=None):
+    # Your code here
 
     with local_app.app_context():
         global flag_bkg, stopper
@@ -74,9 +75,7 @@ def background_spotify_search(local_app, local_db, input_data, limit, offset,use
         elif by=="artist": search = Search_Spotify_Artist(input_data, limit, offset, keys, user)
 
         search_results = search.run(flag_bkg, stopper)
-        if by == "artist":
-            print("search by artist", search)
-            print(search_results)
+        
         for index, row in search_results.iterrows():
             print('row',row)
             try:
@@ -90,7 +89,10 @@ def background_spotify_search(local_app, local_db, input_data, limit, offset,use
                 spotify_url = row['spotify_url']
                 track_name_clean = row['track_name_clean']
 
-                search_record = search.create_spotify_draft(SpotifyDraft, user, by , artist, track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean)
+                if by == "artist":
+                    keyword = row['artist']
+
+                search_record = search.create_spotify_draft(SpotifyDraft, keyword, str(sp_keywords), user, by , artist, track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean)
                 print("search_record", search_record)
                 local_db.session.add(search_record)
                 local_db.session.commit()
@@ -118,7 +120,6 @@ def search(by="keyword"):
 
     global input_data, flag_bkg, app, stopper
     search_id = request.args.get('search_id', None)
-    print(search_id)
     search = Def_Search(current_user, by)
 
     if request.method == 'GET' and search_id is not None:
@@ -244,6 +245,7 @@ def searchSpotify(by="keyword"):
                     
                     time_to_complete = 20*limit_st
 
+
                     thread = threading.Thread(target=background_spotify_search, kwargs={
                         'local_app': app,
                         'local_db': db,
@@ -251,7 +253,9 @@ def searchSpotify(by="keyword"):
                         'limit': limit_st,
                         'offset': offset,
                         'user':current_user.dict_data(),
-                        'by':by
+                        'by':by,
+                        'keyword': data.get('keyword', ''),
+                        'sp_keywords': data.get('sp_keywords', '')
                     })
 
                     thread.start()
@@ -281,7 +285,7 @@ def searchSpotify(by="keyword"):
 def proceedAI(by="keyword"):
         global input_data, flag_bkg, app, stopper
         search_id = request.args.get('search_id', None)
-        print('you are on proceed',request.method)
+        print(search_id)
         search = Def_Search(current_user, by)
 
         if request.method == 'GET' and search_id is not None:
@@ -309,59 +313,60 @@ def proceedAI(by="keyword"):
                     if offset < 0 or limit_st < -1:
                         flash("Limits must be positive integer numbers. If you don't want to limit or offset the results, uncheck the checkbox", category='error')
                     else:
-                        if not flag_bkg.is_set():
-                            stopper.clear()
+                        stopper.clear()
                             
-                            time_to_complete = 20*limit_st
-                            if data.get("improve_song", False): time_to_complete*=2
+                        time_to_complete = 20*limit_st
+                        if data.get("improve_song", False): time_to_complete*=2
 
-                            thread = threading.Thread(target=background_search, kwargs={
-                                'local_app': app,
-                                'local_db': db,
-                                'input_data': data,
-                                'limit': limit_st,
-                                'offset': offset,
-                                'user':current_user.dict_data(),
-                                'by':by
-                            })
+                        thread = threading.Thread(target=background_search, kwargs={
+                            'local_app': app,
+                            'local_db': db,
+                            'input_data': data,
+                            'limit': limit_st,
+                            'offset': offset,
+                            'user':current_user.dict_data(),
+                            'by':by
+                        })
 
-                            thread.start()
-
-
-                            #   Set default prompts if selected
-                            if data.get('default-prompt', False):
-                                if by=="artist": current_user.default_prompt_artist = data['prompt']
-                                elif by=="keyword": current_user.default_prompt = data['prompt']
-                                prompt=data['prompt']
-
-                            if data.get('default-intro-prompt', False):
-                                if by=="artist": current_user.default_intro_prompt_artist = data['intro-prompt']
-                                elif by=="keyword": current_user.default_intro_prompt = data['intro-prompt']
-                                intro_prompt=data['intro-prompt']
-
-                            if data.get('default-improver-prompt', False):
-                                current_user.default_improver_prompt = data['improver-prompt']
-                                improver_prompt=data['improver-prompt']
-
-                            if data.get('default-img-prompt', False):
-                                current_user.default_img_prompt = data['img-prompt']
-                                improver_prompt=data['img-prompt']
-                            
-
-                            img_config = data.get('img-config', json.loads(current_user.default_img_config))
-                            def_img_config = {}
-                            for config in data.get('default-img-config', []):
-                                def_img_config[config]= img_config.get(config, "")
-                            current_user.default_img_config = json.dumps(json.loads(current_user.default_img_config) | def_img_config)
+                        thread.start()
 
 
-                            db.session.commit()
-                            flash(
-                                f'Search running in background. Check the search history in about {int(time_to_complete/60)+1} minutes for the download link.', category='success')
-                        else:
-                            print("another thread is already running")
-                            flash(
-                                "There's another search running in the background. Try again in a few minutes. Check the search history for completion", category='error')
+                        #   Set default prompts if selected
+                        if data.get('default-prompt', False):
+                            if by=="artist": current_user.default_prompt_artist = data['prompt']
+                            elif by=="keyword": current_user.default_prompt = data['prompt']
+                            prompt=data['prompt']
+
+                        if data.get('default-intro-prompt', False):
+                            if by=="artist": current_user.default_intro_prompt_artist = data['intro-prompt']
+                            elif by=="keyword": current_user.default_intro_prompt = data['intro-prompt']
+                            intro_prompt=data['intro-prompt']
+
+                        if data.get('default-improver-prompt', False):
+                            current_user.default_improver_prompt = data['improver-prompt']
+                            improver_prompt=data['improver-prompt']
+
+                        if data.get('default-img-prompt', False):
+                            current_user.default_img_prompt = data['img-prompt']
+                            improver_prompt=data['img-prompt']
+                        
+
+                        img_config = data.get('img-config', json.loads(current_user.default_img_config))
+                        def_img_config = {}
+                        for config in data.get('default-img-config', []):
+                            def_img_config[config]= img_config.get(config, "")
+                        current_user.default_img_config = json.dumps(json.loads(current_user.default_img_config) | def_img_config)
+
+
+                        db.session.commit()
+                        flash(
+                            f'Search running in background. Check the search history in about {int(time_to_complete/60)+1} minutes for the download link.', category='success')
+                        # if not flag_bkg.is_set():
+
+                        # else:
+                        #     print("another thread is already running")
+                        #     flash(
+                        #         "There's another search running in the background. Try again in a few minutes. Check the search history for completion", category='error')
 
                 except ValueError as e:
                     flash("An error happened. Try again.", category='error')

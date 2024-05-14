@@ -1,13 +1,9 @@
-from sqlalchemy import JSON
 from . import db
 from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
 from .constants import default_prompt, default_intro_prompt, default_intro_prompt_artist, default_improver_prompt
 import json
 from uuid import uuid4
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
-
 
 def clean_name(name):
     new_name = name.replace(' ', '_').replace('-', '_').replace('(', '').replace(')', '').replace('.', '').replace(',', '')
@@ -148,22 +144,7 @@ class Search(db.Model):
 
         return json.dumps(data)
 
-class SpotifyDraft(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
-    user = db.Column(db.String(150))
-    searchedby = db.Column(db.String(150),default="keyword")
-    artist = db.Column(db.String())
-    track_name = db.Column(db.String())
-    release_year = db.Column(db.String())
-    album = db.Column(db.String()), 
-    popularity = db.Column(db.String())
-    duration_ms = db.Column(db.String())
-    track_id = db.Column(db.String())
-    spotify_url = db.Column(db.String())
-    track_name_clean = db.Column(db.String())
 
-    
 class Parameters(db.Model):
     name = db.Column(db.String(150), primary_key=True)
     value = db.Column(db.String(150))
@@ -195,12 +176,12 @@ class Def_Search():
         self.img_prompt = current_user.default_img_prompt
         self.by = by
 
-        # if by=="artist":
-        #     self.intro_prompt = current_user.default_intro_prompt_artist
-        #     self.prompt = current_user.default_prompt_artist
-        # elif by=="keyword":
-        #     self.intro_prompt = current_user.default_intro_prompt
-        #     self.prompt = current_user.default_prompt
+        if by=="artist":
+            self.intro_prompt = current_user.default_intro_prompt_artist
+            self.prompt = current_user.default_prompt_artist
+        elif by=="keyword":
+            self.intro_prompt = current_user.default_intro_prompt
+            self.prompt = current_user.default_prompt
         
         self.improved_intro = True
         self.improved_song=True
@@ -212,4 +193,19 @@ class Def_Search():
         self.include_img=True
         self.img_config=json.loads(current_user.default_img_config)
 
-        
+class SpotifyDraft(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    user = db.Column(db.String(150))
+    keyword = db.Column(db.String(150))
+    sp_keywords = db.Column(db.String(150))
+    searchedby = db.Column(db.String(150),default="keyword")
+    artist = db.Column(db.String())
+    track_name = db.Column(db.String())
+    release_year = db.Column(db.String())
+    album = db.Column(db.String()), 
+    popularity = db.Column(db.String())
+    duration_ms = db.Column(db.String())
+    track_id = db.Column(db.String())
+    spotify_url = db.Column(db.String())
+    track_name_clean = db.Column(db.String())

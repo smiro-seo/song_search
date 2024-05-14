@@ -28,7 +28,7 @@ def generate_html(data, intro, return_full_text=False):
     print(data)
     for i, song_data in data.iterrows():
         full_text += '\n' + song_data["model_response"]
-        title = f"{clean_name(song_data['Track Name'])} &#8211; {song_data['Artist'].title()}"    
+        title = f"{clean_name(song_data['Track Name'])} &#8211; {song_data['Artist']}"    
 
         #   Title
         with a.h2(klass="wp-block-heading"):
@@ -47,7 +47,7 @@ def generate_html(data, intro, return_full_text=False):
 
         #   Song Data
         with a.div(klass="songfacts"):
-            for item in ["Artist", "Track Name", "Album", "Release Year"]:
+            for item in ["Artist", "Track Name", "Release Year"]:
                 a(f"<strong>{item}: </strong>{song_data[item]}")
         
         #   Spotify
