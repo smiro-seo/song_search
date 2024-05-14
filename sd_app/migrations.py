@@ -10,6 +10,7 @@ default_img_prompt = 'Based on the following article summary, provide a suitable
  Example 2:\
  An illustration exuding van gogh distinctive style; an ultra-detailed and hyper-realistic portrayal of [keyword], designed with Lisa Frank aesthetics, featuring popular art elements such as butterflies and florals, sharp focus, akin to a high-quality studio photograph, with meticulous detailing.'
 
+
 query_100= [text("SELECT 'first version'")]
 query_101= [text("ALTER TABLE search ADD COLUMN improver_prompt STRING;"),
     text("ALTER TABLE user ADD COLUMN default_improver_prompt STRING;"),
