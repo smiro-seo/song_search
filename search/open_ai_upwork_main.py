@@ -16,6 +16,7 @@ from .search_youtube import youtube_search
 from sd_app.constants import keys
 
 
+
 market = 'US'
 # Characters after which the track name does not matter for duplicates
 flagged_characters = ['-', '(', '/']
@@ -390,6 +391,7 @@ class Search_Process():
         #   Post to wp
         if self.wordpress: 
             self.wp_draft(html, img_binary, img_name)
+
         output_html_name = generate_html_file(html)
 
         return True
