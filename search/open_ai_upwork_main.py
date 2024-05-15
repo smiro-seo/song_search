@@ -337,11 +337,12 @@ class Search_Process():
         result_df = pd.DataFrame(spotify_drafts_dicts)
 
 
-        print('print result dfåå',result_df)
+        print('print result df',result_df)
         if not isinstance(result_df, pd.DataFrame): return False
 
+        #proceed with the first element of result df
+        result_df = result_df.iloc[0]
 
-        print("spotify data" , result_df)
 
         #   Get youtube data
         print(f"Getting Youtube data")
@@ -390,6 +391,7 @@ class Search_Process():
             self.wp_draft(html, img_binary, img_name)
 
         output_html_name = generate_html_file(html)
+        # delete all 
 
         return True
 
@@ -462,237 +464,34 @@ class Search_Spotify():
                 print(e)
                 return "Failed"
             
-    def get_search_results(self, stopper):
-        search_term_dfs = []  # list with search term results
-        print("get_search_results")
-        print(self.sp_keywords)
-
-        for keyword in self.sp_keywords:
-
-            if (stopper.is_set()): raise Exception("stopped")
-            
-            print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-            print(f"Starting first keyword: {keyword}")
-            print(f'Getting most popular songs containing {keyword}')
-            df_w_spot_df = search_spotify_tracks(keyword, self.sp, target="track", by="track")
-
-            search_term_dfs.append(df_w_spot_df)
-
-        # search term-level dataframe
-        st_out_sp_df = pd.concat(search_term_dfs)
-        st_out_sp_df.sort_values('popularity', ascending=False, inplace=True)
-        if st_out_sp_df.shape[0] == 0: return st_out_sp_df
-        print('st_out_sp_df',st_out_sp_df)
-
-
-        # drop duplicates
-        print("Dropping duplicates")
-        out_df_no_duplicates = cleanse_track_duplicates(st_out_sp_df)
-        print("out_df",out_df_no_duplicates)
-        if self.limit != -1:
-            if out_df_no_duplicates.shape[0] > self.offset + self.limit:
-                # search_term-level filtering
-                out_df_no_duplicates = out_df_no_duplicates.iloc[self.offset:self.offset + self.limit]
-            elif out_df_no_duplicates.shape[0] > self.offset:
-                out_df_no_duplicates = out_df_no_duplicates.iloc[self.offset:]
-            else:
-                print(f"Offset too big for results. Returning empty table.")
-                out_df_no_duplicates = pd.DataFrame(columns=out_df_no_duplicates.columns)
-
-        print("Prepping our KW output...")
-        # prep for final output
-        out_df = out_df_no_duplicates.copy()
-        print("Prepping our KW output...", out_df)
-
-        return out_df
-
-# class Search_Keyword(Search_Spotify):
-
-#     def __init__(self, data, limit_st, offset_res, keys, current_user):
-#         Search_Process.__init__(self, data, limit_st, offset_res, keys, current_user)
-#         self.by="keyword"
-#         self.sp_keywords=data.get('sp_keywords', [])
-#         self.keyword = data.get('keyword', '')
-#         self.keyword_descriptor = json.dumps({'keyword': self.keyword, 'sp_keywords':self.sp_keywords})
-
-#         self.intro_prompt_original = self.intro_prompt
-#         self.img_prompt_original = self.img_prompt
-#         self.intro_prompt = self.intro_prompt.replace('[keyword]', self.keyword)
-#         self.img_prompt = self.img_prompt.replace('[artist]', self.keyword).replace('[keyword]', self.keyword)
-#         self.values_to_replace = {'[keyword]': self.keyword}
-
-#         #   Title and slug
-#         self.slug = 'songs-about-' + self.keyword.lower()
-#         self.wp_title = f'{str(limit_st)} Songs About {self.keyword.title()}'
-
-    
-#     def get_search_results(self, stopper):
-#         search_term_dfs = []  # list with search term results
-
-#         for keyword in self.sp_keywords:
-
-#             if (stopper.is_set()): raise Exception("stopped")
-            
-#             print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-#             print(f"Starting first keyword: {keyword}")
-#             print(f'Getting most popular songs containing {keyword}')
-#             df_w_spot_df = search_spotify_tracks(keyword, self.sp, target="track", by="track")
-
-#             search_term_dfs.append(df_w_spot_df)
-
-#         # search term-level dataframe
-#         st_out_sp_df = pd.concat(search_term_dfs)
-#         st_out_sp_df.sort_values('popularity', ascending=False, inplace=True)
-#         if st_out_sp_df.shape[0] == 0: return st_out_sp_df
-
-
-#         # drop duplicates
-#         print("Dropping duplicates")
-#         out_df_no_duplicates = cleanse_track_duplicates(st_out_sp_df)
-#         if self.limit != -1:
-#             if out_df_no_duplicates.shape[0] > self.offset + self.limit:
-#                 # search_term-level filtering
-#                 out_df_no_duplicates = out_df_no_duplicates.iloc[self.offset:self.offset + self.limit]
-#             elif out_df_no_duplicates.shape[0] > self.offset:
-#                 out_df_no_duplicates = out_df_no_duplicates.iloc[self.offset:]
-#             else:
-#                 print(f"Offset too big for results. Returning empty table.")
-#                 out_df_no_duplicates = pd.DataFrame(columns=out_df_no_duplicates.columns)
-
-#         print("Prepping our KW output...")
-#         # prep for final output
-#         out_df = out_df_no_duplicates.copy()
-#         print("Prepping our KW output...", out_df)
-
-#         return out_df
-
-    
-#     def run(self, flag_running, stopper):
-
-#         try:
-#             # instantiate spotify api client
-#             self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=keys['sp_user'],client_secret=keys['sp_password']),requests_timeout=60)
-#             spotify_results = self.main_process(stopper)
-
-#             flag_running.clear()
-#             stopper.clear()
-
-#             print("whle posting", spotify_results)
-
-#             return spotify_results
-        
-#         except Exception as e:
-
-#             flag_running.clear()
-#             stopper.clear()
-
-#             if str(e)=="stopped":
-#                 print("Search stopped")
-#                 return "Stopped"
-#             else:
-#                 print("Error while running search keyword")
-#                 print(e)
-#                 return "Failed"
-
-# class Search_Artist(Search_Spotify):
-
-
-#     def __init__(self, data, limit_st, offset_res, keys, current_user):
-#         Search_Process.__init__(self, data, limit_st, offset_res, keys, current_user)
-#         self.by="artist"
-
-#         self.artist_name=data.get('artist-name', None)
-#         self.artist_id=data.get('artist-id', None)
-
-#         self.intro_prompt_original = self.intro_prompt
-#         self.img_prompt_original = self.img_prompt
-#         self.intro_prompt = self.intro_prompt.replace('[artist]', self.artist_name)
-#         self.img_prompt = self.img_prompt.replace('[artist]', self.artist_name).replace('[keyword]', self.artist_name)
-        
-#         self.keyword_descriptor=self.artist_name
-#         self.values_to_replace = {'artist':self.artist_name}
-
-#         #   Title and slug
-#         self.slug = self.artist_name.replace(" ", "-").lower() + "-songs"
-#         self.wp_title = f'{limit_st} Best {self.artist_name.title()} Songs'
-    
-#     def get_search_results(self, stopper):
-
-#         if (stopper.is_set()): raise Exception("stopped")
-
-#         print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-#         print(f"Searching for top songs by {self.artist_name}")
-#         df_w_spot_df = search_spotify_tracks(self.artist_name, self.sp, target="track", by="artist", keyword_id=self.artist_id)
-
-#         df_w_spot_df.sort_values('popularity', ascending=False, inplace=True)
-#         print("Limiting search results to " + str(self.limit))
-
-#         # drop duplicates
-#         print("Dropping duplicates")
-#         df_w_spot_df = cleanse_track_duplicates(df_w_spot_df)
-#         if self.limit != -1:
-#             if df_w_spot_df.shape[0] > self.offset + self.limit:
-#                 # search_term-level filtering
-#                 df_w_spot_df = df_w_spot_df.iloc[self.offset:self.offset + self.limit]
-#             elif df_w_spot_df.shape[0] > self.offset:
-#                 df_w_spot_df = df_w_spot_df.iloc[self.offset:]
-#             else:
-#                 print(f"Offset too big for results. Returning empty table.")
-#                 df_w_spot_df = pd.DataFrame(columns=df_w_spot_df.columns)
-
-#         return df_w_spot_df
-
-#     def run(self, flag_running, stopper):
-
-#         try:
-#             # instantiate spotify api client
-#             self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=keys['sp_user'],client_secret=keys['sp_password']),requests_timeout=60)
-#             spotify_results = self.main_process(stopper)
-
-#             flag_running.clear()
-#             stopper.clear()
-
-#             print("whle posting", spotify_results)
-
-#             return spotify_results
-        
-#         except Exception as e:
-
-#             flag_running.clear()
-#             stopper.clear()
-
-#             if str(e)=="stopped":
-#                 print("Search stopped")
-#                 return "Stopped"
-#             else:
-#                 print("Error while running search keyword")
-#                 print(e)
-#                 return "Failed"
-
-
 class Search_Keyword(Search_Process):
 
     def __init__(self, data, limit_st, offset_res, keys, current_user):
         Search_Process.__init__(self, data, limit_st, offset_res, keys, current_user)
         self.by="keyword"
-        self.sp_keywords=''
-        self.keyword = ''
+        self.sp_keywords=data.get('sp_keywords', [])
+        self.keyword = data.get('keyword', '')
         self.keyword_descriptor = json.dumps({'keyword': self.keyword, 'sp_keywords':self.sp_keywords})
 
         self.intro_prompt_original = self.intro_prompt
         self.img_prompt_original = self.img_prompt
-        
         self.intro_prompt = self.intro_prompt.replace('[keyword]', self.keyword)
         self.img_prompt = self.img_prompt.replace('[artist]', self.keyword).replace('[keyword]', self.keyword)
         self.values_to_replace = {'[keyword]': self.keyword}
 
         #   Title and slug
-        self.slug = 'songs-about-' + self.keyword.lower()
-        self.wp_title = f'{str(limit_st)} Songs About {self.keyword.title()}'
+        # self.slug = 'songs-about-' + self.keyword.lower()
+        # self.wp_title = f'{str(limit_st)} Songs About {self.keyword.title()}'
+        self.slug = ''
+        self.wp_title = ''
+
     
     def get_search_results(self, stopper):
         songs =SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).order_by(SpotifyDraft.date.desc()).all(),
 
+        # from song pick the first one
+        self.slug = 'songs-about-' + songs[0].keyword
+        self.wp_title = f'{str(len(songs))} Songs About {songs[0].keyword.title()}'
         return songs
 
 class Search_Artist(Search_Process):
@@ -713,34 +512,18 @@ class Search_Artist(Search_Process):
         self.values_to_replace = {'artist':self.artist_name}
 
         #   Title and slug
-        self.slug = self.artist_name.replace(" ", "-").lower() + "-songs"
-        self.wp_title = f'{limit_st} Best {self.artist_name.title()} Songs'
+        # self.slug = self.artist_name.replace(" ", "-").lower() + "-songs"
+        # self.wp_title = f'{limit_st} Best {self.artist_name.title()} Songs'
+        self.slug = ''
+        self.wp_title = ''
     
     def get_search_results(self, stopper):
+        songs = SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).order_by(SpotifyDraft.date.desc()).all(),
 
-        if (stopper.is_set()): raise Exception("stopped")
-
-        print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
-        print(f"Searching for top songs by {self.artist_name}")
-        df_w_spot_df = search_spotify_tracks(self.artist_name, self.sp, target="track", by="artist", keyword_id=self.artist_id)
-
-        df_w_spot_df.sort_values('popularity', ascending=False, inplace=True)
-        print("Limiting search results to " + str(self.limit))
-
-        # drop duplicates
-        print("Dropping duplicates")
-        df_w_spot_df = cleanse_track_duplicates(df_w_spot_df)
-        if self.limit != -1:
-            if df_w_spot_df.shape[0] > self.offset + self.limit:
-                # search_term-level filtering
-                df_w_spot_df = df_w_spot_df.iloc[self.offset:self.offset + self.limit]
-            elif df_w_spot_df.shape[0] > self.offset:
-                df_w_spot_df = df_w_spot_df.iloc[self.offset:]
-            else:
-                print(f"Offset too big for results. Returning empty table.")
-                df_w_spot_df = pd.DataFrame(columns=df_w_spot_df.columns)
-
-        return df_w_spot_df
+        # from song pick the first one
+        self.slug = songs[0].artist.replace(" ", "-").lower() + "-songs"
+        self.wp_title = f'{len(songs)} Best {self.artist_name.title()} Songs'
+        return songs
 
 
 class Search_Spotify_Keyword(Search_Spotify):
@@ -791,6 +574,9 @@ class Search_Spotify_Keyword(Search_Spotify):
         search_term_dfs = []  # list with search term results
 
         for keyword in self.sp_keywords:
+
+            keyword = keyword.lower()
+            print(keyword)
 
             if (stopper.is_set()): raise Exception("stopped")
             
@@ -916,7 +702,7 @@ class Search_Spotify_Artist(Search_Spotify):
 
         print("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||")
         print(f"Searching for top songs by {self.artist_name}")
-        df_w_spot_df = search_spotify_tracks(self.artist_name, self.sp, target="track", by="artist", keyword_id=self.artist_id)
+        df_w_spot_df = search_spotify_tracks(self.artist_name.lower(), self.sp, target="track", by="artist", keyword_id=self.artist_id)
 
         df_w_spot_df.sort_values('popularity', ascending=False, inplace=True)
         print("Limiting search results to " + str(self.limit))

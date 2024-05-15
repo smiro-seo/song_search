@@ -7,7 +7,7 @@ import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from PIL import Image
 import io, base64
 import requests
-local=False
+local=True
 
 cwd = os.path.dirname(__file__)
 output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images') if not local else os.path.join(cwd,'feat_images')

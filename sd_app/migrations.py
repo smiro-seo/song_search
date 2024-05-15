@@ -96,8 +96,9 @@ def check_db_version():
         print("Checking DB version...")
         try:
             db_version = find_db_version(con)
-        except:
+        except Exception as e:
             print("Error while checking DB version")
+            print(e)
             return
         print("Database version: "  + db_version)
 
