@@ -65,7 +65,7 @@ def get_gpt_response(prompt, engine, options=default_gpt_options):
                 n=1,
                 **options
             )
-                                                        
+        
             choice_response_text = completion['choices'][0]['message']['content'].strip().replace('"', '')
         
         # Required timeout for OpenAI API
@@ -193,7 +193,7 @@ class Model_Generator():
         # Get response
         response = get_gpt_response(prompt, self.search.model)
 
-        # Improve if necessary
+        # Improve if necessary 
         if self.search.improve_song: response = self.improve(response)
 
         return response

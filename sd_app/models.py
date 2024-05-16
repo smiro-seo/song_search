@@ -119,7 +119,8 @@ class Search(db.Model):
         }
 
         model = model_name.get(self.model, self.model)
-        img_name = f"{clean_name(self.keyword if self.by=='keyword' else self.artist)}_songs_{self.id}"
+        #img_name = f"{clean_name(self.keyword if self.by=='keyword' else self.artist)}_songs_{self.id}"
+        img_name = ""
 
         data = {
             'id':self.id,

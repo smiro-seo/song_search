@@ -34,6 +34,9 @@ youtube_api_key = keys["youtube_key"]
 # paths
 path = os.path.join(cwd,'..', '..', '..', '..', 'var', 'song_search', 'model_outputs') if not local else os.path.join(cwd,'model_outputs')
 
+def clean_name(name):
+    new_name = name.replace(' ', '_').replace('-', '_').replace('(', '').replace(')', '').replace('.', '').replace(',', '')
+    return new_name
 
 def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=None):
     search_columns = ['artist', 'track_name', 'release_year',
@@ -296,6 +299,7 @@ class Search_Process():
 
         try:
             # instantiate spotify api client
+            print("hi I am running", stopper)
             self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=keys['sp_user'],client_secret=keys['sp_password']),requests_timeout=60)
             self.main_process(stopper)
 
@@ -326,6 +330,7 @@ class Search_Process():
 
         create_wp_draft(self.wp_title, html, self.slug, self.keys, img_id)
 
+    
     def main_process(self, stopper):
 
         youtube_api_key = self.keys['youtube_key']
@@ -333,15 +338,12 @@ class Search_Process():
 
         #   Get spotify data
         result_df = self.get_search_results(stopper)
-        spotify_drafts_dicts = [obj.__dict__ for obj in result_df[0]]
+        spotify_drafts_dicts = [obj.__dict__ for obj in result_df]
         result_df = pd.DataFrame(spotify_drafts_dicts)
 
 
         print('print result df',result_df)
         if not isinstance(result_df, pd.DataFrame): return False
-
-        #proceed with the first element of result df
-        result_df = result_df.iloc[0]
 
 
         #   Get youtube data
@@ -354,11 +356,17 @@ class Search_Process():
         #   Get openai data
         print(f"Getting OpenAI response")
         for i, track in result_df.iterrows(): 
+            
             self.intro_prompt = self.intro_prompt.replace('[keyword]', track.keyword)
-            self.img_prompt = self.img_prompt.replace('[artist]', track.artist).replace('[keyword]', self.keyword)
-            self.values_to_replace = {'[keyword]': self.keyword} 
-            model_reponse = generator.song_description(track, stopper)
-            result_df.loc[i, 'model_response'] = model_reponse
+            self.img_prompt = self.img_prompt.replace('[artist]', track.artist).replace('[keyword]', track.keyword)
+            self.values_to_replace = {'[keyword]': track.keyword} 
+            try:
+                model_reponse = generator.song_description(track, stopper)
+                
+                result_df.loc[i, 'model_response'] = model_reponse
+            except Exception as e:
+                print("model error", e)
+            
         
         print("result_df",result_df)
         #   Clean and sort results
@@ -371,24 +379,38 @@ class Search_Process():
         print("Getting HTML")
         html, self.full_text = generate_html(clean_data, intro, return_full_text=True)
 
-        #   Generate feat. image
+         #   Generate feat. image
         if self.include_img:
             print("Getting featured image")
+            print(self.__dict__)
+            if self.by=='keyword': 
+                img_name = "songs_about_" + clean_name(self.keyword_descriptor)
+
+            if self.by=='artist': 
+                img_name = clean_name(self.keyword_descriptor) + "_songs"
+
             if self.record is None: filename=None
-            else: filename = json.loads(self.record.json_data())['img_name']
-            try:
-                img_binary, img_name, img_gen_prompt, seed = generator.feat_image(filename=filename)
-            except Exception as e:
-                print('error on geerating',e)
+            else: filename = img_name
+
+            print("file_name: " + filename)
+            img_binary, img_name, img_gen_prompt, seed = generator.feat_image(filename=filename)
             self.record.img_gen_prompt = img_gen_prompt
             self.record.img_config['seed']=seed
         else:
             img_binary=None
             img_name=None
 
+
         #   Post to wp
         if self.wordpress: 
             self.wp_draft(html, img_binary, img_name)
+        
+        # remove all drafts
+        if self.by=='keyword':
+            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete()
+        if self.by=='artist':
+            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete()
+
 
         output_html_name = generate_html_file(html)
         # delete all 
@@ -405,7 +427,7 @@ class Search_Spotify():
         self.searchedby = searchedby
         self.artist = '',
         self.track_name = '',
-        self.by="keyword"
+        self.by= searchedby
         self.sp_keywords=data.get('sp_keywords', [])
         self.keyword = data.get('keyword', '')
         self.keyword_descriptor = json.dumps({'keyword': self.keyword, 'sp_keywords':self.sp_keywords})
@@ -463,20 +485,23 @@ class Search_Spotify():
                 print("Error while running search keyword")
                 print(e)
                 return "Failed"
-            
+    
+    
 class Search_Keyword(Search_Process):
 
-    def __init__(self, data, limit_st, offset_res, keys, current_user):
+    def __init__(self, data, limit_st, offset_res, keys, current_user, by):
         Search_Process.__init__(self, data, limit_st, offset_res, keys, current_user)
-        self.by="keyword"
+        self.by=by
         self.sp_keywords=data.get('sp_keywords', [])
         self.keyword = data.get('keyword', '')
         self.keyword_descriptor = json.dumps({'keyword': self.keyword, 'sp_keywords':self.sp_keywords})
 
         self.intro_prompt_original = self.intro_prompt
         self.img_prompt_original = self.img_prompt
-        self.intro_prompt = self.intro_prompt.replace('[keyword]', self.keyword)
-        self.img_prompt = self.img_prompt.replace('[artist]', self.keyword).replace('[keyword]', self.keyword)
+        # self.intro_prompt = self.intro_prompt.replace('[keyword]', self.keyword)
+        # self.img_prompt = self.img_prompt.replace('[artist]', self.keyword).replace('[keyword]', self.keyword)
+        self.intro_prompt = ''
+        self.img_prompt = ''
         self.values_to_replace = {'[keyword]': self.keyword}
 
         #   Title and slug
@@ -485,9 +510,15 @@ class Search_Keyword(Search_Process):
         self.slug = ''
         self.wp_title = ''
 
+
     
     def get_search_results(self, stopper):
-        songs =SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).order_by(SpotifyDraft.date.desc()).all(),
+        songs =SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).order_by(SpotifyDraft.date.desc()).all()
+
+        if (stopper.is_set()): raise Exception("stopped")
+
+        self.intro_prompt = self.intro_prompt.replace('[keyword]', songs[0].keyword)
+        self.img_prompt = self.img_prompt.replace('[artist]', songs[0].artist).replace('[keyword]', songs[0].keyword)
 
         # from song pick the first one
         self.slug = 'songs-about-' + songs[0].keyword
@@ -496,33 +527,55 @@ class Search_Keyword(Search_Process):
 
 class Search_Artist(Search_Process):
 
-    def __init__(self, data, limit_st, offset_res, keys, current_user):
+    def __init__(self, data, limit_st, offset_res, keys, current_user, by):
         Search_Process.__init__(self, data, limit_st, offset_res, keys, current_user)
-        self.by="artist"
+        self.by=by
 
         self.artist_name=data.get('artist-name', None)
         self.artist_id=data.get('artist-id', None)
 
         self.intro_prompt_original = self.intro_prompt
         self.img_prompt_original = self.img_prompt
-        self.intro_prompt = self.intro_prompt.replace('[artist]', self.artist_name)
-        self.img_prompt = self.img_prompt.replace('[artist]', self.artist_name).replace('[keyword]', self.artist_name)
+        # self.intro_prompt = self.intro_prompt.replace('[artist]', self.artist_name)
+        # self.img_prompt = self.img_prompt.replace('[artist]', self.artist_name).replace('[keyword]', self.artist_name)
+        self.intro_prompt
+        self.img_prompt_original
+        
         
         self.keyword_descriptor=self.artist_name
         self.values_to_replace = {'artist':self.artist_name}
 
         #   Title and slug
-        # self.slug = self.artist_name.replace(" ", "-").lower() + "-songs"
-        # self.wp_title = f'{limit_st} Best {self.artist_name.title()} Songs'
         self.slug = ''
         self.wp_title = ''
+
+        self.by = by
     
     def get_search_results(self, stopper):
-        songs = SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).order_by(SpotifyDraft.date.desc()).all(),
+        print("in getting search")
+        try:
+            songs = SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).order_by(SpotifyDraft.date.desc()).all()
+        except Exception as e:
+            print('exception on getting result',e)
+        # print("such are songs", type(songs),songs)
+
+        first_song = songs[0]
+        artist = first_song.__dict__['artist']
+        keyword = first_song.__dict__['keyword']
+        artist = str(artist)
+        keyword = str(keyword)
+
+        print(artist,keyword)
+
+        self.intro_prompt = self.intro_prompt.replace('[artist]', artist)
+        self.img_prompt = self.img_prompt.replace('[artist]', artist).replace('[keyword]', keyword)
+
+        self.artist_name = artist.replace(' ', '-').lower()
+        self.keyword_descriptor = artist.replace(' ', '-').lower()
 
         # from song pick the first one
-        self.slug = songs[0].artist.replace(" ", "-").lower() + "-songs"
-        self.wp_title = f'{len(songs)} Best {self.artist_name.title()} Songs'
+        self.slug = artist.replace(" ", "-").lower() + "-songs"
+        self.wp_title = f'{len(songs)} Best {artist.title()} Songs'
         return songs
 
 
@@ -537,13 +590,13 @@ class Search_Spotify_Keyword(Search_Spotify):
 
         self.intro_prompt_original = self.intro_prompt
         self.img_prompt_original = self.img_prompt
-        self.intro_prompt = self.intro_prompt.replace('[keyword]', self.keyword)
-        self.img_prompt = self.img_prompt.replace('[artist]', self.keyword).replace('[keyword]', self.keyword)
+        self.intro_prompt = self.intro_prompt
+        self.img_prompt = self.img_prompt
         self.values_to_replace = {'[keyword]': self.keyword}
 
         #   Title and slug
-        self.slug = 'songs-about-' + self.keyword.lower()
-        self.wp_title = f'{str(limit_st)} Songs About {self.keyword.title()}'
+        self.slug = ""
+        self.wp_title = ""
     
     def create_spotify_draft(self, SpotifyDraft, keyword, sp_keywords, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
         try:
@@ -662,15 +715,15 @@ class Search_Spotify_Artist(Search_Spotify):
 
         self.intro_prompt_original = self.intro_prompt
         self.img_prompt_original = self.img_prompt
-        self.intro_prompt = self.intro_prompt.replace('[artist]', self.artist_name)
-        self.img_prompt = self.img_prompt.replace('[artist]', self.artist_name).replace('[keyword]', self.artist_name)
+        self.intro_prompt = self.intro_prompt
+        self.img_prompt = self.img_prompt
         
         self.keyword_descriptor=self.artist_name
         self.values_to_replace = {'artist':self.artist_name}
 
         #   Title and slug
-        self.slug = self.artist_name.replace(" ", "-").lower() + "-songs"
-        self.wp_title = f'{limit_st} Best {self.artist_name.title()} Songs'
+        self.slug = ""
+        self.wp_title = ""
     
     def create_spotify_draft(self, SpotifyDraft,keyword, sp_keywords, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
         try:
