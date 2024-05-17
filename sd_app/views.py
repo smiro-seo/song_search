@@ -1,5 +1,5 @@
 from search import Search_Keyword, Search_Artist, Search_Spotify_Keyword, Search_Spotify_Artist
-from flask import Flask, Blueprint, render_template, request, flash, jsonify, redirect, send_file, render_template_string
+from flask import Flask, Blueprint, render_template, request, flash, jsonify, redirect, send_file, render_template_string, url_for
 import json
 import threading
 from flask_login import login_required, current_user
@@ -92,8 +92,7 @@ def background_spotify_search(local_app, local_db, input_data, limit, offset, us
                 spotify_url = row['spotify_url']
                 track_name_clean = row['track_name_clean']
 
-                if by == "artist":
-                    keyword = row['artist']
+                keyword = keyword
 
                 search_record = search.create_spotify_draft(SpotifyDraft, keyword, str(sp_keywords), user, by , artist, track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean)
                 print("search_record", search_record)
@@ -460,6 +459,16 @@ def delete_spotifydraft(flash_msg=True, idx=None):
 
     return jsonify({})
 
+@app.route('/deleteSelected', methods=['POST'])
+def delete_selected():
+    selected_drafts = request.form.getlist('selected_drafts')
+    for draft_id in selected_drafts:    
+        print("draft id",draft_id)
+        SpotifyDraft.query.filter(SpotifyDraft.id==draft_id).delete(synchronize_session=False)
+
+    return redirect(url_for('searchSpotify', by='keyword'))
+
+    
 @views.route('/clear-history', methods=['POST'])
 @login_required
 def clear_history(flash_msg=True):

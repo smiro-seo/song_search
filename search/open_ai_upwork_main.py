@@ -330,7 +330,6 @@ class Search_Process():
 
         create_wp_draft(self.wp_title, html, self.slug, self.keys, img_id)
 
-    
     def main_process(self, stopper):
 
         youtube_api_key = self.keys['youtube_key']
@@ -352,18 +351,28 @@ class Search_Process():
             yt_video_id = get_youtube_search_results(track, stopper)
             print('yt',yt_video_id)
             result_df.loc[i, 'yt_video_id'] = yt_video_id
+        
+        #get the first track in the resultdf
+        first_row = result_df.iloc[0]
+
+        self.intro_prompt = self.intro_prompt.replace('[keyword]',first_row.keyword)
+        self.img_prompt = self.img_prompt.replace('[artist]',first_row.artist).replace('[keyword]',first_row.keyword)
+
+
+        print( 'prompts',self.intro_prompt, self.img_prompt, self.values_to_replace )
 
         #   Get openai data
         print(f"Getting OpenAI response")
-        for i, track in result_df.iterrows(): 
-            
-            self.intro_prompt = self.intro_prompt.replace('[keyword]', track.keyword)
-            self.img_prompt = self.img_prompt.replace('[artist]', track.artist).replace('[keyword]', track.keyword)
-            self.values_to_replace = {'[keyword]': track.keyword} 
+        for i, track in result_df.iterrows():  
             try:
-                model_reponse = generator.song_description(track, stopper)
+                self.values_to_replace = {'[keyword]':first_row.keyword}
+                model_response = generator.song_description(track, stopper)
+                print('model response',model_response)
+                print('intro_prompt', self.intro_prompt)
+                print("img_prompt", self.img_prompt)
+                print("values_to_replace", self.values_to_replace)
                 
-                result_df.loc[i, 'model_response'] = model_reponse
+                result_df.loc[i, 'model_response'] = model_response
             except Exception as e:
                 print("model error", e)
             
@@ -500,8 +509,8 @@ class Search_Keyword(Search_Process):
         self.img_prompt_original = self.img_prompt
         # self.intro_prompt = self.intro_prompt.replace('[keyword]', self.keyword)
         # self.img_prompt = self.img_prompt.replace('[artist]', self.keyword).replace('[keyword]', self.keyword)
-        self.intro_prompt = ''
-        self.img_prompt = ''
+        # self.intro_prompt = ''
+        # self.img_prompt = ''
         self.values_to_replace = {'[keyword]': self.keyword}
 
         #   Title and slug
@@ -538,8 +547,8 @@ class Search_Artist(Search_Process):
         self.img_prompt_original = self.img_prompt
         # self.intro_prompt = self.intro_prompt.replace('[artist]', self.artist_name)
         # self.img_prompt = self.img_prompt.replace('[artist]', self.artist_name).replace('[keyword]', self.artist_name)
-        self.intro_prompt
-        self.img_prompt_original
+        # self.intro_prompt
+        # self.img_prompt
         
         
         self.keyword_descriptor=self.artist_name

@@ -194,6 +194,21 @@ function showAlert(text) {
   window.alert(text);
 }
 
+// function toggleSelectAll(selectAllCheckbox) {
+//   var checkboxes = document.querySelectorAll('.draft-checkbox');
+//   checkboxes.forEach(function(checkbox) {
+//       checkbox.checked = selectAllCheckbox.checked;
+//   });
+// }
+
+// document.getElementById('deleteForm').addEventListener('submit', function(event) {
+//   var checkboxes = document.querySelectorAll('input[name="selected_drafts"]:checked');
+//   if (checkboxes.length === 0) {
+//       event.preventDefault();
+//       alert('Please select at least one item to delete.');
+//   }
+// });
+
 function search(searchType) {
   console.log("Searching by " + searchType);
   switch (searchType) {

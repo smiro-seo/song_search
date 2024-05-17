@@ -6,9 +6,11 @@
     <table class="table" id="keyword-table">
       <thead>
         <tr>
+          <th></th>
           <th>Artist</th> 
           <th>Track</th>
           <th>Keyword</th>
+          <th>Popularity</th>
           <th>Remove</th>
           <th scope="col" colspan="3">
             {% if drafts|length != 0 %}
@@ -17,30 +19,43 @@
           </th>
         </tr>
       </thead>
-      <tbody>
-        {% for draft in drafts %}
-        <tr>
-          <td>{{draft.artist}}</td> 
-          <td>{{draft.track_name}}</td>
-          <td>
-            {% if draft.searchedby=="artist" %}
-            {{ draft.keywords }}
-            {% elif draft.searchedby=="keyword" %}
-            {{ draft.keyword }}
-             <span class="text">
-              ({{ draft.sp_keywords|join(', ') }})</span>
-            {% endif %}
-          </td>
-          <td>
-            {% if draft.searchedby == "artist" %}
-                <button type="button" class="btn btn-danger" onClick="deleteSpotifyDraft({{ draft.id }}, 'artist')">Remove</button>
-            {% elif draft.searchedby == "keyword" %}
-                <button type="button" class="btn btn-danger" onClick="deleteSpotifyDraft({{ draft.id }}, 'keyword')">Remove</button>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
+      <form id="deleteForm" method="post" action="/deleteSelected">
+        <div class="inline">
+          <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"> Select All
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash-alt" type="submit"></i> Delete Selected
+          </button>          
+        </div>
+        <tbody>
+          {% for draft in drafts %}
+          <tr>
+            <td>
+              <input type="checkbox" name="selected_drafts" value="{{ draft.id }}" class="draft-checkbox">
+            </td>
+            <td>{{draft.artist}}</td> 
+            <td>{{draft.track_name}}</td>
+            <td>
+              {% if draft.searchedby=="artist" %}
+              {{ draft.keywords }}
+              {% elif draft.searchedby=="keyword" %}
+              {{ draft.keyword }}
+               <span class="text">
+                ({{ draft.sp_keywords|join(', ') }})</span>
+              {% endif %}
+            </td>
+            <td>{{draft.popularity}}</td>
+            <td>
+              {% if draft.searchedby == "artist" %}
+                  <button type="button" class="btn btn-danger" onClick="deleteSpotifyDraft({{ draft.id }}, 'artist')">Remove</button>
+              {% elif draft.searchedby == "keyword" %}
+                  <button type="button" class="btn btn-danger" onClick="deleteSpotifyDraft({{ draft.id }}, 'keyword')">Remove</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </form>
+      
     </table>
     {% if drafts|length != 0 %}
     <div class="text-right" style="display: flex; justify-content: space-between;">
