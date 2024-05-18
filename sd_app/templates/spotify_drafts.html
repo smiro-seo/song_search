@@ -14,17 +14,17 @@
           <th>Remove</th>
           <th scope="col" colspan="3">
             {% if drafts|length != 0 %}
-            <button type="button" class="btn btn-warning" onClick="clearySpotifyDraft()" style="font-size:90%;width:100%">Discard Draft</button>
+            <button type="button" class="btn btn-warning" onClick="clearySpotifyDraft(`{{by}}`)" style="font-size:90%;width:100%">Discard Draft</button>
             {% endif %}
           </th>
         </tr>
       </thead>
-      <form id="deleteForm" method="post" action="/deleteSelected">
+      <form id="deleteForm" method="post" action="/deleteSelected/{{by}}">
         <div class="inline">
-          <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"> Select All
+          <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">  <h7>Select All</h7>
           <button type="submit" class="btn btn-danger">
-            <i class="fas fa-trash-alt" type="submit"></i> Delete Selected
-          </button>          
+            <i class="fas fa-trash-alt"></i>
+        </button>
         </div>
         <tbody>
           {% for draft in drafts %}

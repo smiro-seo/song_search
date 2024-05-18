@@ -459,16 +459,16 @@ def delete_spotifydraft(flash_msg=True, idx=None):
 
     return jsonify({})
 
-@app.route('/deleteSelected', methods=['POST'])
-def delete_selected():
+@views.route('/deleteSelected/<by>', methods=['POST'])
+@login_required
+def delete_selected(by):
     selected_drafts = request.form.getlist('selected_drafts')
-    for draft_id in selected_drafts:    
-        print("draft id",draft_id)
-        SpotifyDraft.query.filter(SpotifyDraft.id==draft_id).delete(synchronize_session=False)
+    print("deleting selected")
+    for id in selected_drafts:
+        db.session.query(SpotifyDraft).filter(SpotifyDraft.id == id).delete()
+    db.session.commit()
+    return redirect(url_for('views.spotifyDrafts', by=by))
 
-    return redirect(url_for('searchSpotify', by='keyword'))
-
-    
 @views.route('/clear-history', methods=['POST'])
 @login_required
 def clear_history(flash_msg=True):

@@ -415,10 +415,10 @@ class Search_Process():
             self.wp_draft(html, img_binary, img_name)
         
         # remove all drafts
-        # if self.by=='keyword':
-        #     SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
-        # if self.by=='artist':
-        #     SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
+        if self.by=='keyword':
+            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
+        if self.by=='artist':
+            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
 
 
         output_html_name = generate_html_file(html)

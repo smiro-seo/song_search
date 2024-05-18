@@ -194,12 +194,12 @@ function showAlert(text) {
   window.alert(text);
 }
 
-// function toggleSelectAll(selectAllCheckbox) {
-//   var checkboxes = document.querySelectorAll('.draft-checkbox');
-//   checkboxes.forEach(function(checkbox) {
-//       checkbox.checked = selectAllCheckbox.checked;
-//   });
-// }
+function toggleSelectAll(selectAllCheckbox) {
+  var checkboxes = document.querySelectorAll('.draft-checkbox');
+  checkboxes.forEach(function(checkbox) {
+      checkbox.checked = selectAllCheckbox.checked;
+  });
+}
 
 // document.getElementById('deleteForm').addEventListener('submit', function(event) {
 //   var checkboxes = document.querySelectorAll('input[name="selected_drafts"]:checked');
@@ -207,6 +207,9 @@ function showAlert(text) {
 //       event.preventDefault();
 //       alert('Please select at least one item to delete.');
 //   }
+//   console.log(checkboxes)
+
+//   alert(checkboxes)
 // });
 
 function search(searchType) {
@@ -409,7 +412,7 @@ function clearySpotifyDraft(by){
     method: "POST",
     body: JSON.stringify({}),
   }).then((_res) => {
-    window.location.href = "/search/keyword";
+    window.location.href = "/spotifyDrafts/" + by;
   });
 }
 
