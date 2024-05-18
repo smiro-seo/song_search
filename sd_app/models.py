@@ -116,6 +116,7 @@ class Search(db.Model):
             'gpt-4': '(OLD) GPT 4',
             'gpt-3.5-turbo-1106':'GPT 3.5 Turbo',
             'gpt-4-1106-preview': 'GPT 4',
+            'gpt-4o':'GPT 4 OpenAI',
         }
 
         model = model_name.get(self.model, self.model)
@@ -190,7 +191,7 @@ class Def_Search():
         self.artist=""
         self.keyword=""
         self.sp_keywords=""
-        self.model='gpt-4-1106-preview'
+        self.model='gpt-4o'
 
         self.include_img=True
         self.img_config=json.loads(current_user.default_img_config)

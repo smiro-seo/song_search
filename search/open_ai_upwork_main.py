@@ -255,7 +255,7 @@ class Search_Process():
         self.improve_intro = data.get('improve-intro', False)
 
         self.wordpress =  data.get('wordpress', False)
-        self.model = data.get('model','gpt-4-1106-preview' )
+        self.model = data.get('model','gpt-4o' )
         
         self.limit = limit_st
         self.offset = offset_res
@@ -415,10 +415,10 @@ class Search_Process():
             self.wp_draft(html, img_binary, img_name)
         
         # remove all drafts
-        if self.by=='keyword':
-            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
-        if self.by=='artist':
-            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
+        # if self.by=='keyword':
+        #     SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
+        # if self.by=='artist':
+        #     SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
 
 
         output_html_name = generate_html_file(html)

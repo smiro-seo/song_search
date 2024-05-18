@@ -44,6 +44,7 @@ default_sd_options={'steps':20, 'style_preset':'cinematic'}
 
 def get_gpt_response(prompt, engine, options=default_gpt_options):
 
+    print("==============", engine)
     try:
         if 'davinci' in engine:
             # Davinci engines need Completion API
