@@ -403,7 +403,7 @@ def spotifyDrafts(by):
         return render_template("spotify_drafts.html",
                             by=by,
                             user=current_user,
-                            drafts=SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains(by)).order_by(SpotifyDraft.date.desc()).all(),
+                            drafts=SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains(by)).order_by(SpotifyDraft.popularity.desc()).all(),
                             json_load=json.loads,
                             set=set)
     else :
@@ -411,7 +411,7 @@ def spotifyDrafts(by):
         return render_template("spotify_drafts.html",
                             by=by,
                             user=current_user,
-                            drafts=SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains(by)).order_by(SpotifyDraft.date.desc()).all(),
+                            drafts=SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains(by)).order_by(SpotifyDraft.popularity.desc()).all(),
                             json_load=json.loads,
                             set=set)
 
