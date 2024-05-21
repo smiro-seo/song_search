@@ -622,7 +622,7 @@ def add_to_draft():
                 db.session.add(search_record)
                 db.session.commit()
                 flash('Draft added successfully', category='success')
-                return redirect(url_for('views.spotifyDrafts', by="artist"))
+                return redirect(url_for('views.singleSearch'))
             else:
                 search_record = SpotifyDraft(
                     keyword = data.get('keyword', ''),
@@ -642,7 +642,7 @@ def add_to_draft():
                 db.session.add(search_record)
                 db.session.commit()
                 flash('Draft added successfully', category='success')
-                return redirect(url_for('views.spotifyDrafts', by="keyword"))
+                return redirect(url_for('views.singleSearch'))
         except Exception as e:
             print("Error while adding to draft")
             print(e)
