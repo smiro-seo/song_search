@@ -37,42 +37,53 @@
 
       <div class="mb-10">
         <br>
-        <br>
-        <br>
       </div>
-    <table class="table" id="keyword-table">
-      <thead>
-        <tr>
-          <th>Artist</th> 
-          <th>Track</th>
-          <th>Album</th>
-          <th>Popularity</th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if spotifyResponse %}
-        <tr>
-          <td>{{spotifyResponse.artist}}</td>        
-          <td>{{spotifyResponse.track}}</td>
-          <td>
-            {{spotifyResponse.album}}
-          </td>
-          <td>{{spotifyResponse.popularity}}</td>
-          <td>
-            <button type="button" class="btn btn-warning" onClick="deleteSpotifyDraft({{ spotifyResponse.id }}, 'artist')">Add to keywords Draft</button>
-          </td>
-          <td>
-            <button type="button" class="btn btn-warning" onClick="deleteSpotifyDraft({{ spotifyResponse.id }}, 'keyword')">Add to Artists Draft</button>
-          </td>
-
-        </tr>
-        {% endif %}
-      </tbody>
-      
-    </table>
-
+    {% if spotifyResponse %}
+    <h4>Match Found</h4>
+    <form id="spotifyTrackForm" method="post" action="/add_to_draft" class="row g-3" >
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="artist" class="form-label">Artist</label>
+          <input type="text" class="form-control" name="artist" placeholder="{{spotifyResponse.artist}}" value="{{spotifyResponse.artist}}">
+        </div>
+        <div class="form-group">
+          <label for="track" class="form-label">Track Title</label>
+          <input type="text" class="form-control" id="track" name="track_name" placeholder="{{ spotifyResponse.track }}" value="{{ spotifyResponse.track }}">
+        </div>
+        <div class="form-group">
+          <label for="album" class="form-label">Album Name</label>
+          <input type="text" class="form-control" id="album" name="album" placeholder="{{ spotifyResponse.album }}" value="{{ spotifyResponse.album }}">
+        </div>
+        <div class="form-group">
+          <label for="releaseYear" class="form-label">Release Year</label>
+          <input type="number" class="form-control" id="releaseYear" name="releaseYear" placeholder="{{ spotifyResponse.release_year }}" value="{{ spotifyResponse.release_year }}">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="popularity" class="form-label">Popularity Score</label>
+          <input type="number" class="form-control" id="popularity" name="popularity" placeholder="{{ spotifyResponse.popularity }}" value="{{ spotifyResponse.popularity }}">
+        </div>
+        <div class="form-group">
+          <label for="previewUrl" class="form-label">Preview URL</label>
+          <input type="text" class="form-control" id="previewUrl" name="previewUrl" placeholder="{{ spotifyResponse.preview_url }}" value="{{ spotifyResponse.preview_url }}">
+        </div>
+        <div class="form-group">
+          <label for="externalUrl" class="form-label">Spotify URL</label>
+          <input type="text" class="form-control" id="externalUrl" name="externalUrl" placeholder="{{ spotifyResponse.external_url }}" value="{{ spotifyResponse.external_url }}">
+        </div>
+        <div class="form-group">
+          <label for="durationMs" class="form-label">Duration (ms)</label>
+          <input type="number" class="form-control" id="durationMs" name="durationMs" placeholder="{{ spotifyResponse.duration_ms }}" value="{{ spotifyResponse.duration_ms }}">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-warning" name="submitType" value="keyword">Add to Keywords Draft</button>
+      <button type="submit" class="btn btn-warning" name="submitType" value="artist">Add to Artists Draft</button>
+    </form>
+    {% endif %}
+    
+    
+    
 </div>
 
 {% endblock %}

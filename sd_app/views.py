@@ -538,13 +538,16 @@ def singleSearch():
             track = sp.track(track_id)
             if track:
                 spotifyResponse =  {
-                    'artist': track['artists'][0]['name'],
+                    'artist': ', '.join([artist['name'] for artist in track['artists']]),
                     'track': track['name'],
                     'album': track['album']['name'],
                     'popularity': track['popularity'],
+                    'release_year': track['album']['release_date'][:4],
                     'release_date': track['album']['release_date'],
                     'preview_url': track['preview_url'],
-                    'external_url': track['external_urls']['spotify']
+                    'external_url': track['external_urls']['spotify'],
+                    'track_id': track['id'],
+                    'duration_ms': track['duration_ms']
                 }
 
                 return render_template("single_search.html",
@@ -565,13 +568,16 @@ def singleSearch():
                 track = results['tracks']['items'][0]
 
                 spotifyResponse =  {
-                    'artist': track['artists'][0]['name'],
+                    'artist': ', '.join([artist['name'] for artist in track['artists']]),
                     'track': track['name'],
                     'album': track['album']['name'],
                     'popularity': track['popularity'],
+                    'release_year': track['album']['release_date'][:4],
                     'release_date': track['album']['release_date'],
                     'preview_url': track['preview_url'],
-                    'external_url': track['external_urls']['spotify']
+                    'external_url': track['external_urls']['spotify'],
+                    'track_id': track['id'],
+                    'duration_ms': track['duration_ms']
                 }
 
                 return render_template("single_search.html",
@@ -588,5 +594,71 @@ def singleSearch():
                                     )
 
 
+@views.route("/add_to_draft",methods=["POST"])
+@login_required
+def add_to_draft():
+    if request.method == "POST":
+        data = request.form.to_dict()
+        print('here is the data to add',data, request.form)
+        try:    
+            submit_type = request.form.get('submitType') 
+            artist = request.form.get('artist')
+            track_name = request.form.get('track_name')
+            release_year = request.form.get('release_year')
+            album = request.form.get('album')
+            popularity = request.form.get('popularity')
+            duration_ms = request.form.get('duration_ms')
+            track_id = request.form.get('track_id')
+            spotify_url = request.form.get('spotify_url')
+            track_name_clean = request.form.get('track_name_clean')    
 
+            print(artist,track_name,release_year,album,popularity,duration_ms,track_id,spotify_url,track_name_clean)
 
+            if submit_type == "artist":
+                search_record = SpotifyDraft(
+                    keyword = data.get('keyword', ''),
+                    sp_keywords = data.get('sp_keyword', ''),
+                    searchedby = "artist",
+                    user = current_user.username,
+                    artist = data.get('artist', ''),
+                    track_name = data.get('track_name', ''),
+                    release_year = data.get('release_year', ''),
+                    album = data.get('album', ''),
+                    popularity = data.get('popularity', ''),
+                    duration_ms = data.get('duration_ms', ''),
+                    track_id = data.get('track_id', ''),
+                    spotify_url = data.get('spotify_url', ''),
+                    track_name_clean = data.get('track_name_clean', '')
+                )
+                db.session.add(search_record)
+                db.session.commit()
+                flash('Draft added successfully', category='success')
+                return redirect(url_for('views.spotifyDrafts', by="artist"))
+            else:
+                search_record = SpotifyDraft(
+                    keyword = data.get('keyword', ''),
+                    sp_keywords = data.get('sp_keyword', ''),
+                    searchedby = "keyword",
+                    user = current_user.username,
+                    artist = data.get('artist', ''),
+                    track_name = data.get('track_name', ''),
+                    release_year = data.get('release_year', ''),
+                    album = data.get('album', ''),
+                    popularity = data.get('popularity', ''),
+                    duration_ms = data.get('duration_ms', ''),
+                    track_id = data.get('track_id', ''),
+                    spotify_url = data.get('spotify_url', ''),
+                    track_name_clean = data.get('track_name_clean', '')
+                )
+                db.session.add(search_record)
+                db.session.commit()
+                flash('Draft added successfully', category='success')
+                return redirect(url_for('views.spotifyDrafts', by="keyword"))
+        except Exception as e:
+            print("Error while adding to draft")
+            print(e)
+            flash('Error while adding to draft', category='error')
+            return redirect(url_for('views.singleSearch'))
+    else:
+        flash('Error while adding to draft', category='error')
+        return redirect(url_for('views.singleSearch'))
