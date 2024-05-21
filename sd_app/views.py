@@ -13,7 +13,8 @@ import os
 from . import db, app
 from .constants import keys, default_prompt, default_intro_prompt, default_intro_prompt_artist, aspect_ratios
 sys.path.append('/..')
-
+import spotipy 
+from spotipy.oauth2 import SpotifyClientCredentials
 
 
 def fix_str_html(string):
@@ -512,3 +513,80 @@ def seeHTML(filename):
     # Returning file from appended path
     send_file(path, as_attachment=True)
     return render_template_string(html)
+
+
+@views.route("/single_search", methods=["GET", "POST"])
+@login_required
+def singleSearch():
+    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=keys['sp_user'], client_secret=keys['sp_password']), requests_timeout=60)
+
+    if request.method == "GET":
+        return render_template("single_search.html",
+                               user=current_user,
+                               aspect_ratios=aspect_ratios,
+                               spotifyResponse={},
+                               )
+    if request.method == "POST":
+        track_id = request.form.get('trackId')
+        artist_name = request.form.get('artistName')
+        track_name = request.form.get('trackName')
+        searchByTrackId = request.form.get('searchByTrackId')
+
+        print("track_id", track_id, "artist_name", artist_name, "track_name", track_name, searchByTrackId)
+
+        if track_id:
+            track = sp.track(track_id)
+            if track:
+                spotifyResponse =  {
+                    'artist': track['artists'][0]['name'],
+                    'track': track['name'],
+                    'album': track['album']['name'],
+                    'popularity': track['popularity'],
+                    'release_date': track['album']['release_date'],
+                    'preview_url': track['preview_url'],
+                    'external_url': track['external_urls']['spotify']
+                }
+
+                return render_template("single_search.html",
+                                    user=current_user,
+                                    aspect_ratios=aspect_ratios,
+                                    spotifyResponse=spotifyResponse
+                                    )
+            else:
+                return render_template("single_search.html",
+                                user=current_user,
+                                aspect_ratios=aspect_ratios,
+                                spotifyResponse={}
+                                )
+        else:
+            query = f'artist:{artist_name} track:{track_name}'
+            results = sp.search(q=query, type='track', limit=1)
+            if results['tracks']['items']:
+                track = results['tracks']['items'][0]
+
+                spotifyResponse =  {
+                    'artist': track['artists'][0]['name'],
+                    'track': track['name'],
+                    'album': track['album']['name'],
+                    'popularity': track['popularity'],
+                    'release_date': track['album']['release_date'],
+                    'preview_url': track['preview_url'],
+                    'external_url': track['external_urls']['spotify']
+                }
+
+                return render_template("single_search.html",
+                                    user=current_user,
+                                    aspect_ratios=aspect_ratios,
+                                    spotifyResponse=spotifyResponse
+                                    )
+            else:
+                flash('No results found', category='error')
+                return render_template("single_search.html",
+                                    user=current_user,
+                                    aspect_ratios=aspect_ratios,
+                                    spotifyResponse={}
+                                    )
+
+
+
+

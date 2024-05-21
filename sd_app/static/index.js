@@ -623,3 +623,11 @@ $(document).ready(function () {
     }
   });
 });
+
+
+function toggleInputFields() {
+  var searchByTrackId = document.getElementById('searchByTrackId').checked;
+  document.getElementById('trackIdGroup').style.display = searchByTrackId ? 'block' : 'none';
+  document.getElementById('artistNameGroup').style.display = searchByTrackId ? 'none' : 'block';
+  document.getElementById('trackNameGroup').style.display = searchByTrackId ? 'none' : 'block';
+}
