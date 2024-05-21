@@ -602,17 +602,6 @@ def add_to_draft():
         print('here is the data to add',data, request.form)
         try:    
             submit_type = request.form.get('submitType') 
-            artist = request.form.get('artist')
-            track_name = request.form.get('track_name')
-            release_year = request.form.get('release_year')
-            album = request.form.get('album')
-            popularity = request.form.get('popularity')
-            duration_ms = request.form.get('duration_ms')
-            track_id = request.form.get('track_id')
-            spotify_url = request.form.get('spotify_url')
-            track_name_clean = request.form.get('track_name_clean')    
-
-            print(artist,track_name,release_year,album,popularity,duration_ms,track_id,spotify_url,track_name_clean)
 
             if submit_type == "artist":
                 search_record = SpotifyDraft(
@@ -637,7 +626,7 @@ def add_to_draft():
             else:
                 search_record = SpotifyDraft(
                     keyword = data.get('keyword', ''),
-                    sp_keywords = data.get('sp_keyword', ''),
+                    sp_keywords = data.get('sp_keyword', '[' + data.get('track_name', '')) + ']',
                     searchedby = "keyword",
                     user = current_user.username,
                     artist = data.get('artist', ''),
