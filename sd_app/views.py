@@ -291,6 +291,9 @@ def proceedAI(by):
         search = Def_Search(current_user, by)
         print("proceedingby", by)
 
+        songs = SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains(by)).order_by(SpotifyDraft.popularity.desc()).all()
+        first_song = songs[0]
+
         if request.method == 'GET' and search_id is not None:
 
             search_found = Search.query.get(search_id)
@@ -302,7 +305,9 @@ def proceedAI(by):
                 
         elif request.method == 'POST':
             data = json.loads(request.data)
+            keyword = data.get("keyword", "")
             print(data)
+            print(keyword)
 
             if "`" in data.get('prompt', "")+ data.get("intro-prompt", "")+ data.get("improver-prompt", ""):
                 flash("Backticks (`) are not allowed in the prompts. You can use both simple or double quotes.", category='error' )
@@ -381,6 +386,7 @@ def proceedAI(by):
         return render_template(f"proceed.html", 
                             user=current_user.dict_data(),
                             search=search,
+                            first_song = first_song,
                             existing = False,
                             aspect_ratios=aspect_ratios
                             )
@@ -520,10 +526,22 @@ def seeHTML(filename):
 def singleSearch():
     sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=keys['sp_user'], client_secret=keys['sp_password']), requests_timeout=60)
 
+    last = SpotifyDraft.query.filter(SpotifyDraft.user == current_user.username).order_by(SpotifyDraft.date.desc()).first()
+
+    if last:
+        print("last",last)
+        last_keyword = last.keyword
+    else:
+        print("setting it to the next")
+        last_keyword = ""
+    
+    print("last_keyword", last_keyword)
+
     if request.method == "GET":
         return render_template("single_search.html",
                                user=current_user,
                                aspect_ratios=aspect_ratios,
+                               last_keyword = last_keyword,
                                spotifyResponse={},
                                )
     if request.method == "POST":
@@ -553,12 +571,14 @@ def singleSearch():
                 return render_template("single_search.html",
                                     user=current_user,
                                     aspect_ratios=aspect_ratios,
+                                    last_keyword = last_keyword,
                                     spotifyResponse=spotifyResponse
                                     )
             else:
                 return render_template("single_search.html",
                                 user=current_user,
                                 aspect_ratios=aspect_ratios,
+                                last_keyword = last_keyword,
                                 spotifyResponse={}
                                 )
         else:
@@ -583,6 +603,7 @@ def singleSearch():
                 return render_template("single_search.html",
                                     user=current_user,
                                     aspect_ratios=aspect_ratios,
+                                    last_keyword = last_keyword,
                                     spotifyResponse=spotifyResponse
                                     )
             else:
@@ -603,9 +624,11 @@ def add_to_draft():
         try:    
             submit_type = request.form.get('submitType') 
 
+            notset = "notset"
+
             if submit_type == "artist":
                 search_record = SpotifyDraft(
-                    keyword = data.get('keyword', ''),
+                    keyword = data.get('keyword', notset),
                     sp_keywords = data.get('sp_keyword', ''),
                     searchedby = "artist",
                     user = current_user.username,
@@ -616,16 +639,16 @@ def add_to_draft():
                     popularity = data.get('popularity', ''),
                     duration_ms = data.get('duration_ms', ''),
                     track_id = data.get('track_id', ''),
-                    spotify_url = data.get('spotify_url', ''),
-                    track_name_clean = data.get('track_name_clean', '')
+                    spotify_url = data.get('external_url', ''),
+                    track_name_clean = data.get('track_name', '')
                 )
                 db.session.add(search_record)
                 db.session.commit()
-                flash('Draft added successfully', category='success')
+                flash('Draft added successfully', category='success') 
                 return redirect(url_for('views.singleSearch'))
             else:
                 search_record = SpotifyDraft(
-                    keyword = data.get('keyword', ''),
+                    keyword = data.get('keyword', notset),
                     sp_keywords = data.get('sp_keyword', '[' + data.get('track_name', '')) + ']',
                     searchedby = "keyword",
                     user = current_user.username,
@@ -636,8 +659,8 @@ def add_to_draft():
                     popularity = data.get('popularity', ''),
                     duration_ms = data.get('duration_ms', ''),
                     track_id = data.get('track_id', ''),
-                    spotify_url = data.get('spotify_url', ''),
-                    track_name_clean = data.get('track_name_clean', '')
+                    spotify_url = data.get('external_url', ''),
+                    track_name_clean = data.get('track_name', '')
                 )
                 db.session.add(search_record)
                 db.session.commit()

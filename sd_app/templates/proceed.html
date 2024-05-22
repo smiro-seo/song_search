@@ -41,6 +41,26 @@
             <div class="container-fluid accordion-body">
               <div class="row" style="width:100%">
 
+                <!--  KEYWORD  -->
+                {% if search.by=="keyword" %}
+                <div class="accordion-content col-lg-6 col-12">
+
+                  <div style="display:flex;align-items:flex-start">
+                    <h6 class="section-title">Keyword </h6>
+                  </div>
+
+                  <textarea class="text basic-padding"  name="keyword" id="keyword" style="width:100%" >{{first_song.keyword}}</textarea> 
+                  
+                  <!-- <div id="prompt-div" class="horizontal-container">
+                    <input type="checkbox" value="limited" id="default-prompt" name="default-prompt" class="checkbox"/>
+                    <label class="text" for="default-prompt" >Set as default</label>
+
+                    <input type="checkbox" value="limited" id="check-improve-song" name="improve-song" class="checkbox"/>
+                    <label class="text" for="check-improve-song" >Improve song description</label>
+                  </div> -->
+                </div>
+                {% endif%}
+
                 <!--  SONG PROMPT  -->
                 <div class="accordion-content col-lg-6 col-12">
 

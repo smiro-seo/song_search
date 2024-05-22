@@ -355,8 +355,9 @@ class Search_Process():
         #get the first track in the resultdf
         first_row = result_df.iloc[0]
 
-        self.intro_prompt = self.intro_prompt.replace('[keyword]',first_row.keyword)
-        self.img_prompt = self.img_prompt.replace('[artist]',first_row.artist).replace('[keyword]',first_row.keyword)
+        print("here is the first song", first_row)
+        self.intro_prompt = self.intro_prompt.replace('[keyword]',self.keyword)
+        self.img_prompt = self.img_prompt.replace('[artist]',first_row.artist).replace('[keyword]',self.keyword)
 
 
         print( 'prompts',self.intro_prompt, self.img_prompt, self.values_to_replace )
@@ -365,7 +366,7 @@ class Search_Process():
         print(f"Getting OpenAI response")
         for i, track in result_df.iterrows():  
             try:
-                self.values_to_replace = {'[keyword]':first_row.keyword}
+                self.values_to_replace = {'[keyword]':self.keyword}
                 model_response = generator.song_description(track, stopper)
                 print('model response',model_response)
                 print('intro_prompt', self.intro_prompt)
@@ -415,10 +416,10 @@ class Search_Process():
             self.wp_draft(html, img_binary, img_name)
         
         # remove all drafts
-        if self.by=='keyword':
-            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
-        if self.by=='artist':
-            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
+        # if self.by=='keyword':
+        #     SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
+        # if self.by=='artist':
+        #     SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
 
 
         output_html_name = generate_html_file(html)
@@ -526,12 +527,19 @@ class Search_Keyword(Search_Process):
 
         if (stopper.is_set()): raise Exception("stopped")
 
-        self.intro_prompt = self.intro_prompt.replace('[keyword]', songs[0].keyword)
-        self.img_prompt = self.img_prompt.replace('[artist]', songs[0].artist).replace('[keyword]', songs[0].keyword)
+        first_song = songs[0]
+        artist = first_song.__dict__['artist']
+        #keyword = first_song.__dict__['keyword']
+        keyword = self.keyword
+        artist = str(artist)
+        keyword = str(keyword)
+
+        self.intro_prompt = self.intro_prompt.replace('[keyword]', keyword)
+        self.img_prompt = self.img_prompt.replace('[artist]', artist).replace('[keyword]', keyword)
 
         # from song pick the first one
-        self.slug = 'songs-about-' + songs[0].keyword
-        self.wp_title = f'{str(len(songs))} Songs About {songs[0].keyword.title()}'
+        self.slug = 'songs-about-' + self.keyword
+        self.wp_title = f'{str(len(songs))} Songs About {self.keyword.title()}'
         return songs
 
 class Search_Artist(Search_Process):
@@ -542,6 +550,7 @@ class Search_Artist(Search_Process):
 
         self.artist_name=data.get('artist-name', None)
         self.artist_id=data.get('artist-id', None)
+        self.keyword = data.get('keyword',None)
 
         self.intro_prompt_original = self.intro_prompt
         self.img_prompt_original = self.img_prompt
@@ -570,11 +579,12 @@ class Search_Artist(Search_Process):
 
         first_song = songs[0]
         artist = first_song.__dict__['artist']
-        keyword = first_song.__dict__['keyword']
+        #keyword = first_song.__dict__['keyword']
+        keyword = self.keyword
         artist = str(artist)
         keyword = str(keyword)
 
-        print(artist,keyword)
+        print('while getting results',artist,keyword)
 
         self.intro_prompt = self.intro_prompt.replace('[artist]', artist)
         self.img_prompt = self.img_prompt.replace('[artist]', artist).replace('[keyword]', keyword)
