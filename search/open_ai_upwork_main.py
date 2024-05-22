@@ -513,6 +513,7 @@ class Search_Keyword(Search_Process):
         # self.intro_prompt = ''
         # self.img_prompt = ''
         self.values_to_replace = {'[keyword]': self.keyword}
+        self.summary = data.get('summary', "")
 
         #   Title and slug
         # self.slug = 'songs-about-' + self.keyword.lower()
