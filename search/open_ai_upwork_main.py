@@ -548,9 +548,9 @@ class Search_Artist(Search_Process):
         Search_Process.__init__(self, data, limit_st, offset_res, keys, current_user)
         self.by=by
 
-        self.artist_name=data.get('artist-name', None)
-        self.artist_id=data.get('artist-id', None)
-        self.keyword = data.get('keyword',None)
+        self.artist_name=data.get('artist-name', '')
+        self.artist_id=data.get('artist-id', '')
+        self.summary = data.get('summary','')
 
         self.intro_prompt_original = self.intro_prompt
         self.img_prompt_original = self.img_prompt
@@ -579,15 +579,12 @@ class Search_Artist(Search_Process):
 
         first_song = songs[0]
         artist = first_song.__dict__['artist']
-        #keyword = first_song.__dict__['keyword']
-        keyword = self.keyword
         artist = str(artist)
-        keyword = str(keyword)
 
-        print('while getting results',artist,keyword)
+        print('while getting results',artist)
 
         self.intro_prompt = self.intro_prompt.replace('[artist]', artist)
-        self.img_prompt = self.img_prompt.replace('[artist]', artist).replace('[keyword]', keyword)
+        self.img_prompt = self.img_prompt.replace('[artist]', artist)
 
         self.artist_name = artist.replace(' ', '-').lower()
         self.keyword_descriptor = artist.replace(' ', '-').lower()

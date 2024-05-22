@@ -372,6 +372,7 @@ function getFormData() {
 
   return {
     "keyword": $("#keyword").val(),
+    "summary": $("#summary").val(),
     "limit-range-kw-txt": $("#limit-range-kw-txt").val(),
     "offset-range-txt": $("#offset-range-txt").val(),
     "check-limit-kw": $("#check-limit-kw").is(":checked") ? 1 : null,
