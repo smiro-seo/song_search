@@ -552,6 +552,7 @@ class Search_Artist(Search_Process):
         self.artist_name=data.get('artist-name', '')
         self.artist_id=data.get('artist-id', '')
         self.summary = data.get('summary','')
+        self.keyword = data.get('keyword', '')
 
         self.intro_prompt_original = self.intro_prompt
         self.img_prompt_original = self.img_prompt

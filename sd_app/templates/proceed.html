@@ -59,6 +59,16 @@
                     <label class="text" for="check-improve-song" >Improve song description</label>
                   </div> -->
                 </div>
+                {% else %}
+                <div class="accordion-content col-lg-6 col-12" hidden>
+
+                  <div style="display:flex;align-items:flex-start">
+                    <h6 class="section-title">Keyword for artist </h6>
+                  </div>
+
+                  <textarea class="text basic-padding"  name="keyword" id="keyword" style="width:100%" >{{first_song.artist}}</textarea> 
+                  
+                </div>
                 {% endif%}
 
                 <!--  SONG PROMPT  -->
