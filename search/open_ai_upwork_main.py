@@ -618,6 +618,7 @@ class Search_Spotify_Keyword(Search_Spotify):
     
     def create_spotify_draft(self, SpotifyDraft, keyword, sp_keywords, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
         try:
+            track_name = track_name.split("(feat")[0].strip()
             self.record = SpotifyDraft(
                 keyword=keyword,
                 sp_keywords=sp_keywords,
@@ -745,6 +746,7 @@ class Search_Spotify_Artist(Search_Spotify):
     
     def create_spotify_draft(self, SpotifyDraft,keyword, sp_keywords, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
         try:
+            track_name = track_name.split("(feat")[0].strip()
             self.record = SpotifyDraft(
                 #create_spotify_draft
                 keyword=keyword,
