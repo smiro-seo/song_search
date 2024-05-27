@@ -59,8 +59,13 @@ def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=No
         # Set start to the position of the earliest flagged character or -1 if none are found
         start = min(start_positions) if start_positions else -1
         
-        if start != -1:
-            track_name = track_name[:start]
+        # Find the position of the keyword
+        keyword_pos = track_name.find(keyword)
+        print("start:", start, "keyword_pos:", keyword_pos)
+        
+        # If the keyword is not found or it is found after the first flagged character, remove the track
+        if keyword_pos == -1 or (start != -1 and keyword_pos > start):
+            return False
         
         n_words_kw = len(keyword.split(' '))
         track_name_wlist = track_name.split(' ')
