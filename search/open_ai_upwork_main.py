@@ -104,6 +104,7 @@ def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=No
             track_search_results = sp.search(
                 q=f'{by}:{keyword}', type=target, limit=50, offset=offset, market=market)['tracks']['items']
             
+            
             if by=="track":
                 track_search_results_clean = [track for track in track_search_results if clean_names_for_list(track.get('name', None), keyword)]    
             else:
@@ -432,11 +433,11 @@ class Search_Process():
         if self.wordpress: 
             self.wp_draft(html, img_binary, img_name)
         
-        # remove all drafts
-        # if self.by=='keyword':
-        #     SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
-        # if self.by=='artist':
-        #     SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
+        #remove all drafts
+        if self.by=='keyword':
+            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
+        if self.by=='artist':
+            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
 
 
         output_html_name = generate_html_file(html)
