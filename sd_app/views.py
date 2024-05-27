@@ -79,6 +79,8 @@ def background_spotify_search(local_app, local_db, input_data, limit, offset, us
         elif by=="artist": search = Search_Spotify_Artist(input_data, limit, offset, keys, user)
 
         search_results = search.run(flag_bkg, stopper)
+
+        print("search_results", search_results)
         
         for index, row in search_results.iterrows():
             print('row',row)

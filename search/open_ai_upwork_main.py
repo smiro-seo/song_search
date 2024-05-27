@@ -19,7 +19,7 @@ from sd_app.constants import keys
 
 market = 'US'
 # Characters after which the track name does not matter for duplicates
-flagged_characters = ['-', '(', '/']
+flagged_characters = ['-', '(', '/', '{', '[']
    
 
 column_list = ['artist', 'track_name', 'release_year', 'yt_video_id',
@@ -43,30 +43,44 @@ def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=No
                       'album', 'popularity', 'duration_ms', 'track_id', 'spotify_url']
 
     def clean_names_for_list(track_name, keyword):
+
         '''
             This function cleans the name of the track in order to avoid substrings and names of additional artists.
             Example: "Perfect (Remix) (feat. Doja Cat & BIA)" comes up when searching for "Cat"
-            By applying this function, that track would come up as only "Perfect", so it would not appear in the search results
+            By applying this function, that track would be excluded unless the keyword is in the song title only
         '''
-        start = min([track_name.find(c) for c in flagged_characters])
+
+        track_name = str(track_name).lower() 
+        keyword = keyword.lower()  
+        
+        # Find the first occurrence of any flagged character
+        start_positions = [track_name.find(c) for c in flagged_characters if track_name.find(c) != -1]
+        
+        # Set start to the position of the earliest flagged character or -1 if none are found
+        start = min(start_positions) if start_positions else -1
+        
         if start != -1:
             track_name = track_name[:start]
-
+        
         n_words_kw = len(keyword.split(' '))
-        track_name_wlist = track_name.lower().split(' ')
+        track_name_wlist = track_name.split(' ')
 
         if n_words_kw <= 1:
-            return track_name_wlist
-
+            word_combinations = track_name_wlist
         else:
             n_words_tn = len(track_name_wlist)
-            track_name_wlist = track_name.lower().split(' ')
             word_combinations = [
-                ' '.join(track_name_wlist[i:i+n_words_kw]) for i in range(0, n_words_tn-1)]
-            return word_combinations
+                ' '.join(track_name_wlist[i:i+n_words_kw]) for i in range(n_words_tn - n_words_kw + 1)
+            ]
 
-    
-
+        # Check if the keyword is in any of the word combinations
+        keyword_in_combinations = any(keyword in combination for combination in word_combinations)
+        
+        if keyword_in_combinations:
+            return True
+        else:
+            return False
+        
     search_results_clean = []
     print("Searching for " + target + " by " + by)
 
@@ -86,8 +100,7 @@ def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=No
                 q=f'{by}:{keyword}', type=target, limit=50, offset=offset, market=market)['tracks']['items']
             
             if by=="track":
-                track_search_results_clean = [track for track in track_search_results if keyword in clean_names_for_list(
-                    track.get('name', None), keyword)]
+                track_search_results_clean = [track for track in track_search_results if clean_names_for_list(track.get('name', None), keyword)]    
             else:
                 track_search_results_clean=[track for track in track_search_results if keyword_id in [artist['id'] for artist in track['artists']]]
             
@@ -116,7 +129,6 @@ def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=No
         df_search_results = pd.DataFrame(
             search_results, columns=['id', 'name', 'popularity'])
         return df_search_results
-
 
 def scrape_youtube_search_results(track_title):
     def is_same_song(song1, song2):
@@ -520,8 +532,6 @@ class Search_Keyword(Search_Process):
         # self.wp_title = f'{str(limit_st)} Songs About {self.keyword.title()}'
         self.slug = ''
         self.wp_title = ''
-
-
     
     def get_search_results(self, stopper):
         songs =SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).order_by(SpotifyDraft.date.desc()).all()
@@ -534,6 +544,7 @@ class Search_Keyword(Search_Process):
         keyword = self.keyword
         artist = str(artist)
         keyword = str(keyword)
+        print("searching the keyword", keyword)
 
         self.intro_prompt = self.intro_prompt.replace('[keyword]', keyword)
         self.img_prompt = self.img_prompt.replace('[artist]', artist).replace('[keyword]', keyword)
@@ -618,7 +629,7 @@ class Search_Spotify_Keyword(Search_Spotify):
     
     def create_spotify_draft(self, SpotifyDraft, keyword, sp_keywords, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
         try:
-            track_name = track_name.split("(feat")[0].strip()
+            #track_name = re.split("\(feat|\(with", track_name)[0].strip()
             self.record = SpotifyDraft(
                 keyword=keyword,
                 sp_keywords=sp_keywords,
@@ -656,8 +667,10 @@ class Search_Spotify_Keyword(Search_Spotify):
             print(f"Starting first keyword: {keyword}")
             print(f'Getting most popular songs containing {keyword}')
             df_w_spot_df = search_spotify_tracks(keyword, self.sp, target="track", by="track")
+            print('df',df_w_spot_df)
 
             search_term_dfs.append(df_w_spot_df)
+        
 
         # search term-level dataframe
         st_out_sp_df = pd.concat(search_term_dfs)
@@ -687,7 +700,7 @@ class Search_Spotify_Keyword(Search_Spotify):
 
     def main_process(self,stopper):
         result_df = self.get_search_results(stopper)
-        print(result_df)
+        print('song result',result_df)
         # if not isinstance(result_df, pd.DataFrame): return False
 
         # #   Clean and sort results
@@ -746,7 +759,7 @@ class Search_Spotify_Artist(Search_Spotify):
     
     def create_spotify_draft(self, SpotifyDraft,keyword, sp_keywords, current_user,searchedby, artist,track_name, release_year, album, popularity, duration_ms, track_id, spotify_url, track_name_clean):
         try:
-            track_name = track_name.split("(feat")[0].strip()
+            #track_name = re.split("\(feat|\(with", track_name)[0].strip()
             self.record = SpotifyDraft(
                 #create_spotify_draft
                 keyword=keyword,

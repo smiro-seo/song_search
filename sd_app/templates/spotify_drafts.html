@@ -33,7 +33,7 @@
               <input type="checkbox" name="selected_drafts" value="{{ draft.id }}" class="draft-checkbox">
             </td>
             <td>{{draft.artist}}</td> 
-            <td>{{draft.track_name_clean}}</td>
+            <td>{{draft.track_name}}</td>
             <td>
               {% if draft.searchedby=="artist" %}
               {{ draft.keywords }}
