@@ -405,42 +405,57 @@ class Search_Process():
 
         #   Create html
         print("Getting HTML")
-        html, self.full_text = generate_html(clean_data, intro, return_full_text=True)
+        try:
+            html, self.full_text = generate_html(clean_data, intro, return_full_text=True)
+        except Exception as e:
+            print('error while generating html',e)
+            
 
          #   Generate feat. image
-        if self.include_img:
-            print("Getting featured image")
-            print(self.__dict__)
-            if self.by=='keyword': 
-                img_name = "songs_about_" + clean_name(self.keyword_descriptor)
+        try:
+            if self.include_img:
+                print("Getting featured image")
+                print(self.__dict__)
+                if self.by=='keyword': 
+                    img_name = "songs_about_" + clean_name(self.keyword_descriptor)
 
-            if self.by=='artist': 
-                img_name = clean_name(self.keyword_descriptor) + "_songs"
+                if self.by=='artist': 
+                    img_name = clean_name(self.keyword_descriptor) + "_songs"
 
-            if self.record is None: filename=None
-            else: filename = img_name
+                if self.record is None: filename=None
+                else: filename = img_name
 
-            print("file_name: " + filename)
-            img_binary, img_name, img_gen_prompt, seed = generator.feat_image(filename=filename)
-            self.record.img_gen_prompt = img_gen_prompt
-            self.record.img_config['seed']=seed
-        else:
-            img_binary=None
-            img_name=None
+                print("file_name: " + filename)
+                img_binary, img_name, img_gen_prompt, seed = generator.feat_image(filename=filename)
+                self.record.img_gen_prompt = img_gen_prompt
+                self.record.img_config['seed']=seed
+            else:
+                img_binary=None
+                img_name=None
+        except Exception as e:
+            print('error while generating feat. image',e)
 
 
         #   Post to wp
-        if self.wordpress: 
-            self.wp_draft(html, img_binary, img_name)
+        try:
+            if self.wordpress: 
+                self.wp_draft(html, img_binary, img_name)
+        except Exception as e:
+            print('error while posting to wordpress',e)
         
         #remove all drafts
-        if self.by=='keyword':
-            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
-        if self.by=='artist':
-            SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
+        try:
+            if self.by=='keyword':
+                SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('keyword')).delete(synchronize_session=False)
+            if self.by=='artist':
+                SpotifyDraft.query.filter(SpotifyDraft.searchedby.contains('artist')).delete(synchronize_session=False)
+        except Exception as e:
+            print('error while deleting drafts',e)
 
-
-        output_html_name = generate_html_file(html)
+        try:
+            output_html_name = generate_html_file(html)
+        except Exception as e:
+            print('error while generating html file',e)
         # delete all 
 
         return True
