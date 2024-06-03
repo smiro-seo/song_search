@@ -27,7 +27,89 @@
       <div class="accordion" id="input-accordion">
 
         <!--  INPUTS   -->
+      
+        <!-- {% if search.by=="keyword" %}
+        <div class="accordion-item" id="keyword-acc-label">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#keyword-acc-item" aria-expanded="true" aria-controls="keyword-acc-item">
+              Keyword
+            </button>
+          </h2>
+
+          <div id="keyword-acc-item" aria-labelledby="prompts-acc-label" class="accordion-collapse collapse" data-bs-parent="#input-accordion">
+            <div class="container-fluid accordion-body">
+              <div class="row" style="width:100%">
+                
+                <div class="accordion-content col-lg-6 col-12">
+
+                  <div style="display:flex;align-items:flex-start">
+                    <h6 class="section-title">Keyword </h6>
+                  </div>
+
+                  <textarea class="text basic-padding"  name="keyword" id="keyword" style="width:100%" >{{first_song.keyword}}</textarea> 
+                
+                </div>
+                
+              </div>
+            </div>
+          </div>
+
+        </div>
+        {% else %}
+        <div class="accordion-item" id="keyword-acc-label" hidden>
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#keyword-acc-item" aria-expanded="true" aria-controls="keyword-acc-item">
+              Keyword
+            </button>
+          </h2>
+
+          <div id="keyword-acc-item" aria-labelledby="prompts-acc-label" class="accordion-collapse collapse" data-bs-parent="#input-accordion">
+            <div class="container-fluid accordion-body">
+              <div class="row" style="width:100%">
+
+                <div class="accordion-content col-lg-6 col-12" hidden>
+
+                  <div style="display:flex;align-items:flex-start">
+                    <h6 class="section-title">Keyword for artist </h6>
+                  </div>
+
+                  <textarea class="text basic-padding"  name="keyword" id="keyword" style="width:100%" >{{first_song.artist}}</textarea> 
+                  
+                </div>
+                
+              
+              </div>
+            </div>
+          </div>
+
+        </div>
+        {% endif %} -->
         
+        {% if search.by=="keyword" %}
+        <div class="accordion-item" id="keyword-acc-label">
+        <div class="accordion-content col-lg-12 col-12">
+
+          <div style="display:flex;align-items:flex-start">
+            <h6 class="section-title">Keyword </h6>
+          </div>
+
+          <input type="text" class="form-control" name="keyword" id="keyword" style="width: 100%;" value="{{first_song.keyword}}">          
+        </div>
+        </div>
+        {% else %}
+        <div class="accordion-item" id="keyword-acc-label">
+        <div class="accordion-content col-lg-12 col-12" hidden>
+
+          <div style="display:flex;align-items:flex-start">
+            <h6 class="section-title">Keyword for artist </h6>
+          </div>
+          
+          <input type="text" class="form-control" name="keyword" id="keyword" style="width: 100%;" value="{{first_song.artist}}" hidden>          
+
+        </div>
+        </div>
+        {% endif %}
+
 
         <!--  PROMPTS  -->
         <div class="accordion-item" id="prompts-acc-label">
@@ -41,35 +123,6 @@
             <div class="container-fluid accordion-body">
               <div class="row" style="width:100%">
 
-                <!--  KEYWORD  -->
-                {% if search.by=="keyword" %}
-                <div class="accordion-content col-lg-6 col-12">
-
-                  <div style="display:flex;align-items:flex-start">
-                    <h6 class="section-title">Keyword </h6>
-                  </div>
-
-                  <textarea class="text basic-padding"  name="keyword" id="keyword" style="width:100%" >{{first_song.keyword}}</textarea> 
-                  
-                  <!-- <div id="prompt-div" class="horizontal-container">
-                    <input type="checkbox" value="limited" id="default-prompt" name="default-prompt" class="checkbox"/>
-                    <label class="text" for="default-prompt" >Set as default</label>
-
-                    <input type="checkbox" value="limited" id="check-improve-song" name="improve-song" class="checkbox"/>
-                    <label class="text" for="check-improve-song" >Improve song description</label>
-                  </div> -->
-                </div>
-                {% else %}
-                <div class="accordion-content col-lg-6 col-12" hidden>
-
-                  <div style="display:flex;align-items:flex-start">
-                    <h6 class="section-title">Keyword for artist </h6>
-                  </div>
-
-                  <textarea class="text basic-padding"  name="keyword" id="keyword" style="width:100%" >{{first_song.artist}}</textarea> 
-                  
-                </div>
-                {% endif%}
 
                 <!--  SONG PROMPT  -->
                 <div class="accordion-content col-lg-6 col-12">

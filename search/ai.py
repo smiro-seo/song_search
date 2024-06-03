@@ -218,7 +218,7 @@ class Model_Generator():
         else:
             prompt = self.search.improver_prompt + '\n\n' + old_text
 
-        return get_gpt_response(prompt, 'gpt-3.5-turbo', options=improver_prompt_options)
+        return get_gpt_response(prompt, 'gpt-4o', options=improver_prompt_options)
 
     def feat_image(self, filename=None):
 
@@ -229,7 +229,7 @@ class Model_Generator():
         summ_prompt = summ_prompt + self.search.full_text
 
 
-        summ_response = get_gpt_response(summ_prompt, 'gpt-3.5-turbo', options=summarization_prompt_options)
+        summ_response = get_gpt_response(summ_prompt, 'gpt-4o', options=summarization_prompt_options)
 
         # Add summary to user-inputted image prompt
         sd_text_prompt = self.search.img_prompt
@@ -238,7 +238,7 @@ class Model_Generator():
         else:
             sd_text_prompt = sd_text_prompt + "\n\nOnly reply with the prompt, do not add any text besides that. Summarized article:\n" + summ_response
         
-        sd_prompt = get_gpt_response(sd_text_prompt, 'gpt-3.5-turbo', options=image_prompt_options)
+        sd_prompt = get_gpt_response(sd_text_prompt, 'gpt-4o', options=image_prompt_options)
 
         # Add positive and negative keywords to prompt
         sd_prompt = sd_prompt + " " + ", ".join(self.search.image_prompt_keywords)
