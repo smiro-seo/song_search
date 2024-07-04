@@ -11,7 +11,7 @@ keys['wp_user'] = os.getenv('WP_USERNAME')
 keys['wp_password'] = os.getenv('WP_PASSWORD')
 keys['sd_key'] = os.getenv('SD_KEY')
 
-default_prompt = 'Write a brief descriptive text about the song [track name] by [artist] from [release year]. For the second paragraph, pick a number between 1-14 and write and about the corresponding point in the list below. Make sure the topic in the point is appropriate for the song, if not pick a new random number. Ideas for things you can include in the text: 
+default_prompt = "Write a brief descriptive text about the song [track name] by [artist] from [release year]. For the second paragraph, pick a number between 1-14 and write and about the corresponding point in the list below. Make sure the topic in the point is appropriate for the song, if not pick a new random number. Ideas for things you can include in the text: 
 1. Genre and Style: Describe the genre and stylistic elements. 
 2. Theme and Lyrics: Overview of the theme and key lyrics. 
 3. Musical Composition: Instruments and arrangement details. 
@@ -40,7 +40,7 @@ default_prompt = 'Write a brief descriptive text about the song [track name] by 
 ### [Use contractions to sound more conversational] 
 ### [Replace commonly used words and phrases with synonyms] 
 ### [Eliminate all use of the following words; Delve, Plethora, Realm]
-'
+"
 
 default_intro_prompt = "Write a simple, interesting, and captivating introduction for an article listing the best songs about [keyword]. Mention how [keyword] is represented in music and any notable artists that have written songs about [keyword].
 
