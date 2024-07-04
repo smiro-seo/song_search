@@ -28,7 +28,7 @@ improver_prompt_options = {
 summarization_prompt_options = {}
 image_prompt_options = {}
 
-default_sd_options={'steps':20, 'style_preset':'cinematic'}
+default_sd_options={'steps':20, 'style_preset':'photographic'}
 '''
     steps=50, # Amount of inference steps performed on image generation. Defaults to 30.
     cfg_scale=8.0, # Influences how strongly your generation is guided to match your prompt.
@@ -98,7 +98,7 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
                 }
             ],
             'samples':1,
-            'style_preset':'cinematic',
+            'style_preset':'photographic',
             **options
         },
     )
@@ -217,7 +217,7 @@ class Model_Generator():
         else:
             prompt = self.search.improver_prompt + '\n\n' + old_text
 
-        return get_gpt_response(prompt, 'gpt-3.5-turbo', options=improver_prompt_options)
+        return get_gpt_response(prompt, 'gpt-4o', options=improver_prompt_options)
 
     def feat_image(self, filename=None):
 
@@ -227,7 +227,7 @@ class Model_Generator():
         summ_prompt = summ_prompt + self.search.full_text
 
 
-        summ_response = get_gpt_response(summ_prompt, 'gpt-3.5-turbo', options=summarization_prompt_options)
+        summ_response = get_gpt_response(summ_prompt, 'gpt-4o', options=summarization_prompt_options)
 
         # Add summary to user-inputted image prompt
         sd_text_prompt = self.search.img_prompt
@@ -236,11 +236,11 @@ class Model_Generator():
         else:
             sd_text_prompt = sd_text_prompt + "\n\nOnly reply with the prompt, do not add any text besides that. Summarized article:\n" + summ_response
         
-        sd_prompt = get_gpt_response(sd_text_prompt, 'gpt-3.5-turbo', options=image_prompt_options)
+        sd_prompt = get_gpt_response(sd_text_prompt, 'gpt-4o', options=image_prompt_options)
 
         # Add positive and negative keywords to prompt
         sd_prompt = sd_prompt + " " + ", ".join(self.search.image_prompt_keywords)
-        sd_negative_prompt = 'ugly, blurry'
+        sd_negative_prompt = 'painting, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, deformed, ugly, blurry, bad anatomy, bad proportions, extra limbs, cloned face, skinny, glitchy, double torso, extra arms, extra hands, mangled fingers, missing lips, ugly face, distorted face, extra legs, anime'
         sd_negative_prompt += ", " + ", ".join(self.search.image_nprompt_keywords)
 
         # Get stability options
