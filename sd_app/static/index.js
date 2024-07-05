@@ -23,9 +23,9 @@ function copyTextToClipboard(text, ident) {
     }
   );
 }
-function setAr(dim, ar) {
-  $("#img-config-ar").val(dim);
-  $("#img-config-ar-btn").text(`${dim} (${ar})`);
+function setAr(ar) {
+  $("#img-config-ar").val(ar);
+  $("#img-config-ar-btn").text(ar);
 }
 
 function deleteKeyword(sp_kw) {

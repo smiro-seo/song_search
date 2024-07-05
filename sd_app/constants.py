@@ -1,6 +1,5 @@
 import os
 local=True
-
 keys = {}
 
 keys['openai_key'] = os.getenv('OPENAI_API_KEY')
@@ -23,6 +22,19 @@ db_string_conn = f"sqlite:///{database_path}/{DB_NAME}" if not local else f"sqli
 default_model = 'gpt-4o'
 
 aspect_ratios = [
+    '16:9', 
+'21:9',
+'2:3',
+'3:2',
+'4:5',
+'5:4',
+'9:16',
+'9:21',
+]
+
+'''
+OLD ASPECT RATIOS
+aspect_ratios = [
     ('1024x1024', '1:1'),
     ('1152x896','9:7'),
     ('896x1152', '7:9'),
@@ -34,3 +46,6 @@ aspect_ratios = [
     ('640x1536', '5:12'),
     ('512x512', '1:1')
 ]
+
+'''
+

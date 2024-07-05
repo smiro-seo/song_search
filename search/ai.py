@@ -1,9 +1,7 @@
 
 import time, os, openai
-from stability_sdk import client
-from .const import default_img_format
+from .const import default_img_format,aspect_ratios
 import requests
-import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 from PIL import Image
 import io, base64
 import requests
@@ -28,7 +26,7 @@ improver_prompt_options = {
 summarization_prompt_options = {}
 image_prompt_options = {}
 
-default_sd_options={'steps':30, 'style_preset':'photographic'}
+default_sd_options={'steps':30, 'style_preset':'photographic', 'aspect_ratio':'1:1'}
 '''
     steps=50, # Amount of inference steps performed on image generation. Defaults to 30.
     cfg_scale=8.0, # Influences how strongly your generation is guided to match your prompt.
@@ -84,72 +82,36 @@ def get_gpt_response(prompt, engine, options=default_gpt_options):
 def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_options, filename=None):
     
     seed=None
-
-    answers = requests.post(
-        f"https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v0-9/text-to-image",
+    del options['steps']
+    print(options)
+    answer = requests.post(
+        f"https://api.stability.ai/v2beta/stable-image/generate/core",
         headers={
-            "Content-Type": "application/json",
             "Accept": "application/json",
             "Authorization": f"Bearer {keys['sd_key']}"
         },
-        json={
-            "text_prompts": [
-                {
-                    "text": prompt
-                }
-            ],
-            'samples':1,
+        files={"none": ''},
+        data={
+            "prompt":prompt,
+            #'samples':1,
             'style_preset':'photographic',
             **options
         },
     )
-    answers = answers.json()
-    def truncate_string(s, max_length=10):
-        return s[:max_length] if len(s) > max_length else s
-
-    def print_nested_dict(d, max_length=10, indent=0):
-        for key, value in d.items():
-            print(" " * indent, f"{key}:", end=" ")
-            if isinstance(value, dict):
-                print("{")
-                print_nested_dict(value, max_length, indent + 2)
-                print(" " * indent, "}")
-            elif isinstance(value, list):
-                print("[")
-                for item in value:
-                    if isinstance(item, dict) or isinstance(item, list):
-                        print_nested_dict(item, max_length, indent + 2)
-                    else:
-                        print(" " * (indent + 2), truncate_string(str(item), max_length))
-                print(" " * indent, "]")
-            else:
-                print(truncate_string(str(value), max_length))
-
-
+    answer = answer.json()
 
     try:
-        print(print_nested_dict(answers))
-        for response in answers['artifacts']:
-            '''
-            if response.type == generation.ARTIFACT_IMAGE:
-                
-                # Generate unique filename
+        if filename is None: filename = f'{str(answer["seed"])}.{default_img_format}'
+        elif filename[-3:] != default_img_format: filename = filename + '.' + default_img_format
+        filepath =  os.path.join(output_dir,filename)
+        seed = answer['seed']
 
-                data = response.binary
-            '''
-            if response['finishReason']=='SUCCESS':
-                if filename is None: filename = f'{str(response["seed"])}.{default_img_format}'
-                elif filename[-3:] != default_img_format: filename = filename + '.' + default_img_format
-                filepath =  os.path.join(output_dir,filename)
-                data = response['base64']
-                print(data[:30])
-                seed = response['seed']
-
-    except:
+    except Exception as e:
+        print("ERROR IN STABLE DIFF")
+        print(e)
         return None, None, None
-
     # Get binary data from response and save to file
-    img = Image.open(io.BytesIO(base64.b64decode(data)))
+    img = Image.open(io.BytesIO(base64.b64decode(answer['image'])))
 
     
     #img = Image.open(io.BytesIO(data))
@@ -247,12 +209,10 @@ class Model_Generator():
 
         # Get stability options
         options=self.search.img_config
-
-        options['height'] = int(options['aspect-ratio'].split('x')[1])
-        options['width'] = int(options['aspect-ratio'].split('x')[0])
-        options['steps'] = int(options['steps'])
+        
+        options['aspect_ratio']= options.get('aspect-ratio', '1:1')
         del options['aspect-ratio']
 
-        bin_file, filename, seed = get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename, options=self.search.img_config)
+        bin_file, filename, seed = get_stablediff_response(sd_prompt, sd_negative_prompt, self.search.keys, filename=filename, options=options)
 
         return bin_file, filename, sd_prompt, seed
