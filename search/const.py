@@ -1,6 +1,7 @@
 
 default_img_format = 'jpeg'
 aspect_ratios = [
+    '1:1',
     '16:9', 
 '21:9',
 '2:3',

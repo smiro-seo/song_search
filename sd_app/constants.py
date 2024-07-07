@@ -22,6 +22,7 @@ db_string_conn = f"sqlite:///{database_path}/{DB_NAME}" if not local else f"sqli
 default_model = 'gpt-4o'
 
 aspect_ratios = [
+    '1:1',
     '16:9', 
 '21:9',
 '2:3',
