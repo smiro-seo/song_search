@@ -171,12 +171,12 @@ function showDetails(searchData) {
   if (searchData.include_img) {
     $("#details-img-row").attr("hidden", false);
 
-    const img_url = `${imgSrc}/${searchData.img_name}.jpeg`;
+    const img_url = `${imgSrc}/${searchData.img_config?.seed}.jpeg`;
     $.get(img_url)
       .done(function () {
         $("#details-img-src").attr(
           "src",
-          `${imgSrc}/${searchData.img_name}.jpeg`
+          img_url
         );
         $("#details-img-row-src").attr("hidden", false);
       })
