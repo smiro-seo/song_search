@@ -1,5 +1,5 @@
 import os
-local=False
+local=True
 keys = {}
 
 keys['openai_key'] = os.getenv('OPENAI_API_KEY')
