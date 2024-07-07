@@ -170,7 +170,7 @@ function showDetails(searchData) {
 
   if (searchData.include_img) {
     $("#details-img-row").attr("hidden", false);
-
+    console.log(searchData)
     const img_url = `${imgSrc}/${searchData.img_config?.seed}.jpeg`;
     $.get(img_url)
       .done(function () {
