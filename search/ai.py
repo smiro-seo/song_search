@@ -101,8 +101,7 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
     answer = answer.json()
 
     try:
-        if filename is None: filename = f'{str(answer["seed"])}.{default_img_format}'
-        elif filename[-3:] != default_img_format: filename = filename + '.' + default_img_format
+        filename = f'{str(answer["seed"])}.{default_img_format}'
         filepath =  os.path.join(output_dir,filename)
         seed = answer['seed']
 
@@ -112,7 +111,7 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
         return None, None, None
     # Get binary data from response and save to file
     img = Image.open(io.BytesIO(base64.b64decode(answer['image'])))
-
+    print(answer['seed'])
     
     #img = Image.open(io.BytesIO(data))
     img.save(filepath, optimize=True, quality=85) 
