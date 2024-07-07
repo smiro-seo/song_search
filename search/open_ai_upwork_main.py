@@ -429,6 +429,8 @@ class Search_Process():
                 img_binary, img_name, img_gen_prompt, seed = generator.feat_image(filename=filename)
                 self.record.img_gen_prompt = img_gen_prompt
                 self.record.img_config['seed']=seed
+                self.img_config['seed']=seed
+
             else:
                 img_binary=None
                 img_name=None
