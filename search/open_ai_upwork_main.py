@@ -32,7 +32,7 @@ cwd = os.path.dirname(__file__)
 youtube_api_key = keys["youtube_key"]
 
 # paths
-path = os.path.join(cwd,'..', '..', '..', '..', 'var', 'song_search', 'model_outputs') if not local else os.path.join(cwd,'model_outputs')
+path = os.path.join(cwd,'..', '..', '..', 'var', 'song_search', 'model_outputs') if not local else os.path.join(cwd,'model_outputs')
 
 def clean_name(name):
     new_name = name.replace(' ', '_').replace('-', '_').replace('(', '').replace(')', '').replace('.', '').replace(',', '')
@@ -225,7 +225,7 @@ def clean_and_sort(df):
 
 def generate_html_file(html):
     output_html_name = f'sample_keywords_output_html_{datetime.now().strftime("%Y%m%d-%H%M%S")}.html'
-    output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'model_outputs') if not local else os.path.join(cwd,'model_outputs')
+    output_dir = os.path.join(cwd, '..', '..', '..', 'var', 'song_search', 'model_outputs') if not local else os.path.join(cwd,'model_outputs')
     output_path = os.path.join(output_dir, output_html_name)
 
     print(f"Saving HTML file to : {output_path}")

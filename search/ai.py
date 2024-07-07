@@ -8,7 +8,7 @@ import requests
 local=False
 
 cwd = os.path.dirname(__file__)
-output_dir = os.path.join(cwd, '..', '..', '..', '..', 'var', 'song_search', 'feat_images') if not local else os.path.join(cwd,'feat_images')
+output_dir = os.path.join(cwd, '..', '..', '..', 'var', 'song_search', 'feat_images') if not local else os.path.join(cwd,'feat_images')
 
 image_prompt_ex_1=""
 image_prompt_ex_2=""
