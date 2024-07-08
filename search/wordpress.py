@@ -7,6 +7,7 @@ from requests.auth import HTTPBasicAuth
 
 BY_ARTIST_CATEGORY=24
 BY_KEYWORD_CATEGORY=25
+PARENT_CATEGORY=3
 
 base_url = "https://songpier.com/wp-json/wp/v2"
 
@@ -26,7 +27,7 @@ def create_wp_draft(title, html, slug, keys, image_id=None, by="artist"):
         'status': 'draft',
         'slug':slug,
         'content': html,
-        'categories': BY_ARTIST_CATEGORY if by=="artist" else BY_KEYWORD_CATEGORY,  # category ID
+        'categories': json.dumps([PARENT_CATEGORY, BY_ARTIST_CATEGORY if by=="artist" else BY_KEYWORD_CATEGORY]),  # category ID
         'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         'featured_media':image_id
     }
