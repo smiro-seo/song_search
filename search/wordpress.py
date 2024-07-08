@@ -63,6 +63,8 @@ def get_wp_auth(keys):
 def send_wp_request(url, post, headers):
 
     response = requests.post(url, headers=headers, **post)
+    print("WP response:")
+    print(response.json())
     return response
     '''
     if response.status_code==401 or response.status_code=="401":
