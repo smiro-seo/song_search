@@ -346,7 +346,7 @@ class Search_Process():
             if img_name=='': img_name='fet_img_' + self.slug.replace('-', '_')
             img_id = add_wp_image(img_binary, img_name, self.keys)
 
-        create_wp_draft(self.wp_title, html, self.slug, self.keys, img_id)
+        create_wp_draft(self.wp_title, html, self.slug, self.keys, img_id, by=self.by)
 
     def main_process(self, stopper):
 

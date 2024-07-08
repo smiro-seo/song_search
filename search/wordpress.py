@@ -5,9 +5,12 @@ from datetime import datetime
 from .const import default_img_format
 from requests.auth import HTTPBasicAuth
 
+BY_ARTIST_CATEGORY=24
+BY_KEYWORD_CATEGORY=25
+
 base_url = "https://songpier.com/wp-json/wp/v2"
 
-def create_wp_draft(title, html, slug, keys, image_id=None):
+def create_wp_draft(title, html, slug, keys, image_id=None, by="artist"):
 
     url = f"{base_url}/posts"
     auth = get_wp_auth(keys)
@@ -23,7 +26,7 @@ def create_wp_draft(title, html, slug, keys, image_id=None):
         'status': 'draft',
         'slug':slug,
         'content': html,
-        #'categories': 1,  # category ID
+        'categories': BY_ARTIST_CATEGORY if by=="artist" else BY_KEYWORD_CATEGORY,  # category ID
         'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         'featured_media':image_id
     }
