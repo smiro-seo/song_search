@@ -27,7 +27,7 @@ def create_wp_draft(title, html, slug, keys, image_id=None, by="artist"):
         'status': 'draft',
         'slug':slug,
         'content': html,
-        'categories': json.dumps([PARENT_CATEGORY, BY_ARTIST_CATEGORY if by=="artist" else BY_KEYWORD_CATEGORY]),  # category ID
+        'categories': [PARENT_CATEGORY, BY_ARTIST_CATEGORY if by=="artist" else BY_KEYWORD_CATEGORY],  # category ID
         'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         'featured_media':image_id
     }
