@@ -613,7 +613,7 @@ class Search_Artist(Search_Process):
             print('exception on getting result',e)
         # print("such are songs", type(songs),songs)
 
-        artist = self.artist_name
+        artist = str(songs[0].__dict__['artist'])
 
         print('while getting results',artist)
 
