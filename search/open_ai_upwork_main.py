@@ -613,9 +613,8 @@ class Search_Artist(Search_Process):
             print('exception on getting result',e)
         # print("such are songs", type(songs),songs)
 
-        #artist = str(songs[0].__dict__['artist'])
-        artist = self.artist_name
-
+        artist = str(songs[0].__dict__['artist'])
+        
         print('while getting results',artist)
 
         self.intro_prompt = self.intro_prompt.replace('[artist]', artist)
