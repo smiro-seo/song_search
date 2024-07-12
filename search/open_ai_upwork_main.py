@@ -374,7 +374,7 @@ class Search_Process():
         first_row = result_df.iloc[0]
 
         print("here is the first song", first_row)
-        self.intro_prompt = self.intro_prompt.replace('[keyword]',self.keyword)
+        self.intro_prompt = self.intro_prompt.replace('[keyword]',self.keyword).replace('[artist]', first_row.artist)
         self.img_prompt = self.img_prompt.replace('[artist]',first_row.artist).replace('[keyword]',self.keyword)
 
 
@@ -789,7 +789,7 @@ class Search_Spotify_Artist(Search_Spotify):
                 user=current_user['username'],
                 #user_id=current_user['id'],
                 searchedby = searchedby,
-                artist=artist,
+                artist=self.artist_name,
                 track_name=track_name,
                 release_year = release_year,
                 album=album,
