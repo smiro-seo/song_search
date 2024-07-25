@@ -4,7 +4,6 @@ from .const import default_img_format,claude_api_names, claude_api_url
 import requests
 from PIL import Image
 import io, base64
-import anthropic
 local=False
 
 cwd = os.path.dirname(__file__)
