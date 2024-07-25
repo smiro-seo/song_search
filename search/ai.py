@@ -161,14 +161,7 @@ class Model_Generator():
         openai.api_key = keys['openai_key']
         self.sd_key = keys['sd_key']
         self.search = search
-        try:
-            self.anthropic_key = anthropic.Anthropic(
-                api_key=keys['anthropic_key'],
-            )
-        except Exception as e:
-            print(e)
-            print('There was an error validating the anthropic key')
-            self.anthropic_key = None
+        self.anthropic_key = keys['anthropic_key']
 
     def song_description(self, data, stopper):
 
