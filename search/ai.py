@@ -4,6 +4,7 @@ from .const import default_img_format,claude_api_names, claude_api_url
 import requests
 from PIL import Image
 import io, base64
+import json
 local=False
 
 cwd = os.path.dirname(__file__)
@@ -113,12 +114,12 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
             "Authorization": f"Bearer {keys['sd_key']}"
         },
         files={"none": ''},
-        data={
+        data=json.dumps({
             "prompt":prompt,
             #'samples':1,
             'style_preset':'photographic',
             **options
-        },
+        }),
     )
     answer = answer.json()
 
