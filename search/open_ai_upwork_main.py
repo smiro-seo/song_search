@@ -371,11 +371,9 @@ class Search_Process():
             result_df.loc[i, 'yt_video_id'] = yt_video_id
         
         #get the first track in the resultdf
-        first_row = result_df.iloc[0]
 
-        print("here is the first song", first_row)
-        self.intro_prompt = self.intro_prompt.replace('[keyword]',self.keyword).replace('[artist]', first_row.artist)
-        self.img_prompt = self.img_prompt.replace('[artist]',first_row.artist).replace('[keyword]',self.keyword)
+        self.intro_prompt = self.intro_prompt.replace('[keyword]',self.keyword).replace('[artist]', self.keyword)
+        self.img_prompt = self.img_prompt.replace('[artist]',self.keyword).replace('[keyword]',self.keyword)
 
 
         print( 'prompts',self.intro_prompt, self.img_prompt, self.values_to_replace )
@@ -613,7 +611,7 @@ class Search_Artist(Search_Process):
             print('exception on getting result',e)
         # print("such are songs", type(songs),songs)
 
-        artist = str(songs[0].__dict__['artist'])
+        artist = self.keyword
         
         print('while getting results',artist)
 

@@ -43,11 +43,6 @@ def background_search(local_app, local_db, input_data, limit, offset,user, by):
         print(f"Limiting results to {limit}. Offset: {offset}")
 
         print("in background search", by)
-
-        print("OKAY")
-        print("-----------------------------")
-        print(input_data)
-        print("-----------------------------")
         
 
         if by=="keyword": search = Search_Keyword(input_data, limit, offset, keys, user, by)
