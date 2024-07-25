@@ -86,7 +86,8 @@ def get_gpt_response(prompt, engine, options=default_gpt_options, anthropic_key=
                         ]
                     }
                 )
-            choice_response_text = response.json()['content']['text']
+            print(response.json())
+            choice_response_text = response.json()['content'][0]['text']
         
         # Required timeout for OpenAI API
         sleeping_time = sleep_time_anthropic if 'claude' in engine else sleep_time_openai
