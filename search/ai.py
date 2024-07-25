@@ -16,8 +16,8 @@ model_for_extras='gpt-4o'
 
 gpt_max_tokens = 300
 openai.api_key = ""
-sleep_time_openai = 15  # seconds
-sleep_time_anthropic = 2 # seconds
+sleep_time_openai = 0.5  # seconds
+sleep_time_anthropic = 1.5 # seconds
 default_gpt_options = {}
 improver_prompt_options = {
     'temperature':0.75,
