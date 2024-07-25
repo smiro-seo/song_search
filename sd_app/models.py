@@ -117,7 +117,11 @@ class Search(db.Model):
             'gpt-3.5-turbo-1106':'GPT 3.5 Turbo',
             'gpt-4-1106-preview': 'GPT 4',
             'gpt-4o':'GPT 4 OpenAI',
+            'claude-sonnet':'Claude Sonnet',
+            'claude-opus': 'Claude Opus',
+            'claude-haiku': 'Claude Haiku'
         }
+
 
         model = model_name.get(self.model, self.model)
         #img_name = f"{clean_name(self.keyword if self.by=='keyword' else self.artist)}_songs_{self.id}"

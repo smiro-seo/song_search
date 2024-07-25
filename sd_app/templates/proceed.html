@@ -408,12 +408,32 @@
                     </label>
                   </div>
                   <div class="form-check">
-                    <input {{"checked" if search.model == "gpt-4o" else "" }}  class="form-check-input" type="radio" value="gpt-4o" name="model" id="gpt-4o">
-                    <label class="form-check-label" for="gpt-4">
+                    <input {{"checked" if search.model == "gpt-4o" else "" }}  class="form-check-input" type="radio" value="gpt-4" name="model" id="gpt-4">
+                    <label class="form-check-label" for="gpt-4o">
                       GPT 4o
                     </label>
                   </div>
+                  <div class="form-check">
+                    <input {{"checked" if search.model == "claude-sonnet" else "" }}  class="form-check-input" type="radio" value="claude-sonnet" name="model" id="claude-sonnet">
+                    <label class="form-check-label" for="claude-sonnet">
+                      Claude Sonnet
+                    </label>
+                  </div>
                 </div>
+                <div class="form-check">
+                  <input {{"checked" if search.model == "claude-haiku" else "" }}  class="form-check-input" type="radio" value="claude-haiku" name="model" id="claude-haiku">
+                  <label class="form-check-label" for="claude-haiku">
+                    Claude Haiku
+                  </label>
+                </div>
+              </div>
+              <div class="form-check">
+                <input {{"checked" if search.model == "claude-opus" else "" }}  class="form-check-input" type="radio" value="claude-opus" name="model" id="claude-opus">
+                <label class="form-check-label" for="claude-opus">
+                  Claude Opus
+                </label>
+              </div>
+            </div>
 
                 <div class="accordion-content col-lg-3 col-md-6 col-12">
                   <input checked type="checkbox" value="limited" id="wordpress" name="wordpress" class="checkbox">

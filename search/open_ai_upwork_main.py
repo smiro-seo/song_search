@@ -13,7 +13,7 @@ from .html_generator import generate_html
 from .wordpress import create_wp_draft, add_wp_image
 from .ai import Model_Generator, local
 from .search_youtube import youtube_search
-from sd_app.constants import keys 
+from sd_app.constants import keys, default_model
 
 
 
@@ -273,7 +273,7 @@ class Search_Process():
         self.improve_intro = data.get('improve-intro', False)
 
         self.wordpress =  data.get('wordpress', False)
-        self.model = data.get('model','gpt-4o' )
+        self.model = data.get('model',default_model )
         
         self.limit = limit_st
         self.offset = offset_res

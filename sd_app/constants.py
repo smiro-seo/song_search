@@ -3,6 +3,7 @@ local=False
 keys = {}
 
 keys['openai_key'] = os.getenv('OPENAI_API_KEY')
+keys['anthropic_key'] = os.getenv('ANTHROPIC_API_KEY')
 keys['youtube_key'] = os.getenv('YOUTUBE_KEY')
 keys['sp_user'] = os.getenv('SPOTIFY_USER')
 keys['sp_password'] = os.getenv('SPOTIFY_PASSWORD')
@@ -20,6 +21,7 @@ DB_NAME = "database.db"
 database_path="/opt/var/song_search" if not local else "instance"
 db_string_conn = f"sqlite:///{database_path}/{DB_NAME}" if not local else f"sqlite:///{DB_NAME}"
 default_model = 'gpt-4o'
+
 
 aspect_ratios = [
     '1:1',
