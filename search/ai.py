@@ -79,13 +79,13 @@ def get_gpt_response(prompt, engine, options=default_gpt_options, anthropic_key=
                         "anthropic-version": "2023-06-01",
                         "content-type": "application/json",
                     },
-                    data={
+                    data=json.dumps({
                         "model": claude_api_names[engine],
                         "max_tokens": gpt_max_tokens,
                         "messages": [
                             {"role": "user", "content": prompt}
                         ]
-                    }
+                    })
                 )
             print(response.json())
             choice_response_text = response.json()['content'][0]['text']
@@ -114,12 +114,12 @@ def get_stablediff_response(prompt, negative_prompt, keys, options=default_sd_op
             "Authorization": f"Bearer {keys['sd_key']}"
         },
         files={"none": ''},
-        data=json.dumps({
+        data={
             "prompt":prompt,
             #'samples':1,
             'style_preset':'photographic',
             **options
-        }),
+        },
     )
     answer = answer.json()
 
