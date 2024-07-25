@@ -371,9 +371,11 @@ class Search_Process():
             result_df.loc[i, 'yt_video_id'] = yt_video_id
         
         #get the first track in the resultdf
+        first_row = result_df.iloc[0]
 
-        self.intro_prompt = self.intro_prompt.replace('[keyword]',self.keyword).replace('[artist]', self.keyword)
-        self.img_prompt = self.img_prompt.replace('[artist]',self.keyword).replace('[keyword]',self.keyword)
+        print("here is the first song", first_row)
+        self.intro_prompt = self.intro_prompt.replace('[keyword]',self.keyword)
+        self.img_prompt = self.img_prompt.replace('[artist]',first_row.artist).replace('[keyword]',self.keyword)
 
 
         print( 'prompts',self.intro_prompt, self.img_prompt, self.values_to_replace )
@@ -611,8 +613,10 @@ class Search_Artist(Search_Process):
             print('exception on getting result',e)
         # print("such are songs", type(songs),songs)
 
-        artist = self.keyword
-        
+        first_song = songs[0]
+        artist = first_song.__dict__['artist']
+        artist = str(artist)
+
         print('while getting results',artist)
 
         self.intro_prompt = self.intro_prompt.replace('[artist]', artist)
@@ -786,7 +790,7 @@ class Search_Spotify_Artist(Search_Spotify):
                 user=current_user['username'],
                 #user_id=current_user['id'],
                 searchedby = searchedby,
-                artist=self.artist_name,
+                artist=artist,
                 track_name=track_name,
                 release_year = release_year,
                 album=album,

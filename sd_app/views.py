@@ -43,7 +43,6 @@ def background_search(local_app, local_db, input_data, limit, offset,user, by):
         print(f"Limiting results to {limit}. Offset: {offset}")
 
         print("in background search", by)
-        
 
         if by=="keyword": search = Search_Keyword(input_data, limit, offset, keys, user, by)
         elif by=="artist": search = Search_Artist(input_data, limit, offset, keys, user, by)
