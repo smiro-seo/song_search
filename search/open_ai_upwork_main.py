@@ -562,7 +562,8 @@ class Search_Keyword(Search_Process):
         if (stopper.is_set()): raise Exception("stopped")
 
         first_song = songs[0]
-        artist = first_song.__dict__['artist']
+        artist = self.keyword
+        #artist = first_song.__dict__['artist']
         #keyword = first_song.__dict__['keyword']
         keyword = self.keyword
         artist = str(artist)
