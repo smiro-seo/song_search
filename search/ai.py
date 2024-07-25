@@ -42,7 +42,7 @@ default_sd_options={'steps':30, 'style_preset':'photographic', 'aspect_ratio':'1
                                                 # (Available Samplers: ddim, plms, k_euler, k_euler_ancestral, k_heun, k_dpm_2, k_dpm_2_ancestral, k_dpmpp_2s_ancestral, k_lms, k_dpmpp_2m, k_dpmpp_sde)
 '''  
 
-def get_gpt_response(prompt, engine, options=default_gpt_options, anthropic_client=None):
+def get_gpt_response(prompt, engine, options=default_gpt_options, anthropic_key=None):
 
     print("==============", engine)
 
@@ -71,14 +71,23 @@ def get_gpt_response(prompt, engine, options=default_gpt_options, anthropic_clie
             choice_response_text = completion['choices'][0]['message']['content'].strip().replace('"', '')
 
         elif 'claude' in engine:
-            response = anthropic_client.messages.create(
-                model=claude_api_names[engine],
-                max_tokens=gpt_max_tokens,
-                messages=[
-                    {"role": "user", "content": prompt}
-                ]
-            )
-            choice_response_text = response.content.text
+            # Using anthropic api directly because Python 3.9.9 doesn't support newer anthropic version
+            response = requests.post(
+                    claude_api_url,
+                    headers={
+                        'x-api-key': anthropic_key,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json",
+                    },
+                    data={
+                        "model": claude_api_names[engine],
+                        "max_tokens": gpt_max_tokens,
+                        "messages": [
+                            {"role": "user", "content": prompt}
+                        ]
+                    }
+                )
+            choice_response_text = response.json()['content']['text']
         
         # Required timeout for OpenAI API
         sleeping_time = sleep_time_anthropic if 'claude' in engine else sleep_time_openai
@@ -153,13 +162,13 @@ class Model_Generator():
         self.sd_key = keys['sd_key']
         self.search = search
         try:
-            self.anthropic_client = anthropic.Anthropic(
+            self.anthropic_key = anthropic.Anthropic(
                 api_key=keys['anthropic_key'],
             )
         except Exception as e:
             print(e)
             print('There was an error validating the anthropic key')
-            self.anthropic_client = None
+            self.anthropic_key = None
 
     def song_description(self, data, stopper):
 
@@ -174,7 +183,7 @@ class Model_Generator():
         prompt = build_prompt(self.search.prompt, values_to_replace)
 
         # Get response
-        response = get_gpt_response(prompt, self.search.model, anthropic_client=self.anthropic_client)
+        response = get_gpt_response(prompt, self.search.model, anthropic_key=self.anthropic_key)
 
         # Improve if necessary 
         if self.search.improve_song: response = self.improve(response)
@@ -186,7 +195,7 @@ class Model_Generator():
         print("Getting OpenAI introduction")
 
 
-        response = get_gpt_response(self.search.intro_prompt, self.search.model, anthropic_client=self.anthropic_client)
+        response = get_gpt_response(self.search.intro_prompt, self.search.model, anthropic_key=self.anthropic_key)
         
         if self.search.improve_intro: response = self.improve(response)
 
@@ -200,7 +209,7 @@ class Model_Generator():
         else:
             prompt = self.search.improver_prompt + '\n\n' + old_text
 
-        return get_gpt_response(prompt, model_for_extras, options=improver_prompt_options, anthropic_client=self.anthropic_client)
+        return get_gpt_response(prompt, model_for_extras, options=improver_prompt_options, anthropic_key=self.anthropic_key)
 
     def feat_image(self, filename=None):
 
@@ -211,7 +220,7 @@ class Model_Generator():
         summ_prompt = summ_prompt + self.search.full_text
 
 
-        summ_response = get_gpt_response(summ_prompt, model_for_extras, options=summarization_prompt_options, anthropic_client=self.anthropic_client)
+        summ_response = get_gpt_response(summ_prompt, model_for_extras, options=summarization_prompt_options, anthropic_key=self.anthropic_key)
 
         # Add summary to user-inputted image prompt
         sd_text_prompt = self.search.img_prompt
@@ -220,7 +229,7 @@ class Model_Generator():
         else:
             sd_text_prompt = sd_text_prompt + "\n\nOnly reply with the prompt, do not add any text besides that. Summarized article:\n" + summ_response
         
-        sd_prompt = get_gpt_response(sd_text_prompt, model_for_extras, options=image_prompt_options, anthropic_client=self.anthropic_client)
+        sd_prompt = get_gpt_response(sd_text_prompt, model_for_extras, options=image_prompt_options, anthropic_key=self.anthropic_key)
 
         # Add positive and negative keywords to prompt
         sd_prompt = sd_prompt + " " + ", ".join(self.search.image_prompt_keywords)
