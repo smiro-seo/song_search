@@ -624,7 +624,7 @@ class Search_Artist(Search_Process):
 
         self.intro_prompt = self.intro_prompt.replace('[artist]', artist)
         self.img_prompt = self.img_prompt.replace('[artist]', artist)
-        self.title_prompt = self.title_prompt.replace('[artist]', artist).replace('[keyword]', keyword)
+        self.title_prompt = self.title_prompt.replace('[artist]', artist)
 
         self.artist_name = artist.replace(' ', '-').lower()
         self.keyword_descriptor = artist.replace(' ', '-').lower()
