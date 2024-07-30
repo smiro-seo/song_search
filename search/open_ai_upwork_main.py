@@ -256,7 +256,7 @@ class Search_Process():
         self.prompt = data.get('prompt', current_user['default_intro_prompt_artist'])
         self.improver_prompt = data.get('improver-prompt', current_user['default_improver_prompt'])
         self.intro_prompt = data.get('intro-prompt', current_user['default_intro_prompt_artist'])
-        self.title_prompt = data.get('title-prompt', current_user['default_title_prompt_artist'])
+        self.title_prompt = data.get('title-prompt', current_user['default_title_prompt'])
 
         self.include_img = data.get('include-img', False)
 
