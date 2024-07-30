@@ -405,6 +405,8 @@ class Search_Process():
 
         #   Generate title
         self.wp_title=generator.title()
+        print("TITLE: ")
+        print(self.wp_title)
 
         #   Create html
         print("Getting HTML")
