@@ -188,10 +188,18 @@ class Model_Generator():
     
         print("Getting OpenAI introduction")
 
-
         response = get_gpt_response(self.search.intro_prompt, self.search.model, anthropic_key=self.anthropic_key)
         
         if self.search.improve_intro: response = self.improve(response)
+
+        return response
+
+    
+    def title(self):
+    
+        print("Getting OpenAI title")
+
+        response = get_gpt_response(self.search.title_prompt, self.search.model, anthropic_key=self.anthropic_key)
 
         return response
 

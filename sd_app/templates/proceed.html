@@ -12,6 +12,7 @@
 
 <p hidden id="user-default-improver-prompt" >{{user.get('default_improver_prompt')}}</p>
 <p hidden id="user-default-img-prompt" >{{user.get('default_img_prompt')}}</p>
+<p hidden id="user-default-title-prompt" >{{user.get('default_title_prompt')}}</p>
 
 <div class="container-fluid" style="width:100%;margin:0px" >
   <!--  TITLE   
@@ -173,6 +174,30 @@
 
                     <input type="checkbox" value="limited" id="check-improve-intro" name="improve-intro" class="checkbox"/>
                     <label class="text" for="check-improve-intro" >Improve intro description</label>
+                  </div>
+
+                </div> 
+                
+                <!--  TITLE PROMPT  -->
+                <div class="accordion-content col-lg-6 col-12">
+                
+                  <div style="display:flex;align-items:center">
+                    <h6 class="section-title">Title prompt </h6>
+                    <button class="btn btn-outline-secondary btn-sm" style="margin-left:auto" onClick="resetPrompt('title')">Reset</button>
+                    
+                  </div>
+                      
+                  {% if search.by=="keyword" %}
+                    <p class="text" style="white-space: pre-wrap" id="title-prompt-rules" >You can use the [keyword] or [summary] placeholder.</p>
+                  {% elif search.by=="artist" %}
+                    <p class="text" style="white-space: pre-wrap" id="title-prompt-rules" >You can use the [artist] or [summary] placeholder.</p>
+                  {% endif %}
+                  <textarea class="text basic-padding"  name="title-prompt" id="title-prompt" style="width:100%" >{{search.title_prompt}}</textarea> 
+                  
+                    
+                  <div id="title-prompt-div" class="horizontal-container">
+                    <input type="checkbox" value="limited" id="default-title-prompt" name="default-title-prompt" class="checkbox"/>
+                    <label class="text" for="default-title-prompt" >Set as default</label>
                   </div>
 
                 </div> 

@@ -346,20 +346,19 @@ def proceedAI(by):
                             if data.get('default-prompt', False):
                                 if by=="artist": current_user.default_prompt_artist = data['prompt']
                                 elif by=="keyword": current_user.default_prompt = data['prompt']
-                                prompt=data['prompt']
 
                             if data.get('default-intro-prompt', False):
                                 if by=="artist": current_user.default_intro_prompt_artist = data['intro-prompt']
                                 elif by=="keyword": current_user.default_intro_prompt = data['intro-prompt']
-                                intro_prompt=data['intro-prompt']
 
                             if data.get('default-improver-prompt', False):
                                 current_user.default_improver_prompt = data['improver-prompt']
-                                improver_prompt=data['improver-prompt']
 
                             if data.get('default-img-prompt', False):
                                 current_user.default_img_prompt = data['img-prompt']
-                                improver_prompt=data['img-prompt']
+                                
+                            if data.get('default-title-prompt', False):
+                                current_user.default_title_prompt = data['title-prompt']
                             
 
                             img_config = data.get('img-config', json.loads(current_user.default_img_config))

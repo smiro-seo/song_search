@@ -375,10 +375,8 @@ class Search_Process():
 
         print("here is the first song", first_row)
         self.intro_prompt = self.intro_prompt.replace('[keyword]',self.keyword)
+        self.title_prompt = self.title_prompt.replace('[keyword]',self.keyword).replace('[artist]',self.keyword)
         self.img_prompt = self.img_prompt.replace('[artist]',first_row.artist).replace('[keyword]',self.keyword)
-
-
-        print( 'prompts',self.intro_prompt, self.img_prompt, self.values_to_replace )
 
         #   Get openai data
         print(f"Getting OpenAI response")
@@ -388,6 +386,7 @@ class Search_Process():
                 model_response = generator.song_description(track, stopper)
                 print('model response',model_response)
                 print('intro_prompt', self.intro_prompt)
+                print('title_prompt', self.title_prompt)
                 print("img_prompt", self.img_prompt)
                 print("values_to_replace", self.values_to_replace)
                 
@@ -402,6 +401,9 @@ class Search_Process():
 
         #   Generate intro
         intro = generator.intro()
+
+        #   Generate title
+        self.wp_title=generator.title()
 
         #   Create html
         print("Getting HTML")
@@ -561,10 +563,7 @@ class Search_Keyword(Search_Process):
 
         if (stopper.is_set()): raise Exception("stopped")
 
-        first_song = songs[0]
         artist = self.keyword
-        #artist = first_song.__dict__['artist']
-        #keyword = first_song.__dict__['keyword']
         keyword = self.keyword
         artist = str(artist)
         keyword = str(keyword)
@@ -572,10 +571,11 @@ class Search_Keyword(Search_Process):
 
         self.intro_prompt = self.intro_prompt.replace('[keyword]', keyword)
         self.img_prompt = self.img_prompt.replace('[artist]', artist).replace('[keyword]', keyword)
+        self.title_prompt = self.title_prompt.replace('[artist]', artist).replace('[keyword]', keyword)
 
         # from song pick the first one
         self.slug = 'songs-about-' + self.keyword
-        self.wp_title = f'{str(len(songs))} Songs About {self.keyword.title()}'
+        # self.wp_title = f'{str(len(songs))} Songs About {self.keyword.title()}'
         return songs
 
 class Search_Artist(Search_Process):
@@ -623,13 +623,14 @@ class Search_Artist(Search_Process):
 
         self.intro_prompt = self.intro_prompt.replace('[artist]', artist)
         self.img_prompt = self.img_prompt.replace('[artist]', artist)
+        self.title_prompt = self.title_prompt.replace('[artist]', artist).replace('[keyword]', keyword)
 
         self.artist_name = artist.replace(' ', '-').lower()
         self.keyword_descriptor = artist.replace(' ', '-').lower()
 
         # from song pick the first one
         self.slug = artist.replace(" ", "-").lower() + "-songs"
-        self.wp_title = f'{len(songs)} Best {artist.title()} Songs'
+        # self.wp_title = f'{len(songs)} Best {artist.title()} Songs'
         return songs
 
 

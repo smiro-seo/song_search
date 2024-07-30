@@ -70,6 +70,12 @@ query_1072=[
     'ALTER TABLE search ADD COLUMN img_gen_prompt STRING;',
     f"UPDATE search SET img_gen_prompt = '' ;",
 ]
+query_108=[
+    'ALTER TABLE search ADD COLUMN title_prompt STRING;',
+    f"UPDATE search SET title_prompt = '' ;",
+    'ALTER TABLE "user" ADD COLUMN default_title_prompt STRING;',
+    f"UPDATE \"user\" SET default_title_prompt = '' ;",
+]
 
 queries = {
     '1.0.0':query_100,
@@ -85,7 +91,8 @@ queries = {
     '1.0.6.1':query_1061,
     '1.0.7': query_107,
     '1.0.7.1':query_1071,
-    '1.0.7.2':query_1072
+    '1.0.7.2':query_1072,
+    '1.0.8':query_108
 }
 
 

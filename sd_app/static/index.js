@@ -5,6 +5,7 @@ const trashSvg = (onClick) =>
 let imgSrc = document.body.getAttribute("data-img-src");
 let default_prompt = $("#user-default-prompt").text();
 let default_intro_prompt = $("#user-default-intro-prompt").text();
+let default_title_prompt = $("#user-default-title-prompt").text();
 let default_improver_prompt = $("#user-default-improver-prompt").text();
 let default_img_prompt = $("#user-default-img-prompt").text();
 
@@ -132,6 +133,7 @@ function showDetails(searchData) {
     "user",
     "model",
     "intro-prompt",
+    "title-prompt",
     "improver-prompt",
     "prompt",
     "status",
@@ -380,9 +382,11 @@ function getFormData() {
     wordpress: $("#wordpress").is(":checked") ? 1 : false,
     prompt: $("#prompt").val(),
     "intro-prompt": $("#intro-prompt").val(),
+    "title-prompt": $("#title-prompt").val(),
     "improver-prompt": improving_enabled ? $("#improver-prompt").val() : "",
     "default-prompt": $("#default-prompt").is(":checked"),
     "default-intro-prompt": $("#default-intro-prompt").is(":checked"),
+    "default-title-prompt": $("#default-title-prompt").is(":checked"),
     "default-img-prompt": $("#default-img-prompt").is(":checked"),
     "default-improver-prompt":
       improving_enabled && $("#default-improver-prompt").is(":checked"),
@@ -422,6 +426,9 @@ function resetPrompt(prompt) {
   switch (prompt) {
     case "intro":
       $("#intro-prompt").val(default_intro_prompt);
+      break;
+    case "title":
+      $("#title-prompt").val(default_title_prompt);
       break;
     case "song":
       $("#prompt").val(default_prompt);

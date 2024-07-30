@@ -18,6 +18,7 @@ class User(db.Model, UserMixin):
     default_prompt = db.Column(db.String(512))
     default_prompt_artist = db.Column(db.String(512))
     default_intro_prompt = db.Column(db.String(512))
+    default_title_prompt = db.Column(db.String(512))
     default_intro_prompt_artist = db.Column(db.String(512))
     default_improver_prompt = db.Column(db.String(512))
     default_img_prompt = db.Column(db.String(512))
@@ -48,6 +49,7 @@ class User(db.Model, UserMixin):
             'default_intro_prompt_artist': self.default_intro_prompt_artist,
             'default_improver_prompt': self.default_improver_prompt,
             'default_img_prompt': self.default_img_prompt,
+            'default_title_prompt': self.default_title_prompt,
             'default_img_config': json.loads(self.default_img_config),
             'is_authenticated': current_user.is_authenticated and current_user.id == self.id
         }
@@ -63,6 +65,7 @@ class Search(db.Model):
     intro_prompt = db.Column(db.String(516))
     improver_prompt = db.Column(db.String(516))
     img_prompt = db.Column(db.String(516))
+    title_prompt = db.Column(db.String(516))
 
     image_prompt_keywords_str = db.Column(db.String(516))
     image_nprompt_keywords_str = db.Column(db.String(516))
@@ -137,6 +140,7 @@ class Search(db.Model):
             'intro-prompt': self.intro_prompt,
             'improver-prompt': self.improver_prompt,
             'img-prompt': self.img_prompt,
+            'title-prompt':self.title_prompt,
             'improved_song': self.improved_song,
             'improved_intro': self.improved_intro,
             'p-img-keywords': ", ".join(self.image_prompt_keywords),
@@ -181,6 +185,7 @@ class Def_Search():
     def __init__(self, current_user, by):
         self.improver_prompt = current_user.default_improver_prompt
         self.img_prompt = current_user.default_img_prompt
+        self.title_prompt = current_user.default_title_prompt
         self.by = by
 
         if by=="artist":
