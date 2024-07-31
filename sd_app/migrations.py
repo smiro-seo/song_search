@@ -76,6 +76,10 @@ query_108=[
     'ALTER TABLE "user" ADD COLUMN default_title_prompt STRING;',
     f"UPDATE \"user\" SET default_title_prompt = '' ;",
 ]
+query_1081=[
+    'ALTER TABLE "user" ADD COLUMN default_title_prompt_artist STRING;',
+    f"UPDATE \"user\" SET default_title_prompt_artist = '' ;",
+]
 
 queries = {
     '1.0.0':query_100,
@@ -92,7 +96,8 @@ queries = {
     '1.0.7': query_107,
     '1.0.7.1':query_1071,
     '1.0.7.2':query_1072,
-    '1.0.8':query_108
+    '1.0.8':query_108,
+    '1.0.8.1':query_1081
 }
 
 

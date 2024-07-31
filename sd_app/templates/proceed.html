@@ -4,15 +4,16 @@
 
 {% if search.by=="artist" %}
   <p hidden id="user-default-intro-prompt">{{user.get('default_intro_prompt_artist')}}</p>
+  <p hidden id="user-default-title-prompt" >{{user.get('default_title_prompt_artist')}}</p>
   <p hidden id="user-default-prompt" >{{user.get('default_prompt_artist')}}</p>
 {% elif search.by=="keyword" %}
   <p hidden id="user-default-intro-prompt">{{user.get('default_intro_prompt')}}</p>
+  <p hidden id="user-default-title-prompt" >{{user.get('default_title_prompt')}}</p>
   <p hidden id="user-default-prompt" >{{user.get('default_prompt')}}</p>
 {% endif %}
 
 <p hidden id="user-default-improver-prompt" >{{user.get('default_improver_prompt')}}</p>
 <p hidden id="user-default-img-prompt" >{{user.get('default_img_prompt')}}</p>
-<p hidden id="user-default-title-prompt" >{{user.get('default_title_prompt')}}</p>
 
 <div class="container-fluid" style="width:100%;margin:0px" >
   <!--  TITLE   
@@ -188,9 +189,9 @@
                   </div>
                       
                   {% if search.by=="keyword" %}
-                    <p class="text" style="white-space: pre-wrap" id="title-prompt-rules" >You can use the [keyword] or [summary] placeholder.</p>
+                    <p class="text" style="white-space: pre-wrap" id="title-prompt-rules" >You can use the [keyword] placeholder.</p>
                   {% elif search.by=="artist" %}
-                    <p class="text" style="white-space: pre-wrap" id="title-prompt-rules" >You can use the [artist] or [summary] placeholder.</p>
+                    <p class="text" style="white-space: pre-wrap" id="title-prompt-rules" >You can use the [artist] placeholder.</p>
                   {% endif %}
                   <textarea class="text basic-padding"  name="title-prompt" id="title-prompt" style="width:100%" >{{search.title_prompt}}</textarea> 
                   

@@ -358,7 +358,8 @@ def proceedAI(by):
                                 current_user.default_img_prompt = data['img-prompt']
                                 
                             if data.get('default-title-prompt', False):
-                                current_user.default_title_prompt = data['title-prompt']
+                                if by=="artist": current_user.default_title_prompt_artist = data['title-prompt']
+                                elif by=="keyword": current_user.default_title_prompt = data['title-prompt']
                             
 
                             img_config = data.get('img-config', json.loads(current_user.default_img_config))

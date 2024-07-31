@@ -253,7 +253,7 @@ class Search_Process():
 
     def __init__(self, data, limit_st, offset_res, keys, current_user):
 
-        self.prompt = data.get('prompt', current_user['default_intro_prompt_artist'])
+        self.prompt = data.get('prompt', current_user['default_prompt_artist'])
         self.improver_prompt = data.get('improver-prompt', current_user['default_improver_prompt'])
         self.intro_prompt = data.get('intro-prompt', current_user['default_intro_prompt_artist'])
         self.title_prompt = data.get('title-prompt', current_user['default_title_prompt'])
@@ -402,12 +402,6 @@ class Search_Process():
 
         #   Generate intro
         intro = generator.intro()
-
-        #   Generate title
-        self.wp_title=generator.title()
-        print("TITLE: ")
-        print(self.wp_title)
-
         #   Create html
         print("Getting HTML")
         try:
@@ -417,6 +411,13 @@ class Search_Process():
             
 
          #   Generate feat. image
+        
+        #   Generate title
+        self.wp_title=generator.title()
+        print("TITLE: ")
+        print(self.wp_title)
+
+        #   Generate image
         try:
             if self.include_img:
                 print("Getting featured image")

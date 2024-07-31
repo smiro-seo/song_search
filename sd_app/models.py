@@ -1,7 +1,7 @@
 from . import db
 from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
-from .constants import default_prompt, default_intro_prompt, default_intro_prompt_artist, default_improver_prompt
+from .constants import default_prompt, default_intro_prompt, default_intro_prompt_artist, default_improver_prompt, default_title_prompt, default_title_prompt_artist
 import json
 from uuid import uuid4
 
@@ -18,8 +18,9 @@ class User(db.Model, UserMixin):
     default_prompt = db.Column(db.String(512))
     default_prompt_artist = db.Column(db.String(512))
     default_intro_prompt = db.Column(db.String(512))
-    default_title_prompt = db.Column(db.String(512))
     default_intro_prompt_artist = db.Column(db.String(512))
+    default_title_prompt = db.Column(db.String(512))
+    default_title_prompt_artist = db.Column(db.String(512))
     default_improver_prompt = db.Column(db.String(512))
     default_img_prompt = db.Column(db.String(512))
 
@@ -35,6 +36,8 @@ class User(db.Model, UserMixin):
         self.default_prompt_artist = default_prompt
         self.default_intro_prompt = default_intro_prompt
         self.default_intro_prompt_artist = default_intro_prompt_artist
+        self.default_title_prompt = default_title_prompt
+        self.default_title_prompt_artist = default_title_prompt_artist
         self.default_improver_prompt = default_improver_prompt
         self.default_img_prompt = ""
         self.default_img_config = json.dumps({'steps':30})
@@ -50,6 +53,7 @@ class User(db.Model, UserMixin):
             'default_improver_prompt': self.default_improver_prompt,
             'default_img_prompt': self.default_img_prompt,
             'default_title_prompt': self.default_title_prompt,
+            'default_title_prompt_artist': self.default_title_prompt_artist,
             'default_img_config': json.loads(self.default_img_config),
             'is_authenticated': current_user.is_authenticated and current_user.id == self.id
         }
