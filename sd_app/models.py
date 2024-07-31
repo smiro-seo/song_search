@@ -189,15 +189,16 @@ class Def_Search():
     def __init__(self, current_user, by):
         self.improver_prompt = current_user.default_improver_prompt
         self.img_prompt = current_user.default_img_prompt
-        self.title_prompt = current_user.default_title_prompt
         self.by = by
 
         if by=="artist":
             self.intro_prompt = current_user.default_intro_prompt_artist
             self.prompt = current_user.default_prompt_artist
+            self.title_prompt = current_user.default_title_prompt_artist
         elif by=="keyword":
             self.intro_prompt = current_user.default_intro_prompt
             self.prompt = current_user.default_prompt
+            self.title_prompt = current_user.default_title_prompt
         
         self.improved_intro = True
         self.improved_song=True
