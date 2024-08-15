@@ -84,6 +84,7 @@ def scrape_youtube_search_results(track_title):
     except Exception as e:
         print("ERROR")
         print(e)
+        print(e.read().decode())  # Read the body of the error response
         video_id = ''
         
     return video_id
