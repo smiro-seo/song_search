@@ -11,7 +11,7 @@ import pandas as pd
 import sys
 import os
 from . import db, app
-from .constants import keys, default_prompt, default_intro_prompt, default_intro_prompt_artist, aspect_ratios
+from .constants import keys, default_prompt, aspect_ratios
 sys.path.append('/..')
 import spotipy 
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -176,20 +176,20 @@ def search(by="keyword"):
                         if data.get('default-prompt', False):
                             if by=="artist": current_user.default_prompt_artist = data['prompt']
                             elif by=="keyword": current_user.default_prompt = data['prompt']
-                            prompt=data['prompt']
 
                         if data.get('default-intro-prompt', False):
                             if by=="artist": current_user.default_intro_prompt_artist = data['intro-prompt']
                             elif by=="keyword": current_user.default_intro_prompt = data['intro-prompt']
-                            intro_prompt=data['intro-prompt']
 
                         if data.get('default-improver-prompt', False):
                             current_user.default_improver_prompt = data['improver-prompt']
-                            improver_prompt=data['improver-prompt']
 
                         if data.get('default-img-prompt', False):
                             current_user.default_img_prompt = data['img-prompt']
-                            improver_prompt=data['img-prompt']
+                        
+                        if data.get('default-title-prompt', False):
+                            if by=="artist": current_user.default_title_prompt_artist = data['title-prompt']
+                            elif by=="keyword": current_user.default_title_prompt = data['title-prompt']
                         
 
                         img_config = data.get('img-config', json.loads(current_user.default_img_config))
@@ -311,7 +311,7 @@ def proceedAI(by):
             print(data)
             print(keyword)
 
-            if "`" in data.get('prompt', "")+ data.get("intro-prompt", "")+ data.get("improver-prompt", ""):
+            if "`" in data.get('prompt', "")+ data.get("intro-prompt", "")+ data.get("improver-prompt", "")+ data.get("title-prompt", ""):
                 flash("Backticks (`) are not allowed in the prompts. You can use both simple or double quotes.", category='error' )
 
             else:

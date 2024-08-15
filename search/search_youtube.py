@@ -9,6 +9,10 @@
 
 import argparse
 
+import urllib.request
+import urllib.parse
+import re
+
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -49,6 +53,41 @@ def youtube_search(options, DEVELOPER_KEY):
     # print('Channels:\n', '\n'.join(channels), '\n')
     # print('Playlists:\n', '\n'.join(playlists), '\n')
     return search_response
+
+
+def scrape_youtube_search_results(track_title):
+    def is_same_song(song1, song2):
+
+        song1_words = set(song1.lower().split())
+        song2_words = set(song2.lower().split())
+        common_words = song1_words.intersection(song2_words)
+
+        if len(common_words) >= 2:
+            return True
+        else: return False
+
+
+    input = urllib.parse.urlencode({'search_query': track_title})
+    try:
+        html = urllib.request.urlopen(
+            "http://www.youtube.com/results?" + input)
+        all_results = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+        video_id=None
+        for song_id in all_results:
+            song_html = urllib.request.urlopen("http://www.youtube.com/watch?v=" + song_id)
+            yt_title = re.findall(r'<title>(.*?)</title>', song_html.read().decode())[0]
+
+            if is_same_song(track_title, yt_title):
+                video_id=song_id
+                print("OK")
+                break
+    except Exception as e:
+        print("ERROR")
+        print(e)
+        video_id = ''
+        
+    return video_id
+
 
 
 if __name__ == '__main__':

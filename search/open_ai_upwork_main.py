@@ -12,7 +12,7 @@ from sd_app.models import SpotifyDraft
 from .html_generator import generate_html
 from .wordpress import create_wp_draft, add_wp_image
 from .ai import Model_Generator, local
-from .search_youtube import youtube_search
+from .search_youtube import youtube_search, scrape_youtube_search_results
 from sd_app.constants import keys, default_model
 
 
@@ -136,37 +136,6 @@ def search_spotify_tracks(keyword, sp, target="track", by="track", keyword_id=No
             search_results, columns=['id', 'name', 'popularity'])
         return df_search_results
 
-def scrape_youtube_search_results(track_title):
-    def is_same_song(song1, song2):
-
-        song1_words = set(song1.lower().split())
-        song2_words = set(song2.lower().split())
-        common_words = song1_words.intersection(song2_words)
-
-        if len(common_words) >= 2:
-            return True
-        else: return False
-
-
-    input = urllib.parse.urlencode({'search_query': track_title})
-    try:
-        html = urllib.request.urlopen(
-            "http://www.youtube.com/results?" + input)
-        all_results = re.findall(r"watch\?v=(\S{11})", html.read().decode())
-        video_id=None
-        for song_id in all_results:
-            song_html = urllib.request.urlopen("http://www.youtube.com/watch?v=" + song_id)
-            yt_title = re.findall(r'<title>(.*?)</title>', song_html.read().decode())[0]
-
-            if is_same_song(track_title, yt_title):
-                video_id=song_id
-                break
-
-    except:
-        video_id = ''
-
-    return video_id
-
 def get_youtube_search_results(data, stopper):
 
     if (stopper.is_set()): raise Exception("stopped")
@@ -178,6 +147,7 @@ def get_youtube_search_results(data, stopper):
         # Try getting the video data from google API
         search_results = youtube_search(options, youtube_api_key)
         video_id = search_results['items'][0]['id']['videoId']
+        if video_id is None or video_id=='': raise Exception
     except HttpError as error:
         # check if the error is due to exceeding the daily quota
         if error.resp.status in [403, 404]:
@@ -368,6 +338,7 @@ class Search_Process():
         print(f"Getting Youtube data")
         for i, track in result_df.iterrows():
             yt_video_id = get_youtube_search_results(track, stopper)
+            time.sleep(0.5)
             print('yt',yt_video_id)
             result_df.loc[i, 'yt_video_id'] = yt_video_id
         
