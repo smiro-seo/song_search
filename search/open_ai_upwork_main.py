@@ -338,7 +338,7 @@ class Search_Process():
         print(f"Getting Youtube data")
         for i, track in result_df.iterrows():
             yt_video_id = get_youtube_search_results(track, stopper)
-            time.sleep(0.5)
+            time.sleep(1)
             print('yt',yt_video_id)
             result_df.loc[i, 'yt_video_id'] = yt_video_id
         
